@@ -42,6 +42,9 @@ public class SQLDataSet extends DataSet
 	private String iS_InsertSQL;
 	private String iS_UpdateSQL;
 	private String iS_DeleteSQL;
+	private boolean ib_noRowsInsertedError = false;
+	private boolean ib_noRowsUpdatedError = false; 
+	private boolean ib_noRowsDeletedError = false;
 	
 	private boolean ib_autoGenerateWriteSQL = false;
 
@@ -253,6 +256,11 @@ public class SQLDataSet extends DataSet
 	public int save() throws DataSetException
 	{
 		setUpIfPossible();
+		SQLWriteEngine l_SQLWriteEngine = (SQLWriteEngine) getWriteEngine();
+		if(l_SQLWriteEngine!=null)
+		{
+			l_SQLWriteEngine.geneteErrorOnNoRowsAction(ib_noRowsInsertedError, ib_noRowsUpdatedError, ib_noRowsDeletedError);
+		}
 		return super.save();
 	}
 	/**
@@ -279,16 +287,21 @@ public class SQLDataSet extends DataSet
 	}
 
 	/**
-	 * Method setErrorOnNoRowsInserted.
 	 * No rows is not updated on database based on SQL statement, is error generated.
 	 * 
 	 * @param ab_noRowsInsertedError
 	 * @param ab_noRowsUpdatedError
 	 * @param ab_noRowsDeletedError
 	 */
-	public void setErrorOnNoRowsInserted(boolean ab_noRowsInsertedError, boolean ab_noRowsUpdatedError, boolean ab_noRowsDeletedError)
+	public void generateErrorOnNoRowsAction(boolean ab_noRowsInsertedError, boolean ab_noRowsUpdatedError, boolean ab_noRowsDeletedError)
 	{
 		SQLWriteEngine l_SQLWriteEngine = (SQLWriteEngine) getWriteEngine();
-		l_SQLWriteEngine.setErrorOnNoRowsInserted(ab_noRowsInsertedError, ab_noRowsUpdatedError, ab_noRowsDeletedError);
+		if(l_SQLWriteEngine==null)
+		{
+			ib_noRowsDeletedError = ab_noRowsDeletedError;
+			ib_noRowsInsertedError = ab_noRowsInsertedError;
+			ib_noRowsUpdatedError = ab_noRowsUpdatedError;
+		}
+		
 	}
 }

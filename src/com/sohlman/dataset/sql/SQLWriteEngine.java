@@ -519,14 +519,14 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	}
 
 	/**
-	 * Method setErrorOnNoRowsInserted.
+	 * Method setErrorOnNoRowsAction.
 	 * No rows is not updated on database based on SQL statement, is error generated.
 	 * 
 	 * @param ab_noRowsInsertedError
 	 * @param ab_noRowsUpdatedError
 	 * @param ab_noRowsDeletedError
 	 */
-	public void setErrorOnNoRowsInserted(boolean ab_noRowsInsertedError, boolean ab_noRowsUpdatedError, boolean ab_noRowsDeletedError)
+	public void geneteErrorOnNoRowsAction(boolean ab_noRowsInsertedError, boolean ab_noRowsUpdatedError, boolean ab_noRowsDeletedError)
 	{
 		ib_noRowsInsertedError = ab_noRowsInsertedError;
 		ib_noRowsUpdatedError = ab_noRowsUpdatedError;
