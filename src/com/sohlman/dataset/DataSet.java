@@ -439,27 +439,29 @@ public class DataSet
 	}
 
 	/** Get certain value from row or column.
-		 * @param ai_rowIndex Row to read value
-		 * @param ai_columnIndex Column to read value
-		 * @return Column. This must be casted right object type.
-		 */
+	 * @param ai_rowIndex Row to read value
+	 * @param ai_columnIndex Column to read value
+	 * @return Column. This must be casted right object type.
+	 * @throws ArrayIndexOutOfBoundsException if row or column is out of range
+	 */
 	public final Object getValueAt(int ai_rowIndex, int ai_columnIndex)
 	{
 		Object l_Object = null;
 		if (ai_rowIndex > 0 && ai_rowIndex <= iVe_Data.size())
 		{ // Because of multithreading it is not sure that we will get handle
 			// for the row.
+			RowContainer l_RowContainer;
 			try
 			{
-				RowContainer l_RowContainer;
 				l_RowContainer = (RowContainer) iVe_Data.get(ai_rowIndex - 1);
-				Row l_Row = l_RowContainer.i_Row_Current;
-				l_Object = l_Row.getValueAt(ai_columnIndex);
-			}
+							}
 			catch (ArrayIndexOutOfBoundsException l_ArrayIndexOutOfBoundsException)
 			{
-				l_ArrayIndexOutOfBoundsException.printStackTrace();
+				throw new ArrayIndexOutOfBoundsException("Row " + ai_rowIndex + " is out of range");
 			}
+			Row l_Row = l_RowContainer.i_Row_Current;
+			l_Object = l_Row.getValueAt(ai_columnIndex);
+			
 		}
 		return l_Object;
 	}
@@ -492,31 +494,31 @@ public class DataSet
 	{
 		i_KeyAction = a_KeyAction;
 	} /** Set setReadEngine for DataSet
-																							 * @param a_ReadEngine Assigned read engine.
-																							 */
+																									 * @param a_ReadEngine Assigned read engine.
+																									 */
 	public final void setReadEngine(ReadEngine a_ReadEngine)
 	{
 		// future when many types of
 		// write engines exists. Do check and set all other nulls.
 		i_ReadEngine = a_ReadEngine;
 	} /** Set WriteEngine for DataSet
-																						 * @param a_WriteEngine Refrence to new WriteEngine.
-																						 */
+																								 * @param a_WriteEngine Refrence to new WriteEngine.
+																								 */
 	public final void setWriteEngine(WriteEngine a_WriteEngine)
 	{
 		i_WriteEngine = a_WriteEngine;
 	} /** Removes ReadEngine from DataSet
-																							 */
+																									 */
 	public final void removeReadEngine()
 	{
 		i_ReadEngine = null;
 	} /** Removes KeyAction object from DataSet
-																							 */
+																									 */
 	public final void removeKeyAction()
 	{
 		i_KeyAction = null;
 	} /** Removes WriteEngine from DataSet
-																							 */
+																									 */
 	public final void removeWriteEngine()
 	{
 		i_WriteEngine = null;
@@ -562,8 +564,8 @@ public class DataSet
 		}
 		return i_RowInfo.getColumnName(ai_index);
 	} /** Returns row count of DataSet
-																							 * @return Row count of DataSet
-																							 */
+																									 * @return Row count of DataSet
+																									 */
 	public int getRowCount()
 	{
 		return iVe_Data.size();
@@ -1014,6 +1016,18 @@ public class DataSet
 		}
 		return ERROR;
 	}
+	
+	public void sort(int ai_columnIndex)
+	{
+		int[] li_indexes = {ai_columnIndex};
+		sort(li_indexes);
+	}
+	
+	public void sort(int[] ai_columnIndexes)
+	{
+		setComparator(new RowComparator(ai_columnIndexes));
+		sort();
+	}
 
 	/**
 	* Sorts data using current comparator.
@@ -1274,7 +1288,7 @@ public class DataSet
 				Row l_Row_Source = a_DataSet_Source.getReferenceToRow(li_sIndex);
 				int li_result;
 
-				li_result = compareRows(l_Row_Destination, l_Row_Source, ai_sourceKeys, ai_destinationKeys);
+				li_result = compareRows(l_Row_Source,l_Row_Destination ,ai_sourceKeys, ai_destinationKeys);
 
 				if (li_result < 0)
 				{
@@ -1294,9 +1308,9 @@ public class DataSet
 						int li_row = addRow();
 						copyRow(l_Row_Source, getReferenceToRow(li_row), ai_sourceColumns, ai_destinationColumns);
 						li_addCount++;
+						
 						li_sIndex++;
 					}
-
 				}
 				else
 				{
@@ -1308,31 +1322,44 @@ public class DataSet
 							li_modifyCount++;
 						}
 					}
-
-					if (li_dIndex < li_destinationCount)
+					li_dIndex++;
+					if (li_dIndex <= li_destinationCount)
 					{
-						if (compareRows(getReferenceToRow(li_dIndex + 1), l_Row_Source, ai_sourceKeys, ai_destinationKeys) != 0)
+						if (compareRows(l_Row_Source, getReferenceToRow(li_dIndex), ai_sourceKeys, ai_destinationKeys) != 0)
 						{
 							li_sIndex++;
 						}
 					}
-					li_dIndex++;
-				}
 
+				}
 			}
-			while (li_dIndex <= li_destinationCount);
+			while (li_dIndex <= li_destinationCount && li_sIndex <= li_sourceCount);
 
 			// Add rest from the source
 			if (ab_doAdd)
 			{
-				while (li_sIndex <= li_sourceCount)
+				li_sIndex++;
+				if (li_sIndex <= li_sourceCount)
 				{
-					int li_row = addRow();
-					copyRow(a_DataSet_Source.getReferenceToRow(li_sIndex), getReferenceToRow(li_row), ai_sourceColumns, ai_destinationColumns);
-					li_addCount++;
-					li_sIndex++;
+					while (li_sIndex <= li_sourceCount)
+					{
+						int li_row = addRow();
+						copyRow(a_DataSet_Source.getReferenceToRow(li_sIndex), getReferenceToRow(li_row), ai_sourceColumns, ai_destinationColumns);
+						li_addCount++;
+						li_sIndex++;
+					}
 				}
 			}
+			
+			// Delete rest of the destination here
+			if (ab_doDelete)
+			{
+				for(int li_index = li_destinationCount ; li_index >= li_dIndex ; li_index--)
+				{
+					removeRow(li_index);
+					li_removeCount++;
+				}
+			}			
 		}
 		else if (li_sourceCount == 0 && li_destinationCount > 0)
 		{
