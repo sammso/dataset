@@ -145,5 +145,5 @@ public class ColumnsInfo
 			}
 		}
 		return true;
-	}	
+	}
 }

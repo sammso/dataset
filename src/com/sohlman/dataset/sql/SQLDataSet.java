@@ -19,7 +19,7 @@ import com.sohlman.dataset.DataSetException;
  *     or {@link #setWriteSQLStametents setWriteSQLStametents }
  *     depending of need of use of SQLDataSet.
  * </li>
- * <li>If you have read engine and you data from one table with SELECT statment, ask SQLDataSet to generate automaticly write statements by setting {@link setAutoGenerateWriteSQL setAutoGenerateWriteSQL} true.</li>      
+ * <li>If you have read engine and you data from one table with SELECT statment, ask SQLDataSet to generate automatically write statements by setting {@link #setAutoGenerateWriteSQL setAutoGenerateWriteSQL} true.</li>      
  * <li>Read data, using {@link com.sohlman.dataset.DataSet#read() read} method <i>(optional)</i></li>
  * <li>Modify data using {@link com.sohlman.dataset.DataSet#addRow addRow}, {@link com.sohlman.dataset.DataSet#insertRow insertRow}, 
  * {@link com.sohlman.dataset.DataSet#removeRow removeRow}, {@link com.sohlman.dataset.DataSet#setValueAt setValueAt} and 

@@ -318,7 +318,7 @@ public class DataSet
 
 			if (l_RowContainer != null)
 			{
-				if (i_KeyAction != null && l_RowContainer.i_Row_Orig != null && i_KeyAction.isKeyModified(l_Row, a_Row))
+				if ( i_KeyAction!=null && l_RowContainer.i_Row_Orig != null && i_KeyAction.isKeyModified(l_Row, a_Row))
 				{
 					doRemoveRow(ai_index);
 					doInsertRow(ai_index, new RowContainer(null, a_Row));
