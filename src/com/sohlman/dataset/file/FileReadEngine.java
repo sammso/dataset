@@ -96,11 +96,11 @@ public class FileReadEngine implements ReadEngine
 
 			while ((!lb_ok) && ((lS_Line = i_BufferedReader.readLine()) != null))
 			{
+				iS_LastReadLine = lS_Line;
 				lb_ok = validateLine(lS_Line);
 			}
 			if (lb_ok && lS_Line != null)
 			{
-				iS_LastReadLine = lS_Line;
 				for (int li_index = 1; li_index <= i_FileRowInfo.getColumnCount(); li_index++)
 				{
 					int li_startPosition = i_FileRowInfo.getColumnStartPosition(li_index);

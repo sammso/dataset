@@ -1,9 +1,5 @@
 package com.sohlman.dataset;
 
-import com.sohlman.dataset.Row;
-import com.sohlman.dataset.DataSetException;
-import com.sohlman.dataset.KeyAction;
-import com.sohlman.dataset.RowInfo;
 import java.util.Vector;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -924,16 +920,34 @@ public class DataSet
 	*/
 	public final Row getRow(int ai_index)
 	{
+		Row l_Row = getReferenceToRow(ai_index);
+		if(l_Row!=null)
+		{
+			return (Row)l_Row.clone();
+		}
+		else
+		{
+			return null;		
+		}
+	}
+	
+	/** Returns Row from ai_index location. Don't return reference to row.
+	* @param ai_index Index of row
+	* @return Copy of the row object in DataSet
+	*/
+	protected final Row getReferenceToRow(int ai_index)
+	{
 		if (ai_index > 0 && ai_index <= getRowCount())
 		{
 			RowContainer l_RowContainer = (RowContainer) iVe_Data.get(ai_index - 1);
-			return (Row) l_RowContainer.i_Row_Current.clone();
+			return (Row) l_RowContainer.i_Row_Current;
 		}
 		else
 		{
 			return null;
 		}
-	}
+	}	
+	
 	/** Set Row object to DataSet.
 	* @param ai_index Row where to modify row.
 	* @param a_Row Row object which is modifying
@@ -1329,5 +1343,33 @@ public class DataSet
 	{
 		return iVe_Data;
 	}
-
+	
+	
+	/**
+	 * Method sumRows.
+	 * @param ai_compareColumns
+	 * @param ai_sumColumns
+	 */
+	public void sumRows(int[] ai_compareColumns, int[] ai_sumColumns)
+	{
+		setComparator(new RowComparator(ai_compareColumns));
+		sort();
+		
+		for(int li_row = getRowCount() ; li_row > 1  ; li_row-- )
+		{
+			Row l_Row_Current = getReferenceToRow(li_row);
+			Row l_Row_Before = getReferenceToRow(li_row - 1);
+			
+			if(l_Row_Current.equals(l_Row_Before,ai_compareColumns))
+			{
+				for(int li_index = 0 ; li_index < ai_sumColumns.length ; li_index++)
+				{
+					
+				}
+				
+				removeRow(li_row);	
+			}		
+		}
+	}
+	
 }

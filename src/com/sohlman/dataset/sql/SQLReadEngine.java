@@ -246,9 +246,13 @@ public class SQLReadEngine implements ReadEngine
 			}
 
 		}
-		catch (SQLException a_SQLException)
+		catch (SQLException l_SQLException)
 		{
-			throw new DataSetException("readStart - SQL Error", a_SQLException);
+			throw new DataSetException("readStart - SQL Error", l_SQLException);
+		}
+		catch(ClassNotFoundException l_ClassNotFoundException)
+		{
+			throw new DataSetException("ClassNotFound", l_ClassNotFoundException);	
 		}
 	}
 

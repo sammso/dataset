@@ -9,14 +9,19 @@ package com.sohlman.dataset;
 public class ColumnInfo
 {
 	private String iS_Name;
-	private String iS_ClassName;
+	private Class i_Class;
 	
-	public ColumnInfo(String aS_Name, String aS_ClassName)
+	public ColumnInfo(String aS_Name, String aS_ClassName) throws ClassNotFoundException
 	{
 		setName(aS_Name);
 		setClassName(aS_ClassName);
 	}
 	
+	public ColumnInfo(String aS_Name, Class a_Class)
+	{
+		setName(aS_Name);
+		setClass(a_Class);
+	}		
 	public String getName()
 	{
 		return iS_Name;
@@ -24,21 +29,26 @@ public class ColumnInfo
 	
 	public String getClassName()
 	{
-		return iS_ClassName;
+		return i_Class.getName();
 	}
 	
 	public Class getColumnClass() throws ClassNotFoundException
 	{
-		return Class.forName(iS_ClassName);
+		return i_Class;//Class.forName(iS_ClassName);
 	}
 	
-	public void setClassName(String aS_ClassName)
+	protected void setClass(Class a_Class)
 	{
-		if(aS_ClassName==null)
+		if(a_Class==null)
 		{
-			throw new IllegalArgumentException("Class name cannot be null");
+			throw new IllegalArgumentException("Class cannot be null");
 		}
-		iS_ClassName = aS_ClassName;
+		i_Class = a_Class;
+	}
+	
+	protected void setClassName(String aS_ClassName) throws ClassNotFoundException
+	{
+		setClass(Class.forName(aS_ClassName));
 	}
 	
 	public void setName(String aS_Name)
