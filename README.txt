@@ -1,19 +1,26 @@
-	DataSet Library 1.0 Beta 6
+	DataSet Library 1.0 RC 1
 -------------------------------------------------------------
  I currently using this version of DataSet on my projects.
  I'm using DataSet on production.
  - Web applications
+ - On my NetForm project http://netform.sohlman.com
  - DataTransfer applications.
  - Small Swing application
 
 Changes 
 ------------------------------------------------------------- 
- Changes in  Beta 6
- - Package structure fix
- - FileReadEngine fix on Timestamps
+ Changes in RC 1
+ - Row setValueAt checking class is now corrected. Before it used to use 
+   class name now it is using Class.instanceOf() method which is working 
+   more presise
+ - RowInfo.getColumnClass(int) index is now 1 - size
 
- Before Beta 4 - Read from Earlier releases
- Beta 5
+ Changes in Beta 6
+ - Package structure fix. 
+    + build.xml didn't put swingsrc to it's folder.
+ - FileReadEngine fix on Timestamp range.
+ 
+ Changes in Beta 5
  - Fixed bug on removeRow event generation
  - syncronizeFrom functionality has been rewritten. API has
    been changed. It is better now.
@@ -26,10 +33,14 @@ Changes
  - Swing developement.
  - Rename KeyAction ModifyAction also it is bounded to RowInfo
  
+Before Beta 4 - Read from Earlier releases
+ 
 Future Ideas
 -------------------------------------------------------------
  - Tight SWT (Eclipse) integration
  - DataSet Taglib for JSP for reporting purposes
+ - Connection to NetForm web application framework. 	
+   http://netform.sohlman.com
 
 Installation instructions:
 -------------------------------------------------------------

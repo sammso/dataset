@@ -1,5 +1,7 @@
 package com.sohlman.dataset;
 
+import java.io.Serializable;
+
 
 /**
  * Column  info contains all needed data from column
@@ -7,7 +9,7 @@ package com.sohlman.dataset;
  * 
  * @author Sampsa Sohlman
  */
-public class ColumnInfo
+public class ColumnInfo implements Serializable
 {
 	private String iS_Name;
 	private Class i_Class;

@@ -647,7 +647,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 	/**
 	 * Method setErrorOnNoRowsAction.
-	 * No rows is not updated on database based on SQL statement, is error generated.
+	 * If no rows is not updated on database based on SQL statement, is error generated.
 	 * 
 	 * @param ab_noRowsInsertedError
 	 * @param ab_noRowsUpdatedError

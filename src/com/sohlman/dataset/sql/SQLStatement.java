@@ -640,9 +640,4 @@ class SQLStatement
 			return ai_default;
 		}
 	}
-	
-	public void close()
-	{
-
-	}
 }

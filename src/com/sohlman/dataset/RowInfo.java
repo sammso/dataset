@@ -1,14 +1,16 @@
 package com.sohlman.dataset;
 
+import java.io.Serializable;
+
 /**
  * @author Sampsa Sohlman
  *
  * @version 2002-10-09
  */
-public class RowInfo
+public class RowInfo implements Serializable
 {	
 	private ColumnInfo[] i_ColumnInfos;
-	private ModifyAction i_ModifyAction = null;
+	transient private ModifyAction i_ModifyAction;
 	
 	public RowInfo(ColumnInfo[] a_ColumnInfos)
 	{
@@ -74,9 +76,9 @@ public class RowInfo
 	 * @throws ClassNotFoundException if class is not in classpath
 	 * @throws ArrayIndexOutOfBoundsException if index is out of range
 	 */
-	public Class getColumnClass(int ai_index) throws ClassNotFoundException
+	public Class getColumnClass(int ai_index)
 	{
-		return i_ColumnInfos[ai_index].getColumnClass();
+		return getColumnInfo(ai_index).getColumnClass();
 	}
 	
 	
@@ -117,6 +119,7 @@ public class RowInfo
 	/**
 	 * @return ModifyAction which 
 	 */
+	
 	public ModifyAction getKeyAction()
 	{
 		return i_ModifyAction;	
@@ -125,5 +128,5 @@ public class RowInfo
 	public void setKeyAction(ModifyAction a_ModifyAction)
 	{
 		i_ModifyAction = a_ModifyAction;
-	}
+	}	
 }

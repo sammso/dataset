@@ -1,7 +1,6 @@
 package com.sohlman.dataset;
 
 
-
 /** Row object represent row in {@link DataSet DataSet} object.<br>
  *
  * @author Sampsa Sohlman
@@ -11,6 +10,7 @@ package com.sohlman.dataset;
 public class Row
 {
 	public final static Row NO_MORE_ROWS = null;
+	public final static int ERROR = -1;
 
 	Object[] iO_Columns;
 	RowInfo i_RowInfo;
@@ -34,15 +34,13 @@ public class Row
 	 */
 	public final int setValueAt(int ai_index, Object a_Object)
 	{
-		
-		//if(a_Object!=null) System.out.println(ai_index + " : " + a_Object.getClass().getName() + " :  " + a_Object.toString());
 		if (ai_index > 0 && ai_index <= iO_Columns.length)
 		{
 			if(a_Object==null)
 			{
 				iO_Columns[ai_index - 1] = null;	
 			}
-			else if(a_Object.getClass().getName().equals(i_RowInfo.getColumnClassName(ai_index)))
+			if(i_RowInfo.getColumnClass(ai_index).isInstance(a_Object))
 			{
 				iO_Columns[ai_index - 1] = a_Object;
 			}
