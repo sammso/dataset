@@ -214,7 +214,7 @@ public class SQLDataSet extends DataSet
 				}
 				else
 				{
-					l_SQLWriteEngine.setSQLColumnsInfo((SQLRowInfo) getRowInfo());
+					l_SQLWriteEngine.setSQLRowInfo((SQLRowInfo) getRowInfo());
 					l_SQLWriteEngine.setSQL(iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL);
 				}
 			}

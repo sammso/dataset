@@ -969,6 +969,7 @@ public class DataSet
 		}
 		return li_row;
 	}
+	
 	/** Current status of row<br>
 	* With key action is possible deside if we hare doing just 'modify' or 'insert / delete' when setting item.<br>
 	* If this method is not all the objects are always considered as modified.
@@ -996,6 +997,7 @@ public class DataSet
 		}
 		return ERROR;
 	}
+	
 	/**
 	* Sorts data using current comparator.
 	* 
@@ -1362,11 +1364,7 @@ public class DataSet
 	}
 	
 	
-	/**
-	 * Method sumRows.
-	 * @param ai_compareColumns
-	 * @param ai_sumColumns
-	 */
+/*
 	public void sumRows(int[] ai_groupColumns, int[] ai_sumColumns)
 	{	
 		setComparator(new RowComparator(ai_groupColumns));
@@ -1381,68 +1379,134 @@ public class DataSet
 			{
 				for(int li_index = 0 ; li_index < ai_sumColumns.length ; li_index++)
 				{
-					Object l_Object = addObject(l_Row_Current.getValueAt(ai_sumColumns[li_index]), l_Row_Before.getValueAt(ai_sumColumns[li_index]));
-					l_Row_Before.setValueAt(ai_sumColumns[li_index], l_Object);
+					Number l_Number = DataSetService.sum((Number)l_Row_Current.getValueAt(ai_sumColumns[li_index]), (Number)l_Row_Before.getValueAt(ai_sumColumns[li_index]));
+					l_Row_Before.setValueAt(ai_sumColumns[li_index], l_Number);
 				}
 				removeRow(li_row);	
 			}	
 		}
 	}
+*/	
+	/**
+	 * Method getValuesAt returns range of values from certain column
+	 * @param ai_startRow Start row
+	 * @param ai_endRow End row
+	 * @param ai_columnIndex Column
+	 * @return Object[]
+	 */
+	public Object[] getValuesAt(int ai_startRow, int ai_endRow, int ai_columnIndex)
+	{
+		if(ai_startRow>ai_endRow)
+		{
+			throw new IllegalArgumentException("Start row value has be smaller than end row value");
+		}
+		if(ai_startRow <= 0)
+		{
+			throw new IllegalArgumentException("Start row has to be from 1 to rowCount");	
+		}
+		if(ai_endRow > getRowCount())
+		{
+			throw new IllegalArgumentException("End row cannot be larger than rowcount");	
+		}
+		
+		
+		
+		Object[] l_Objects = new Object[ai_endRow - ai_startRow  + 1];
+	
+		int li_counter = 0;
+		for(int li_index = ai_startRow ; li_index <= ai_endRow ; li_index++)
+		{
+			l_Objects[li_counter] = getValueAt(li_index,ai_columnIndex);
+			li_counter++;
+		}
+		
+		return l_Objects;
+	}
+	
+	public void groupBy(int [] ai_groupColums)
+	{
+		GroupCalc[] l_GroupCalcs = null;
+		groupBy(ai_groupColums,l_GroupCalcs);
+	}
 	
 	/**
-	 * Method This is part of functionality of sumRows
-	 * @param a_Object_1
-	 * @param a_Object_2
-	 * @return Object
-	 */
-	private Object addObject(Object a_Object_1, Object a_Object_2)
+	 * Method groupBy
+	 * @param ai_compareColumns
+	 * @param a_GroupCalc
+	 */	
+	public void groupBy(int[] ai_groupColumns, GroupCalc a_GroupCalc)
 	{
-		if(a_Object_1==null || a_Object_2 != null)
-		{
-			return a_Object_2;	
-		}
-		if(a_Object_2==null || a_Object_1 != null)
-		{
-			return a_Object_1;	
-		}		
+		GroupCalc[] l_GroupCalcs = new GroupCalc[1];
+		l_GroupCalcs[0] = a_GroupCalc;
+		groupBy(ai_groupColumns,l_GroupCalcs);
+	}
+	
+	
+	/**
+	 * Method groupBy
+	 * @param ai_compareColumns
+	 * @param a_GroupCalcs
+	 */
+	public void groupBy(int[] ai_groupColumns, GroupCalc[] a_GroupCalcs)
+	{	
+		setComparator(new RowComparator(ai_groupColumns));
+		sort();
 		
-		if (a_Object_1 instanceof Integer )
-		{
-			return (Object) new Integer(((Integer)a_Object_1).intValue() + ((Integer)a_Object_2).intValue());
-		}
-		else if (a_Object_1 instanceof Long )
-		{
-			return (Object) new Long(((Long)a_Object_1).longValue() + ((Long)a_Object_2).longValue());
-		}
-		else if (a_Object_1 instanceof Double )
-		{
-			return (Object) new Double(((Double)a_Object_1).doubleValue() + ((Double)a_Object_2).doubleValue());
-		}
-		else if (a_Object_1 instanceof Float )
-		{
-			return (Object) new Float(((Float)a_Object_1).floatValue() + ((Float)a_Object_2).floatValue());
-		}
-		else if (a_Object_1 instanceof Short )
-		{
-			short ls_value1 = ((Short)a_Object_1).shortValue();
-			short ls_value2 = ((Short)a_Object_1).shortValue();			
-			short ls_value = (short)(ls_value1 + ls_value2);
-			return (Object) new Short( ls_value );
-		}		
-		else if (a_Object_1 instanceof BigInteger )
-		{
-			BigInteger l_BigInteger_1 = (BigInteger) a_Object_1;
-			BigInteger l_BigInteger_2 = (BigInteger) a_Object_2;	
+		// Search
 		
-			return (Object) l_BigInteger_1.add(l_BigInteger_2);
-		}
-		else if (a_Object_1 instanceof BigDecimal )
-		{
-			BigDecimal l_BigDecimal_1 = (BigDecimal) a_Object_1;
-			BigDecimal l_BigDecimal_2 = (BigDecimal) a_Object_2;	
+		Row l_Row_Found = null;
+
 		
-			return (Object) l_BigDecimal_1.add(l_BigDecimal_2);
-		}		
-		return null;				
-	} 	
+		for(int li_row = getRowCount() ; li_row > 1  ; li_row-- )
+		{
+			// First find secuense of mached rows
+			Row l_Row_Current = getReferenceToRow(li_row);
+			int li_rowEnd = li_row;
+			int li_rowStart = li_row;			
+			Row l_Row_Before;
+			boolean lb_continue = true;
+			do
+			{
+				li_row--;
+				l_Row_Before = getReferenceToRow(li_row);
+				
+				if(l_Row_Before==null)
+				{
+					li_row = li_row;
+				}
+				
+				if(l_Row_Current.equals(l_Row_Before, ai_groupColumns))
+				{
+					li_rowStart = li_row;	
+				}
+				else
+				{
+					lb_continue = false;
+				}
+			} while(li_row > 1 && lb_continue);
+			li_row++; // move cursor
+			
+			
+			// Then  calculate group
+			if(li_rowStart < li_rowEnd)
+			{
+				if(a_GroupCalcs!=null)
+				{
+					// Calculate grouping
+					for(int li_index = 0 ; li_index < a_GroupCalcs.length ; li_index++)
+					{
+						int li_column = a_GroupCalcs[li_index].getColumnIndex();
+						Object[] l_Objects = getValuesAt(li_rowStart, li_rowEnd,li_column);
+						setValueAt(a_GroupCalcs[li_index].calculateGroupBy(l_Objects),li_row, li_column);
+					}
+				}				
+				// Remove rows that are used in grouping
+				for(int li_index = li_rowEnd ;  li_index > li_rowStart ; li_index --)
+				{
+					removeRow(li_index);
+				}
+			}
+		}
+	}	
+	
 }

@@ -152,7 +152,7 @@ public class Row
 	 * @return Row (BasicRow) from this object.
 	 */
 	public Object clone()
-	{
+	{	
 		Object[] l_Objects = new Object[iO_Columns.length];
 
 		System.arraycopy(iO_Columns, 0, l_Objects, 0, iO_Columns.length);

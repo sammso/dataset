@@ -16,6 +16,63 @@ import java.util.Locale;
 public class DataSetService
 {
 	/**
+	 * Method This is part of functionality of sumRows
+	 * @param a_Object_1
+	 * @param a_Object_2
+	 * @return Object
+	 */
+	public static Number sum(Number a_Number_1, Number a_Number_2)
+	{
+		if(a_Number_1==null && a_Number_2 != null)
+		{
+			return a_Number_2;	
+		}
+		if(a_Number_2==null && a_Number_1 != null)
+		{
+			return a_Number_1;	
+		}		
+		
+		if (a_Number_1 instanceof Integer )
+		{
+			return new Integer(((Integer)a_Number_1).intValue() + ((Integer)a_Number_2).intValue());
+		}
+		else if (a_Number_1 instanceof Long )
+		{
+			return new Long(((Long)a_Number_1).longValue() + ((Long)a_Number_2).longValue());
+		}
+		else if (a_Number_1 instanceof Double )
+		{
+			return new Double(((Double)a_Number_1).doubleValue() + ((Double)a_Number_2).doubleValue());
+		}
+		else if (a_Number_1 instanceof Float )
+		{
+			return new Float(((Float)a_Number_1).floatValue() + ((Float)a_Number_2).floatValue());
+		}
+		else if (a_Number_1 instanceof Short )
+		{
+			short ls_value1 = ((Short)a_Number_1).shortValue();
+			short ls_value2 = ((Short)a_Number_1).shortValue();			
+			short ls_value = (short)(ls_value1 + ls_value2);
+			return new Short( ls_value );
+		}		
+		else if (a_Number_1 instanceof BigInteger )
+		{
+			BigInteger l_BigInteger_1 = (BigInteger) a_Number_1;
+			BigInteger l_BigInteger_2 = (BigInteger) a_Number_2;	
+		
+			return l_BigInteger_1.add(l_BigInteger_2);
+		}
+		else if (a_Number_1 instanceof BigDecimal )
+		{
+			BigDecimal l_BigDecimal_1 = (BigDecimal) a_Number_1;
+			BigDecimal l_BigDecimal_2 = (BigDecimal) a_Number_2;	
+		
+			return l_BigDecimal_1.add(l_BigDecimal_2);
+		}		
+		return null;				
+	} 	
+
+	/**
 	 * Create String buffer which is filled with space " "
 	 * @param ai_size Size of new StringBuffer
 	 * @return StringBuffer Space filled Stringbuffer
