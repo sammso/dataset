@@ -16,6 +16,7 @@ public class DataSetListModel extends AbstractListModel
 	private int ii_maxListSize = 100;
 	private int ii_visibleColumn;
 	private DataSet i_DataSet;
+	private DataSetListModel i_DataSetListModel_This = this;
 	private DataSetListener i_DataSetListener = new DataSetListener()
 	{
 		/**
@@ -25,8 +26,15 @@ public class DataSetListModel extends AbstractListModel
 		{
 			if(a_DataSetEvent.getAction()==DataSetEvent.READ_END)
 			{
-				fireIntervalAdded(this, i_DataSet.getRowCount(), 0);
-			}		
+				fireIntervalAdded(i_DataSetListModel_This, i_DataSet.getRowCount(), 0);
+			}
+			if(a_DataSetEvent.getAction()==DataSetEvent.COLUMN_CHANGED)
+			{
+				if(ii_visibleColumn == a_DataSetEvent.getColumn())
+				{
+					fireContentsChanged(i_DataSetListModel_This, a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1);
+				}
+			}
 		}
 	};
 

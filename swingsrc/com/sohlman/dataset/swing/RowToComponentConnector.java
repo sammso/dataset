@@ -10,6 +10,7 @@ import java.util.Hashtable;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.text.JTextComponent;
@@ -112,8 +113,27 @@ public class RowToComponentConnector
 		//setRowComponentContainer(new RowComponentContainer(a_JLabel, ai_columnIndex, null));
 	}
 
-	public void enable(boolean ab_value)
+	public void setEnabled(boolean ab_value)
 	{
-		
+		Enumeration l_Enumeration = iHt_Components.elements();
+		while(l_Enumeration.hasMoreElements())
+		{
+			Object l_Object = l_Enumeration.nextElement();
+			RowComponentContainer l_RowComponentContainer = (RowComponentContainer)l_Object;
+			JComponent l_JComponent = l_RowComponentContainer.getComponent();
+			l_JComponent.setEnabled(ab_value);
+		}
 	}
+	
+	public void setVisible(boolean ab_value)
+	{
+		Enumeration l_Enumeration = iHt_Components.elements();
+		while(l_Enumeration.hasMoreElements())
+		{
+			Object l_Object = l_Enumeration.nextElement();
+			RowComponentContainer l_RowComponentContainer = (RowComponentContainer)l_Object;
+			JComponent l_JComponent = l_RowComponentContainer.getComponent();
+			l_JComponent.setVisible(ab_value);
+		}
+	}	
 }

@@ -3,6 +3,7 @@ package com.sohlman.dataset.swing;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
 
 /**
@@ -16,6 +17,7 @@ class RowComponentContainer
 	private JTextComponent i_JTextComponent;
 	private JCheckBox i_JCheckBox;
 	private JComboBox i_JComboBox;
+	private JLabel i_JLabel;
 
 	private Object[] iO_Params;
 
@@ -42,6 +44,14 @@ class RowComponentContainer
 		iO_Params = aO_Params;
 		i_JComboBox = a_JComboBox;
 	}
+	
+	RowComponentContainer(JLabel a_JLabel, int ai_columnIndex, Object[] aO_Params)
+	{
+		ii_columnIndex = ai_columnIndex;
+		i_JComponent = a_JLabel;
+		iO_Params = aO_Params;
+		i_JLabel = a_JLabel;
+	}	
 
 	JComponent getComponent()
 	{
@@ -105,8 +115,7 @@ class RowComponentContainer
 	}
 	
 	public void setValue(Object a_Object)
-	{
-		System.out.println("XX");		
+	{		
 		if (i_JCheckBox != null)
 		{
 
@@ -127,6 +136,10 @@ class RowComponentContainer
 		else if (i_JComboBox != null)
 		{
 			i_JComboBox.setSelectedItem(a_Object);
-		}			
+		}
+		else if (i_JLabel != null)
+		{
+			i_JLabel.setText(a_Object.toString());
+		}						
 	}
 }
