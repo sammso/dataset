@@ -43,7 +43,7 @@
 		<delete dir="${builddir}" failonerror="false"/>
 	</target>	
 
-	<target name="CreateDist" depends="CompileDataSet, CompileSQLTool, JavaDoc" description="Create Distribution Package" >
+	<target name="CreateDist" depends="CompileDataSet, CompileSQLTool" description="Create Distribution Package" >
 		<!-- Main -->
 		
 		<copy todir="${distdir}/src">
@@ -56,10 +56,20 @@
 		
 		<!-- JavaDoc -->		
 		
-		<javadoc access="protected" packagelist="com.sohlman.dataset" destdir="${distdir}/docs">
-			<sourcepath path="${datasetsrc}"/>
-			<sourcepath path="${swingsrc}"/>
-		</javadoc>
+		<javadoc 
+			destdir="${distdir}/docs/"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="${title}"
+			>
+			<packageset dir="${datasetsrc}" defaultexcludes="yes"/>
+			<packageset dir="${swingsrc}" defaultexcludes="yes"/>			
+			<doctitle><![CDATA[<h1>${title}</h1>]]></doctitle>
+			<bottom><![CDATA[<i>Sampsa Sohlman 2001-2003</i>]]></bottom>
+			<group title="DataSet Core" packages="com.sohlman.dataset:com.sohlman.dataset.file:com.sohlman.dataset.sql"/>
+			<group title="DataSet Swing" packages="com.sohlman.dataset.swing"/>			
+		</javadoc>		
 		
 		<!-- Swing library -->
 		<copy todir="${distdir}">

@@ -5,7 +5,7 @@ package com.sohlman.dataset;
  * @author Sampsa Sohlman
  * @version 2001-08-15
  */
-public interface KeyAction
+public interface ModifyAction
 {
 	/** This method tells what kind of action should be taken, when DataSet row is modified.<br>
 	 * Just normal modify<br>

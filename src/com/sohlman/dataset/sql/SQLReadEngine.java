@@ -15,7 +15,7 @@ import com.sohlman.dataset.RowInfo;
 
 /** Common retrieve engine for retrieving data from JDBC sources.
  *
- * <p>To create SQL statements see documentation of {@link SQLStatement SQLStatement} class.</p>
+ * <p>To create SQL statements see documentation of {@link com.sohlman.dataset.sql.SQLStatement SQLStatement} class.</p>
  * @author Sampsa Sohlman
  * 
  * @version 2002-10-10 Inteface has been changed

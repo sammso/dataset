@@ -8,8 +8,8 @@ package com.sohlman.dataset;
 public class RowInfo
 {	
 	private ColumnInfo[] i_ColumnInfos;
-
-
+	private ModifyAction i_ModifyAction = null;
+	
 	public RowInfo(ColumnInfo[] a_ColumnInfos)
 	{
 		i_ColumnInfos = a_ColumnInfos;			
@@ -112,5 +112,18 @@ public class RowInfo
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * @return ModifyAction which 
+	 */
+	public ModifyAction getKeyAction()
+	{
+		return i_ModifyAction;	
+	}
+	
+	public void setKeyAction(ModifyAction a_ModifyAction)
+	{
+		i_ModifyAction = a_ModifyAction;
 	}
 }

@@ -21,7 +21,7 @@ import com.sohlman.dataset.DataSetException;
  * 	<li>Set Set SQLRowInfo</li>
  *  <li>Set SQLRetrieveEngine related which is related to same DataSet</li>
  * </ul>
-* <p>To create SQL statements see documentation of {@link SQLStatement SQLStatement} class.</p>
+* <p>To create SQL statements see documentation of {@link com.sohlman.dataset.sql.SQLStatement SQLStatement} class.</p>
  * @author Sampsa Sohlman
  * @version 2002-10-10
  */

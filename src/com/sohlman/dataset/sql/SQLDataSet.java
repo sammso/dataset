@@ -26,11 +26,11 @@ import com.sohlman.dataset.DataSetException;
  * {@link com.sohlman.dataset.DataSet#setRowAt setRowAt} methods <i>(optional)</i>
  * </li> 
  * <li>Save changes, using {@link com.sohlman.dataset.DataSet#save() save()} <i>(optional)</i><li>
- * <li>You can ask Databata base information from {@link SQLRowInfo SQLRowInfo} object, which you can
+ * <li>You can ask Databata base information from {@link com.sohlman.dataset.sql.SQLRowInfo SQLRowInfo} object, which you can
  * object, which you can get with {@link com.sohlman.dataset.DataSet#getRowInfo() getRowInfo} object.
  * </li>
  * </ol>
- * <p>To create SQL statements see documentation of {@link SQLStatement SQLStatement} class.</p>
+ * <p>To create SQL statements see documentation of {@link com.sohlman.dataset.sql.SQLStatement SQLStatement} class.</p>
  * 
  * @author  Sampsa Sohlman
  * @version 2002-10-31
@@ -58,7 +58,7 @@ public class SQLDataSet extends DataSet
 	}
 
 	/**
-	 * Set {@link ConnectionContainer ConnectionContainer} object for SQLDataSet.
+	 * Set {@link com.sohlman.dataset.sql.ConnectionContainer ConnectionContainer} object for SQLDataSet.
 	 * It is required for connection to database.
 	 * @param a_ConnectionContainer
 	 * @throws DataSetException

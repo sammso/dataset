@@ -20,6 +20,9 @@ Changes
    - swing functionality removed and transferred to another .jar
  - Swing support removed it is now on own .jar file.
  - Write statements generation developed further
+ - Swing developement.
+ - Rename KeyAction ModifyAction also it is bounded to RowInfo
+ 
 Future Ideas
 -------------------------------------------------------------
  - Column level tracking for changed columns. (It is now

@@ -8,7 +8,7 @@ package com.sohlman.dataset;
  * @author Sampsa Sohlman
  * @version 2001-09-17
  */
-public class KeyColumnsAction implements com.sohlman.dataset.KeyAction
+public class KeyColumnsAction implements com.sohlman.dataset.ModifyAction
 {
     /** List of columns
      */    

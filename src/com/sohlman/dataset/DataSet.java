@@ -63,10 +63,6 @@ public class DataSet
 
 	private DataSetComparator i_DataSetComparator = null;
 
-	/** With key action is possible deside if we are doing just modify or insert / delete
-	 */
-	private KeyAction i_KeyAction = null;
-
 	/** Listeners
 	 */
 	private Vector iVe_Listeners;
@@ -314,7 +310,8 @@ public class DataSet
 
 			if (l_RowContainer != null)
 			{
-				if (i_KeyAction != null && l_RowContainer.i_Row_Orig != null && i_KeyAction.isKeyModified(l_Row, a_Row))
+				ModifyAction l_KeyAction = i_RowInfo.getKeyAction();
+				if ( l_KeyAction != null && l_RowContainer.i_Row_Orig != null && l_KeyAction.isKeyModified(l_Row, a_Row))
 				{
 					doRemoveRow(ai_index);
 					doInsertRow(ai_index, new RowContainer(null, a_Row));
@@ -482,14 +479,14 @@ public class DataSet
 		return getValueAt(ai_rowIndex, li_columnIndex);
 	}
 
-	/** Set set KeyAction object for DataSet<br>
+	/** Set set ModifyAction object for DataSet<br>
 	 * With key action is possible deside if we hare doing just 'modify' or 'insert / delete' when setting item.<br>
 	 * If this method is not all the objects are always considered as modified.
-	 * @param a_KeyAction Refrence to KeyAction Object
+	 * @param a_KeyAction Refrence to ModifyAction Object
 	 */
-	public final void setKeyAction(KeyAction a_KeyAction)
+	public final void setModifyAction(ModifyAction a_ModifyAction)
 	{
-		i_KeyAction = a_KeyAction;
+		i_RowInfo.setKeyAction(a_ModifyAction);
 	} /** Set setReadEngine for DataSet
 																												 * @param a_ReadEngine Assigned read engine.
 																												 */
@@ -509,13 +506,15 @@ public class DataSet
 	public final void removeReadEngine()
 	{
 		i_ReadEngine = null;
-	} /** Removes KeyAction object from DataSet
-																												 */
-	public final void removeKeyAction()
+	} 
+	
+	/** Removes ModifyAction object from DataSet																											 */
+	public final void removeModifyAction()
 	{
-		i_KeyAction = null;
-	} /** Removes WriteEngine from DataSet
-																												 */
+		setModifyAction(null);
+	} 
+	
+	/** Removes WriteEngine from DataSet																											 */
 	public final void removeWriteEngine()
 	{
 		i_WriteEngine = null;
@@ -574,7 +573,7 @@ public class DataSet
 	}
 
 	/**
-	 * @see printBuffers(PrintStream , boolean , boolean , boolean , boolean )
+	 * @see #printBuffers(PrintStream , boolean , boolean , boolean , boolean )
 	 */
 	public void printBuffers(PrintStream a_PrintStream)
 	{
