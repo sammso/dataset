@@ -19,9 +19,9 @@ public class FileRowInfo extends RowInfo
 	 * @param aS_ColumnClassNames
 	 * @param aS_ColumnNames
 	 */
-	public FileRowInfo(ColumnInfo[] a_ColumnInfos)
+	public FileRowInfo(FileColumnInfo[] a_FileColumnInfo)
 	{
-		super(a_ColumnInfos);
+		super(a_FileColumnInfo);
 	}
 	
 	public int getColumnStartPosition(int ai_index)

@@ -108,7 +108,7 @@ public class DataSet
 	 * It has to contain all fields without null values.
 	 * @param a_ColumnsInfo array of class names that object contains
 	 */
-	public void setColumnInfo(RowInfo a_ColumnsInfo)
+	public void setRowInfo(RowInfo a_ColumnsInfo)
 	{
 		i_RowInfo = a_ColumnsInfo;
 	}
@@ -1031,6 +1031,16 @@ public class DataSet
 			throw new DataSetException(EX_STRUCTURE_IS_NOT_MATCH);			
 		}
 			
+		
+		// DataSet's need to be correct order because of copying	
+		
+		a_DataSet_Source.setComparator(a_RowComparator);
+		a_DataSet_Source.sort();
+		
+		setComparator(a_RowComparator);
+		sort();
+
+			
 		int li_sourceCounter = 1, li_destinationCounter = 1;
 		int li_sourceCount = a_DataSet_Source.getRowCount();
 		int li_destinationCount = getRowCount();
@@ -1213,6 +1223,7 @@ public class DataSet
 			return COPY;
 		}
 	} 
+	
 	/**
 	* Method getDeleted.
 	* This point only for WriteEngine

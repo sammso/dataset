@@ -118,7 +118,7 @@ public class SQLReadEngine implements ReadEngine
 	/** This is first method to call retrieve operation.
 	 *
 	 */
-	public RowInfo readStart(RowInfo a_ColumnsInfo) throws DataSetException
+	public RowInfo readStart(RowInfo a_RowInfo) throws DataSetException
 	{
 		ii_rowCount = 0;
 		try
@@ -164,18 +164,18 @@ public class SQLReadEngine implements ReadEngine
 					}
 					l_SQLRowInfo = new SQLRowInfo(l_SQLColumnInfos);
 				}
-				if (a_ColumnsInfo == null || (!l_SQLRowInfo.equals(a_ColumnsInfo)))
+				if (a_RowInfo == null || (!l_SQLRowInfo.equals(a_RowInfo)))
 				{
 					return (RowInfo) l_SQLRowInfo;
 				}
 				else
 				{
 					// Check that columns info type is SQLRowInfo
-					if (a_ColumnsInfo instanceof SQLRowInfo)
+					if (a_RowInfo instanceof SQLRowInfo)
 					{
 						// Check Column types and class names are same
 						
-						l_SQLRowInfo = (SQLRowInfo) a_ColumnsInfo;
+						l_SQLRowInfo = (SQLRowInfo) a_RowInfo;
 						for (int li_c = 1; li_c <= l_SQLRowInfo.getColumnCount(); li_c++)
 						{
 							if (l_SQLRowInfo.getColumnType(li_c) != li_columnTypes[li_c - 1])

@@ -14,9 +14,6 @@ public class FileColumnInfo extends ColumnInfo
 	private String iS_Format;
 	private int ii_startPos;
 	private int ii_endPos;
-	private Timestamp iTs_ValidStart;
-	private Timestamp iTs_EndStart;
-
 
 	/**
 	 * Method FileColumnInfo.

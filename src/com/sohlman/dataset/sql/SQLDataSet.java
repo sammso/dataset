@@ -27,7 +27,7 @@ import com.sohlman.dataset.DataSetException;
  * </li> 
  * <li>Save changes, using {@link com.sohlman.dataset.DataSet#save() save()} <i>(optional)</i><li>
  * <li>You can ask Databata base information from {@link SQLRowInfo SQLRowInfo} object, which you can
- * object, which you can get with {@link com.sohlman.dataset.DataSet#getColumnsInfo() getColumnsInfo} object.
+ * object, which you can get with {@link com.sohlman.dataset.DataSet#getRowInfo() getRowInfo} object.
  * </li>
  * </ol>
  * <p>To create SQL statements see documentation of {@link SQLStatement SQLStatement} class.</p>
