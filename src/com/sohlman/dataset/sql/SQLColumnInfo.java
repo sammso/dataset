@@ -108,12 +108,78 @@ public class SQLColumnInfo extends ColumnInfo
 		return ib_isAutoIncrement;
 	}
 	
+	/** (Internal use) Set's catalog name
+	 * @param aS_Name
+	 */
+	void setCatalogName(String aS_Name)
+	{
+		iS_CatalogName = aS_Name;
+	}
+	
+	/**
+	 * Catalog name for current column
+	 * 
+	 * @return the name of the catalog for the table in which the given column appears or "" if not applicable 
+	 */
+	public String getCatalogName()
+	{
+		return iS_CatalogName;
+	}
+	
+	/** (Internal use) Set's schema name
+	 * @param aS_Name
+	 */
+	void setSchemaName(String aS_Name)
+	{
+		iS_SchemaName = aS_Name;
+	}
+	
+	/**
+	 * Schema name for current column
+	 * 
+	 * @return schema name or "" if not applicable  
+	 */
+	public String getSchemaName()
+	{
+		return iS_SchemaName;
+	}	
+	
+	/** (Internal use) Set's table name
+	 * @param aS_Name
+	 */
+	void setTableName(String aS_Name)
+	{
+		iS_TableName = aS_Name;
+	}
+	
+	/**
+	 * Table name for current column
+	 * 
+	 * @return table name or "" if not applicable  
+	 */
+	public String getTableName()
+	{
+		return iS_TableName;
+	}	
+	
 	/** (Internal use) Set's DisplaySize
 	 * @param ai_size
 	 */
 	void setDisplaySize(int ai_size)
 	{
 		ii_displaySize = ai_size;
+	}	
+		
+	
+	/**
+	 * This is mostly ment give values of
+	 * databases exaple size of char(20) or varchar(20)
+	 * 
+	 * @return usually max String size of column
+	 */
+	public int getDisplaySize()
+	{
+		return ii_displaySize;
 	}
 	
 	/**
@@ -134,18 +200,6 @@ public class SQLColumnInfo extends ColumnInfo
 	{
 		ib_isCurrency = ab_isCurrency;
 	}
-	
-	/**
-	 * This is mostly ment give values of
-	 * databases exaple size of char(20) or varchar(20)
-	 * 
-	 * @return usually max String size of column
-	 */
-	public int getDisplaySize()
-	{
-		return ii_displaySize;
-	}
-		
 
 	/**
 	 * Returns java.sql.Types type
