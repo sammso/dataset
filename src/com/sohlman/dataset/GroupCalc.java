@@ -4,11 +4,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
- * GroupCalc object is working with {@link com.sohlman.dataset.DataSet#groupByRows DataSet.groupByRows}<br>
+ * GroupCalc object is working with {@link com.sohlman.dataset.DataSet#groupBy(int[] , GroupCalc[]) DataSet.groupBy()}<br>
  * 
  * (Note this is still experimental)
  * 
  * @author Sampsa Sohlman
+ * @version 2003-02-25
  */
 public abstract class GroupCalc
 {
@@ -31,7 +32,7 @@ public abstract class GroupCalc
 	public abstract Object calculateGroupBy(Object[] a_Objects);
 	
 	/**
-	 * Method This is part of functionality
+	 * Method divide.
 	 * @param a_Number_1
 	 * @param a_Number_2
 	 * @return Number
