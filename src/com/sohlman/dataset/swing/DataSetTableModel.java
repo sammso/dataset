@@ -103,7 +103,7 @@ public class DataSetTableModel extends AbstractTableModel implements DataSetList
 		{
 			try
 			{
-				a_Object = DataSetService.StringToSpecifiedType(a_Object, lS_ColumnClassName);
+				a_Object = DataSetService.StringToSpecifiedObject((String)a_Object, lS_ColumnClassName);
 			}
 			catch (Exception a_Exception)
 			{

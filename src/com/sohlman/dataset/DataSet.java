@@ -650,7 +650,7 @@ public class DataSet
 		{
 			StringBuffer l_StringBuffer = createSpaceFilledStringBuffer(li_countColumns * 18);
 			l_Row = ((RowContainer) aVe_Buffer.get(li_c1)).i_Row_Current;
-			setStringToStringBuffer(l_StringBuffer, "|", 0);
+			DataSetService.setStringToStringBuffer(l_StringBuffer, "|", 0);
 			for (int li_c2 = 0; li_c2 < li_countColumns; li_c2++)
 			{
 				String l_String = "" + l_Row.getValueAt(li_c2 + 1);
@@ -658,11 +658,11 @@ public class DataSet
 				{
 					l_String = l_String.substring(0, 17);
 				}
-				setStringToStringBuffer(l_StringBuffer, l_String, li_c2 * 18 + 1);
-				setStringToStringBuffer(l_StringBuffer, "|", li_c2 * 18);
+				DataSetService.setStringToStringBuffer(l_StringBuffer, l_String, li_c2 * 18 + 1);
+				DataSetService.setStringToStringBuffer(l_StringBuffer, "|", li_c2 * 18);
 			}
 
-			setStringToStringBuffer(l_StringBuffer, " ", li_countColumns * 18 - 1);
+			DataSetService.setStringToStringBuffer(l_StringBuffer, " ", li_countColumns * 18 - 1);
 			a_PrintStream.print(l_StringBuffer.toString());
 			a_PrintStream.println();
 		}
@@ -677,7 +677,7 @@ public class DataSet
 		StringBuffer l_StringBuffer = createSpaceFilledStringBuffer(li_countColumns * 18);
 		for (int li_c2 = 0; li_c2 < li_countColumns; li_c2++)
 		{
-			setStringToStringBuffer(l_StringBuffer, " " + i_RowInfo.getColumnName(li_c2 + 1) + " ", li_c2 * 18);
+			DataSetService.setStringToStringBuffer(l_StringBuffer, " " + i_RowInfo.getColumnName(li_c2 + 1) + " ", li_c2 * 18);
 		}
 		a_PrintStream.print(l_StringBuffer.toString());
 		a_PrintStream.println();
@@ -695,32 +695,6 @@ public class DataSet
 			l_StringBuffer.append(" ");
 		}
 		return l_StringBuffer;
-	}
-	/**
-	* Puts String to StringBuffer to wanted position by replacing data that are there.
-	* @param a_StringBuffer StringBuffer object to modified
-	* @param a_String Modifiying String. 
-	* @param ai_pos Position where to start modification. 
-	* @return boolean false if position is larger that size of StringBuffer othervice true or String is null
-	*/
-	private boolean setStringToStringBuffer(StringBuffer a_StringBuffer, String a_String, int ai_pos)
-	{
-		int li_size = a_StringBuffer.length();
-		if (a_String == null)
-			return false;
-		if (li_size <= ai_pos)
-			return false;
-		int li_end = ai_pos + a_String.length();
-		if (li_end > li_size)
-		{
-			li_end = li_size;
-		}
-
-		for (int li_x = ai_pos; li_x < li_end; li_x++)
-		{
-			a_StringBuffer.setCharAt(li_x, a_String.charAt(li_x - ai_pos));
-		}
-		return true;
 	}
 	/** Returns handle for ReadEngine.
 	* @return Reference to current RetrieveEngine.<br>

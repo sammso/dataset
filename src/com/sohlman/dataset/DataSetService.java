@@ -55,73 +55,100 @@ public class DataSetService
 		}
 		return true;
 	}	
+	/**
+	* Puts String to StringBuffer to wanted position by replacing data that are there.
+	* @param a_StringBuffer StringBuffer object to modified
+	* @param a_String Modifiying String. 
+	* @param ai_pos Position where to start modification. 
+	* @param ai_end Position where to end modification
+	* @return boolean false if position is larger that size of StringBuffer othervice true or String is null
+	*/
+	private boolean setStringToStringBuffer(StringBuffer a_StringBuffer, String a_String, int ai_pos, int ai_end)
+	{
+		int li_size = a_StringBuffer.length();
+		if (a_String == null)
+			return false;
+		if (li_size <= ai_pos)
+			return false;
+
+		if (ai_end > li_size)
+		{
+			ai_end = li_size;
+		}
+
+		for (int li_x = ai_pos; li_x < ai_end; li_x++)
+		{
+			a_StringBuffer.setCharAt(li_x, a_String.charAt(li_x - ai_pos));
+		}
+		return true;
+	}	
 	
 	/**
-	 * Method StringToSpecifiedType.
+	 * Method StringToSpecifiedObject.
 	 * 
-	 * Converts String to specified type, by using default 
+	 * Converts String to object to specifiend class, by using default 
 	 * 
-	 * @param a_Object
-	 * @param aS_ClassName
+	 * @param aS_Object
+	 * @param aS_ObjectClassName
 	 * @return Object
 	 */
-	public static Object StringToSpecifiedType(Object a_Object, String aS_ClassName)
+	public static Object StringToSpecifiedObject(String aS_Object, String aS_ObjectClassName)
 	{
-		if (a_Object == null)
+		if (aS_Object == null)
 		{
 			return null;
 		}
-		if (aS_ClassName.equals("java.lang.Boolean"))
+		if (aS_ObjectClassName.equals("java.lang.Boolean"))
 		{
-			return new Boolean(Boolean.getBoolean((String) a_Object));
+			return new Boolean(Boolean.getBoolean((String) aS_Object));
 		}
-		if (aS_ClassName.equals("java.lang.Byte"))
+		if (aS_ObjectClassName.equals("java.lang.Byte"))
 		{
-			return new Byte(Byte.parseByte((String) a_Object));
+			return new Byte(Byte.parseByte((String) aS_Object));
 		}
-		if (aS_ClassName.equals("java.math.BigInteger"))
+		if (aS_ObjectClassName.equals("java.math.BigInteger"))
 		{
-			return new BigInteger((String) a_Object);
+			return new BigInteger((String) aS_Object);
 		}
-		if (aS_ClassName.equals("java.math.BigDecimal"))
+		if (aS_ObjectClassName.equals("java.math.BigDecimal"))
 		{
-			return new BigDecimal((String) a_Object);
+			return new BigDecimal((String) aS_Object);
 		}
 		
-		if( aS_ClassName.equals("java.sql.Date") || aS_ClassName.equals("java.util.Date"))
+		if( aS_ObjectClassName.equals("java.sql.Date") || aS_ObjectClassName.equals("java.util.Date"))
 		{
-			return java.sql.Date.valueOf((String) a_Object);
+			return java.sql.Date.valueOf((String) aS_Object);
 		}
 
-		if (aS_ClassName.equals("java.sql.Time") )
+		if (aS_ObjectClassName.equals("java.sql.Time") )
 		{
-			return Time.valueOf((String) a_Object);
+			return Time.valueOf((String) aS_Object);
 		}
 
-		if (aS_ClassName.equals("java.sql.Timestamp"))
+		if (aS_ObjectClassName.equals("java.sql.Timestamp"))
 		{
-			return Timestamp.valueOf((String) a_Object);
+			return Timestamp.valueOf((String) aS_Object);
 		}
 
-		if (aS_ClassName.equals("java.lang.Double"))
+		if (aS_ObjectClassName.equals("java.lang.Double"))
 		{
-			return new Double(Double.parseDouble((String) a_Object));
+			return new Double(Double.parseDouble((String) aS_Object));
 		}
-		if (aS_ClassName.equals("java.lang.Float"))
+		if (aS_ObjectClassName.equals("java.lang.Float"))
 		{
-			return new Float(Float.parseFloat((String) a_Object));
-		}
-
-		if (aS_ClassName.equals("java.lang.Integer"))
-		{
-			return new Integer(Integer.parseInt((String) a_Object));
+			return new Float(Float.parseFloat((String) aS_Object));
 		}
 
-		if (aS_ClassName.equals("java.lang.String"))
+		if (aS_ObjectClassName.equals("java.lang.Integer"))
 		{
-			return a_Object.toString();
+			return new Integer(Integer.parseInt((String) aS_Object));
 		}
 
-		throw new IllegalArgumentException(a_Object.getClass().getName() + " is not supported class type");
+		if (aS_ObjectClassName.equals("java.lang.String"))
+		{
+			return aS_Object.toString();
+		}
+
+		throw new IllegalArgumentException(aS_Object.getClass().getName() + " is not supported class type");
 	}
 }
