@@ -6,6 +6,7 @@
  - On my NetForm project http://netform.sohlman.com
  - DataTransfer applications.
  - Small Swing application
+ - DataSet.add() was generating 2 events. It shoud have generate only one.
 
 Changes 
 ------------------------------------------------------------- 

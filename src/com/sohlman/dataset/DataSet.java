@@ -163,17 +163,6 @@ public class DataSet
 		int li_row = 0;
 		li_row = insertRow(-1);
 
-		if (li_row > 0 && iVe_Listeners != null)
-		{
-			Enumeration l_Enumeration;
-			l_Enumeration = iVe_Listeners.elements();
-			while (l_Enumeration.hasMoreElements())
-			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(
-					new DataSetEvent(this, DataSetEvent.ROW_INSERTED, li_row, DataSetEvent.NOTVALID));
-			}
-		}
-
 		return li_row;
 	}
 
