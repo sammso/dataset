@@ -30,11 +30,12 @@ import java.text.SimpleDateFormat;
  * @version 2002-10-22
  */
 public class FileReadEngine implements ReadEngine
-{
+{	
 	private File i_File;
 	private BufferedReader i_BufferedReader;
 	private FileRowInfo i_FileRowInfo;
 	private int ii_counter;
+	private String iS_LastReadLine = null;
 
 	public FileReadEngine(File a_File, FileRowInfo a_FileRowInfo)
 	{
@@ -45,6 +46,11 @@ public class FileReadEngine implements ReadEngine
 	public FileReadEngine(File a_File)
 	{
 		i_File = a_File;
+	}
+
+	public String getLastReadLine()
+	{
+		return iS_LastReadLine;
 	}
 
 	/** 
@@ -94,16 +100,26 @@ public class FileReadEngine implements ReadEngine
 			}
 			if (lb_ok && lS_Line != null)
 			{
+				iS_LastReadLine = lS_Line;
 				for (int li_index = 1; li_index <= i_FileRowInfo.getColumnCount(); li_index++)
 				{
+					int li_startPosition = i_FileRowInfo.getColumnStartPosition(li_index);
 					int li_endPosition = i_FileRowInfo.getColumnEndPosition(li_index);
-					if (lS_Line.length() < li_endPosition)
-					{
-						li_endPosition = lS_Line.length();
-					}
-					String lS_Data = lS_Line.substring(i_FileRowInfo.getColumnStartPosition(li_index), li_endPosition);
 
-					l_Objects[li_index - 1] = getObject(lS_Data, i_FileRowInfo.getColumnInfo(li_index));
+					if (li_startPosition < 0 || li_startPosition > lS_Line.length())
+					{
+						l_Objects[li_index - 1] = null;
+					}
+					else
+					{
+						if (lS_Line.length() < li_endPosition)
+						{
+							li_endPosition = lS_Line.length();
+						}
+						String lS_Data = lS_Line.substring(i_FileRowInfo.getColumnStartPosition(li_index), li_endPosition);
+
+						l_Objects[li_index - 1] = getObject(lS_Data, i_FileRowInfo.getColumnInfo(li_index));
+					}
 				}
 				ii_counter++;
 				return new Row(l_Objects, i_FileRowInfo);
@@ -166,11 +182,11 @@ public class FileReadEngine implements ReadEngine
 					return new Byte(aS_Data);
 				}
 			}
-			else if (lS_ClassName.equals("java.lang.BigInteger"))
+			else if (lS_ClassName.equals("java.math.BigInteger"))
 			{
 				return new BigInteger(aS_Data);
 			}
-			else if (lS_ClassName.equals("java.lang.BigDecimal"))
+			else if (lS_ClassName.equals("java.math.BigDecimal"))
 			{
 				return new BigDecimal(aS_Data);
 			}
@@ -190,7 +206,7 @@ public class FileReadEngine implements ReadEngine
 					return (java.sql.Date) new java.sql.Date(l_Date.getTime());
 				}
 			}
-			else if (lS_ClassName.equals("java.sql.Time") || lS_ClassName.equals("java.util.Time"))
+			else if (lS_ClassName.equals("java.sql.Time"))
 			{
 				if (l_FileColumnInfo.getFormat() == null)
 				{

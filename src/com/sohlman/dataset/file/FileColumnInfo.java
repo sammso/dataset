@@ -16,7 +16,7 @@ public class FileColumnInfo extends ColumnInfo
 	private int ii_endPos;
 
 	/**
-	 * Method FileColumnInfo.
+	 * Constructor FileColumnInfo.
 	 * @param aS_Name
 	 * @param aS_ClassName
 	 * @param aS_Format
@@ -32,6 +32,23 @@ public class FileColumnInfo extends ColumnInfo
 		ii_startPos = ai_startPos;
 		ii_endPos = ai_endPos;
 	}
+	
+	/**
+	 * Constructor FileColumnInfo<br>
+	 * Defines empty column that is not read from file and default value read value is null
+	 * 
+	 * @param aS_Name
+	 * @param aS_ClassName
+	 * @param aS_Format
+	 */
+	public FileColumnInfo(String aS_Name, String aS_ClassName, String aS_Format)
+	{
+		super(aS_Name, aS_ClassName);
+		ib_emptyIsNull = true;
+		iS_Format = aS_Format;
+		ii_startPos = NO_POSITION;
+		ii_endPos = NO_POSITION;
+	}	
 	
 	/**
 	 * Method FileColumnInfo.

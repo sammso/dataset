@@ -18,7 +18,7 @@ public interface ReadEngine
 	 * @return RowInfo which acts as row model object 
 	 * @throws DataSetException on error situation
 	 */	
-	public RowInfo readStart(RowInfo a_ColumnsInfo) throws DataSetException;    
+	public RowInfo readStart(RowInfo a_RowInfo) throws DataSetException;    
 	
 	/** Gets row from ReadEngine
 	 *
@@ -27,7 +27,7 @@ public interface ReadEngine
 	 * @param a_ColumnsInfo ColumnInfo which are used to create the row 
 	 * @return how many rows have been read. DataSet.NO_MORE_ROWS if no new row found.
 	 */	
-	public Row readRow(RowInfo a_ColumnsInfo) throws DataSetException;
+	public Row readRow(RowInfo a_RowInfo) throws DataSetException;
 		
 	/** Last action when all the rows are retrieved
 	 * @return How may rows are retrieved

@@ -20,6 +20,11 @@ import com.sohlman.dataset.RowContainer;
 import com.sohlman.dataset.WriteEngine;
 
 /**
+ * 
+ * FileWriteEngine for saving results to text. Current version supports only fixed length files
+ * but future version will support also comma separated files.
+ * 
+ * 
  * @author Sampsa Sohlman
  * @version 2003-01-26
  */
@@ -207,13 +212,13 @@ public class FileWriteEngine implements WriteEngine
 				
 				return l_Byte.toString();
 			}
-			else if (lS_ClassName.equals("java.lang.BigInteger"))
+			else if (lS_ClassName.equals("java.math.BigInteger"))
 			{
 				BigInteger l_BigInteger = (BigInteger)a_Object;
 				
 				return l_BigInteger.toString();
 			}
-			else if (lS_ClassName.equals("java.lang.BigDecimal"))
+			else if (lS_ClassName.equals("java.math.BigDecimal"))
 			{
 				BigDecimal l_BigDecimal = (BigDecimal)a_Object;
 				return l_BigDecimal.toString();
