@@ -3,36 +3,37 @@ package com.sohlman.dataset;
 import com.sohlman.dataset.Row;
 import com.sohlman.dataset.DataSetException;
 import com.sohlman.dataset.KeyAction;
+import com.sohlman.dataset.ColumnsInfo;
 import java.util.Vector;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.io.PrintStream;
 import java.util.List;
+
 /** 
- * <p>DataSet is common component to handle data in table from.
- * variable sources like SQL database, tabular file, XML file etc</p>
- * <p><b>Usage</b></p>
- * <ol>        
- * <li>Create Row model object and assign it to to dataset by using setRowModel() method.<b><i>(mandatory)</i></b> <i>ReadEngine also have possibility to create new row model.</i></i></li>
- * <li>Implement ReadEngine class <b><i>(optional)</i></b></li>
- * <ul>        
- * 	There is no need to create {@link ReadEngine ReadEngine} or some common solution is used like {@link com.sohlman.library.dataset.sql.SQLReadEngine SQLReadEngine}.
- * </ul>       
- * <li>Implement {@link WriteEngine WriteEngine} class <b><i>(optional)</i></b></li>
- * <ul>        
- * 	There is no need to create WriteEngine if datasource is readonly(*) or some common solution is used like {@link com.sohlman.library.dataset.sql.SQLWriteEngine SQLWriteEngine}.<br>
- * 	<i>(*)Data is still updateable through datamodification methods, but save() method returns -1.</i>
- * </ul>       
- * <li>Implement {@link KeyAction KeyAction} <b><i>(optional)</i></b></li>
- * <li>Instantiate DataSet</li>
- * <li>Assign {@link ReadEngine ReadEngine}, {@link WriteEngine WriteEngine}, {@link KeyAction KeyAction} to DataSet <b><i>(optional)</i></b></li>
- * <li>Read data, using read() method<b> <i>(optional)</i></b></li>
- * <li>Modify data using addRow, insertRow(), RemoveRow(), setItemAt() and setRowAt()  methods<b> <i>(optional)</i></b></li>
- * <li>Save changes, using save() <b> <i>(optional)</i></b>
- * </ol>               
+* <p>DataSet is common component to handle data in table from.
+* variable sources like SQL database, tabular file, XML file etc</p>
+* <p><b>Usage</b></p>
+* <ol>        
+* <li>First create {@link ColumnsInfo ColumnsInfo} which defines ColumnStructure for DataSet</li>
+* <li>Set ReadEngine class <b><i>(optional)</i></b></li>
+* <ul>        
+* 	There is no need to create {@link ReadEngine ReadEngine} or some common solution is used like {@link com.sohlman.library.dataset.sql.SQLReadEngine SQLReadEngine}.
+* </ul>       
+* <li>Implement {@link WriteEngine WriteEngine} class <b><i>(optional)</i></b></li>
+* <ul>        
+* 	There is no need to create WriteEngine if datasource is readonly(*) or some common solution is used like {@link com.sohlman.library.dataset.sql.SQLWriteEngine SQLWriteEngine}.<br>
+* 	<i>(*)Data is still updateable through datamodification methods, but save() method returns -1.</i>
+* </ul>
+* <li>Instantiate DataSet</li>
+* <li>Assign {@link ReadEngine ReadEngine}, {@link WriteEngine WriteEngine} to DataSet <b><i>(optional)</i></b></li>
+* <li>Read data, using {@link #read() read()} method<b> <i>(optional)</i></b></li>
+* <li>Modify data using {@link #addRow() addRow()}, {@link #insertRow() insertRow()}, {@link #RemoveRow() RemoveRow()}, {@link #setItemAt() setItemAt()} and {@link #setRowAt() setRowAt()} methods<b> <i>(optional)</i></b></li>
+* <li>Save changes, using {@link #save() save()} <b> <i>(optional)</i></b>
+* </ol>              
  * @author Sampsa Sohlman
- * @version 0.9
+ * @version 2002-10-09
  */
 
 public class DataSet
@@ -48,22 +49,16 @@ public class DataSet
 	private Vector iVe_New;
 	/** This buffer contains links to modified data
 	 */
-	private Vector iVe_Modified;
-	/** Column names
+	/** ColumnsInfo Object containing ColumnInformation
 	 */
-	private String[] iS_ColumnNames;
+	private ColumnsInfo i_ColumnsInfo;
 
-	/** This example row object.
-	 */
-	private Row i_Row_ModelObject;
+	private Vector iVe_Modified;
 
 	// Write engines
 	/** Write engine which will only write changes back to source.
 	 */
 	private WriteEngine i_WriteEngine = null;
-	/** If row model is created or not. Some ReadEngines might create Row model automaticly, if it is not defined.
-	 */
-	private boolean ib_rowModelObjectExist = false;
 
 	// Read engins
 	/** Read engine, which reads data row by row.
@@ -80,7 +75,7 @@ public class DataSet
 	private String[] iS_ColumnClasses;
 
 	private Vector iVe_Listeners;
-	
+
 	public final static int NO_MORE_ROWS = -1;
 
 	/**
@@ -116,34 +111,14 @@ public class DataSet
 		iVe_New = new Vector();
 	}
 
-	/** Set's Row object which is used as model when creating new rows.<br>
-	 * It has to contain all fields without null values.
-	 * @param a_Row Row object which is used as model.
-	 */
-	public void setModelRowObject(Row a_Row)
-	{
-		reset();
-		if (a_Row != null)
-		{
-			ib_rowModelObjectExist = true;
-			i_Row_ModelObject = a_Row;
-		}
-		else
-		{
-			ib_rowModelObjectExist = false;
-			i_Row_ModelObject = null;
-		}
-	}
-	
 	/** Set's defintion of rows as types of objects. These objects must be cloneable.<br>
 	 * It has to contain all fields without null values.
-	 * @param aS_ClassNames array of class names that object contains
-	 */	
-	public void defineRow(String[] aS_ClassNames)
+	 * @param a_ColumnsInfo array of class names that object contains
+	 */
+	public void setColumnInfo(ColumnsInfo a_ColumnsInfo)
 	{
-		setModelRowObject(new BasicRow(aS_ClassNames));
+		i_ColumnsInfo = a_ColumnsInfo;
 	}
-	
 
 	/** Adds listener to DataSet
 	 * @param a_DataSetListener Object implementing DataSetListener inteface
@@ -171,14 +146,6 @@ public class DataSet
 				iVe_Listeners = null;
 			}
 		}
-	}
-
-	/** Set columnNames for DataSet.
-	 * @param aS_ColumnNames Array of columnNames.
-	 */
-	public final void setColumnNames(String[] aS_ColumnNames)
-	{
-		iS_ColumnNames = aS_ColumnNames;
 	}
 
 	/** Creates new empty row, to wanted position.<br>
@@ -214,7 +181,7 @@ public class DataSet
 		int li_return = 0;
 		li_return = insertRow(-1);
 
-		if ( li_return > 0  && iVe_Listeners != null)
+		if (li_return > 0 && iVe_Listeners != null)
 		{
 			Enumeration l_Enumeration;
 			l_Enumeration = iVe_Listeners.elements();
@@ -238,7 +205,7 @@ public class DataSet
 		int li_return = 0;
 		// doReset never throws exception so we don't need to catch it.
 
-			li_return = doRemoveRow(ai_index);
+		li_return = doRemoveRow(ai_index);
 		if (li_return > 0 && iVe_Listeners != null)
 		{
 			Enumeration l_Enumeration;
@@ -456,9 +423,6 @@ public class DataSet
 	 */
 	public final void setWriteEngine(WriteEngine a_WriteEngine)
 	{
-		// future when many types of
-		// write engines exists. Do check and set all other nulls.
-
 		i_WriteEngine = a_WriteEngine;
 	}
 
@@ -489,7 +453,12 @@ public class DataSet
 	 */
 	public String getColumnClassName(int ai_columnIndex)
 	{
-		return i_Row_ModelObject.getClassName(ai_columnIndex);
+		return i_ColumnsInfo.getColumnClassName(ai_columnIndex);
+	}
+
+	public ColumnsInfo getColumnsInfo()
+	{
+		return i_ColumnsInfo;
 	}
 
 	/** Return column count for DataSet
@@ -497,14 +466,13 @@ public class DataSet
 	 */
 	public int getColumnCount()
 	{
-		// FUTURE
-		if (i_Row_ModelObject != null)
+		if (i_ColumnsInfo == null)
 		{
-			return i_Row_ModelObject.getColumnCount();
+			return 0;
 		}
 		else
 		{
-			return -1;
+			return i_ColumnsInfo.getColumnCount();
 		}
 	}
 
@@ -512,10 +480,15 @@ public class DataSet
 	 * Requires tha column names are set.
 	 * @param ai_index Column index
 	 * @return Column name
+	 * @throws ArrayIndexOutOfBoundsException if index is out of range or no columns exists
 	 */
 	public String getColumnName(int ai_index)
 	{
-		return iS_ColumnNames[ai_index];
+		if (i_ColumnsInfo == null)
+		{
+			throw new ArrayIndexOutOfBoundsException("There is no column information");
+		}
+		return i_ColumnsInfo.getColumnName(ai_index);
 	}
 
 	/** Returns row count of DataSet
@@ -533,20 +506,59 @@ public class DataSet
 	 */
 	public void printBuffers(PrintStream a_PrintStream)
 	{
-		a_PrintStream.println("*******************************************************");
+		StringBuffer lSb_Sep = new StringBuffer(18 * getColumnCount());
+		for (int li_x = 0; li_x < getColumnCount(); li_x++)
+			lSb_Sep.append("******************");
+		String lS_Sep1 = lSb_Sep.toString();
+
+		lSb_Sep = new StringBuffer(18 * getColumnCount());
+		for (int li_x = 0; li_x < getColumnCount(); li_x++)
+			lSb_Sep.append("------------------");		
+		String lS_Sep2 = lSb_Sep.toString();
+
+		a_PrintStream.println(lS_Sep1);
 		a_PrintStream.println("Databuffer");
-		a_PrintStream.println("-------------------------------------------------------");
+		printColumnNames(a_PrintStream);
+		a_PrintStream.println(lS_Sep2);
 		printBuffer(iVe_Data, a_PrintStream);
-		a_PrintStream.println("NewBuffer");
-		a_PrintStream.println("-------------------------------------------------------");
-		printBuffer(iVe_New, a_PrintStream);
-		a_PrintStream.println("ModifiedBuffer");
-		a_PrintStream.println("-------------------------------------------------------");
-		printBuffer(iVe_Modified, a_PrintStream);
-		a_PrintStream.println("DeleteBuffer");
-		a_PrintStream.println("-------------------------------------------------------");
-		printBuffer(iVe_Deleted, a_PrintStream);
-		a_PrintStream.println("*******************************************************");
+		a_PrintStream.println(lS_Sep1);
+		if (iVe_New.size() > 0)
+		{
+			a_PrintStream.println("NewBuffer");
+			printColumnNames(a_PrintStream);
+			a_PrintStream.println(lS_Sep2);
+			printBuffer(iVe_New, a_PrintStream);
+		}
+		else
+		{
+			a_PrintStream.println("NewBuffer (empty)");
+		}
+		a_PrintStream.println(lS_Sep1);
+		if (iVe_Modified.size() > 0)
+		{
+			a_PrintStream.println("ModifiedBuffer");
+			printColumnNames(a_PrintStream);
+			a_PrintStream.println(lS_Sep2);
+			printBuffer(iVe_Modified, a_PrintStream);
+		}
+		else
+		{
+			a_PrintStream.println("ModifiedBuffer (empty)");
+		}
+		a_PrintStream.println(lS_Sep1);
+		if (iVe_Deleted.size() > 0)
+		{
+			a_PrintStream.println("DeleteeBuffer");
+			printColumnNames(a_PrintStream);
+			a_PrintStream.println(lS_Sep2);
+			printBuffer(iVe_Deleted, a_PrintStream);
+		}
+		else
+		{
+			a_PrintStream.println("DeletedBuffer (empty)");
+		}
+
+		a_PrintStream.println(lS_Sep1);
 	}
 
 	/**
@@ -560,17 +572,81 @@ public class DataSet
 
 		li_countRows = aVe_Buffer.size();
 
-		li_countColumns = i_Row_ModelObject.getColumnCount();
+		li_countColumns = getColumnCount();
 
 		for (int li_c1 = 0; li_c1 < li_countRows; li_c1++)
 		{
+			StringBuffer l_StringBuffer = createSpaceFilledStringBuffer(li_countColumns * 18);
+
 			l_Row = ((RowContainer) aVe_Buffer.get(li_c1)).i_Row_Current;
-			for (int li_c2 = 1; li_c2 <= li_countColumns; li_c2++)
+			for (int li_c2 = 0; li_c2 < li_countColumns; li_c2++)
 			{
-				a_PrintStream.print(l_Row.getValueAt(li_c2) + "\t");
+				setStringToStringBuffer(l_StringBuffer, " " + l_Row.getValueAt(li_c2 + 1) + " ", li_c2 * 18);
 			}
-			a_PrintStream.print("\n");
+			setStringToStringBuffer(l_StringBuffer, " ", li_countColumns * 18 - 1);			
+			a_PrintStream.print(l_StringBuffer.toString());
+			a_PrintStream.println();
 		}
+	}
+
+	/**
+	 * @param a_PrintStream
+	 */
+	private void printColumnNames(PrintStream a_PrintStream)
+	{
+		int li_countRows, li_countColumns;
+
+		li_countColumns = getColumnCount();
+		StringBuffer l_StringBuffer = createSpaceFilledStringBuffer(li_countColumns * 18);
+		for (int li_c2 = 0; li_c2 < li_countColumns; li_c2++)
+		{
+			setStringToStringBuffer(l_StringBuffer, " " + i_ColumnsInfo.getColumnName(li_c2 + 1) + " ", li_c2 * 18);
+		}
+		a_PrintStream.print(l_StringBuffer.toString());
+		a_PrintStream.println();
+	}
+
+	/**
+	 * Create String buffer which is filled with space " "
+	 * @param ai_size Size of new StringBuffer
+	 * @return StringBuffer Space filled Stringbuffer
+	 */
+	private StringBuffer createSpaceFilledStringBuffer(int ai_size)
+	{
+		StringBuffer l_StringBuffer = new StringBuffer(ai_size);
+
+		for (int li_c = 0; li_c < ai_size; li_c++)
+		{
+			l_StringBuffer.append(" ");
+		}
+		return l_StringBuffer;
+	}
+
+	/**
+	 * Puts String to StringBuffer to wanted position by replacing data that are there.
+	 * @param a_StringBuffer StringBuffer object to modified
+	 * @param a_String Modifiying String. 
+	 * @param ai_pos Position where to start modification. 
+	 * @return boolean false if position is larger that size of StringBuffer othervice true or String is null
+	 */
+	private boolean setStringToStringBuffer(StringBuffer a_StringBuffer, String a_String, int ai_pos)
+	{
+		int li_size = a_StringBuffer.length();
+		if (a_String == null)
+			return false;
+		if (li_size <= ai_pos)
+			return false;
+		int li_end = ai_pos + a_String.length();
+		if (li_end > li_size)
+		{
+			li_end = li_size;
+		}
+
+		for (int li_x = ai_pos; li_x < li_end; li_x++)
+		{
+			a_StringBuffer.setCharAt(li_x, a_String.charAt(li_x - ai_pos));
+		}
+		return true;
 	}
 
 	/** Returns handle for ReadEngine.
@@ -601,7 +677,7 @@ public class DataSet
 			{
 				i_WriteEngine.writeStart();
 				/*
-
+				
 				*/
 				i_WriteEngine.write(this);
 				iVe_New.removeAllElements();
@@ -625,25 +701,18 @@ public class DataSet
 	{
 		if (i_ReadEngine != null)
 		{
-			doReset();
-			Row l_Row = null;
+			reset();
 			int li_count = 0;
 			int li_return = 0;
 			try
 			{
-				if (i_Row_ModelObject!=null)
-				{
-					l_Row = (Row) i_Row_ModelObject.clone();
-				}
-				
-				l_Row = i_ReadEngine.readStart(l_Row);
-				i_Row_ModelObject = l_Row;
-				
-				while (i_ReadEngine.readRow(l_Row) != NO_MORE_ROWS)
+				i_ColumnsInfo = i_ReadEngine.readStart(i_ColumnsInfo);
+
+				Row l_Row;
+				while ((l_Row = i_ReadEngine.readRow(i_ColumnsInfo)) != Row.NO_MORE_ROWS)
 				{
 					iVe_Data.add(new RowContainer(l_Row, l_Row));
 					li_count++;
-					l_Row = (Row)i_Row_ModelObject.clone();
 				}
 			}
 			finally
@@ -685,9 +754,9 @@ public class DataSet
 
 	private final int doInsertRow(int ai_index)
 	{
-		Row l_Row;
+		Object[] l_Objects = new Object[getColumnCount()];
 
-		l_Row = (Row) i_Row_ModelObject.clone();
+		Row l_Row = new Row(l_Objects, i_ColumnsInfo);
 		l_Row.setAllNulls();
 		return doInsertRow(ai_index, new RowContainer(null, l_Row));
 	}
@@ -711,11 +780,6 @@ public class DataSet
 		{
 			return -2;
 		}
-	}
-
-	private final void doReset()
-	{
-
 	}
 
 	private final int doSetValueAt(Object a_Object, int ai_rowIndex, int ai_columnIndex)
@@ -922,25 +986,46 @@ public class DataSet
 			}
 		}
 	}
-	
+
+
+	/**
+	 * Method getDeleted.
+	 * This point only for WriteEngine
+	 * @return List
+	 */
 	public List getDeleted()
 	{
 		return iVe_Deleted;
 	}
-	
+
+	/**
+	 * Method getModified.
+	 * This point only for WriteEngine
+	 * @return List
+	 */
 	public List getModified()
 	{
 		return iVe_Modified;
 	}
-	
+
+	/**
+	 * Method getInserted.
+	 * This point only for WriteEngine
+	 * @return List
+	 */
 	public List getInserted()
 	{
 		return iVe_New;
 	}
-	
+
+	/**
+	 * Method getAllRows.
+	 * This point only for WriteEngine
+	 * @return List
+	 */
 	public List getAllRows()
 	{
 		return iVe_Data;
 	}
-			
+
 }

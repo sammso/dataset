@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.*;
 
 import com.sohlman.dataset.DataSet;
 import com.sohlman.dataset.DataSetListener;
@@ -56,7 +55,7 @@ public class JDataSet extends AbstractTableModel implements DataSetListener
 
 	public void setCellEditable(int ai_columnIndex, boolean ab_choise)
 	{
-		if (ai_columnIndex <= 0)
+		if (ai_columnIndex <= 0 || ai_columnIndex > i_DataSet.getColumnCount())
 		{
 			throw new ArrayIndexOutOfBoundsException("DataSet index starts from 1");
 		}

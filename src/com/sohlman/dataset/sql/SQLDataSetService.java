@@ -16,7 +16,7 @@ import java.math.BigDecimal;
 
 import com.sohlman.dataset.DataSetException;
 import com.sohlman.dataset.Row;
-import com.sohlman.dataset.BasicRow;
+import com.sohlman.dataset.Row;
 
 /**
  *

@@ -12,12 +12,9 @@ import java.sql.*;
 
 import com.sohlman.dataset.sql.*;
 /**
+ * Demo application which demonstrate database connection from Swing
+ * 
  * @author Sampsa Sohlman
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
  */
 public class SwingDemo
 {
@@ -27,13 +24,14 @@ public class SwingDemo
 	
 	private JButton i_JButton_Read;
 	private JButton i_JButton_Save;
-
+	
+	private String iS_TableName;
 
 	
 	private JTextArea i_JTextArea_SQL;
 	private JFrame i_JFrame;
 	private JTable i_JTable;
-	private DataSet i_DataSet = null;
+	private SQLDataSet i_SQLDataSet = null;
 	private Connection i_Connection = null;
 
 	private ActionListener i_ActionListener = new ActionListener()
@@ -45,51 +43,58 @@ public class SwingDemo
 		{
 			if (a_ActionEvent.getSource() == i_JButton_Add)
 			{
-				i_DataSet.addRow();
-				i_JTable.updateUI();
+				i_SQLDataSet.addRow();
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Delete)
 			{
 				int li_row = i_JTable.getSelectedRow();
-				i_DataSet.removeRow(li_row + 1);
-				i_JTable.updateUI();
+				i_SQLDataSet.removeRow(li_row + 1);
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Print)
 			{
-				//i_DataSet.printBuffers(System.out);
-				
-				
-				SQLReadEngine l_SQLReadEngine = (SQLReadEngine)i_DataSet.getReadEngine();
-				
-				int li_columnCount = i_DataSet.getColumnCount();
-				
-				
-				for(int li_x = 1 ; li_x <= li_columnCount ; li_x++ )
-				{
-					
-					System.out.println(l_SQLReadEngine.getColumnTableName(li_x));
-				}
-				
-				
 				System.out.println("Table name is \"" + getTableNameFromSelectSQL(i_JTextArea_SQL.getText()) + "\"");
+				i_SQLDataSet.printBuffers(System.out);
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Read)
 			{
 				System.out.println("Read");
 				try
 				{
-					((SQLDataSet)i_DataSet).setSQLStatements(i_JTextArea_SQL.getText(),null,null,null);
-					i_DataSet.read();
-					System.out.println(i_DataSet.getRowCount());
-					i_JTable.setAutoCreateColumnsFromModel(true);
-					i_JTable.doLayout();
+					i_SQLDataSet.setSQLStatements(i_JTextArea_SQL.getText(),null,null,null);
+					i_SQLDataSet.read();
 					i_JTable.updateUI();
+					System.out.println(i_SQLDataSet.getRowCount());
 				}
 				catch(DataSetException l_DataSetException)
 				{
 					l_DataSetException.printStackTrace();
 				}
 			}
+			if (a_ActionEvent.getSource() == i_JButton_Save)
+			{
+				System.out.println("Save");
+				
+				SQLColumnsInfo l_SQLColumnsInfo = (SQLColumnsInfo)i_SQLDataSet.getColumnsInfo();
+				
+				for(int li_x = 1 ; li_x < l_SQLColumnsInfo.getColumnCount() ; li_x ++)
+				{
+					System.out.print(l_SQLColumnsInfo.getColumnName(li_x) + " | ");
+				}
+				System.out.println();
+				//String lS_Insert = getInsert(getT
+				
+				//l_SQLDataSet.setWriteSQLStametents()
+				
+				try
+				{
+					i_SQLDataSet.setSQLStatements(i_JTextArea_SQL.getText(),null,null,null);
+					System.out.println(i_SQLDataSet.getRowCount());
+				}
+				catch(DataSetException l_DataSetException)
+				{
+					l_DataSetException.printStackTrace();
+				}
+			}			
 			
 		}
 	};
@@ -205,8 +210,8 @@ public class SwingDemo
 			System.out.println(l_DataSetException.getMessage());
 		}
 
-		i_DataSet = (DataSet) l_SQLDataSet;
-		return i_DataSet;
+		i_SQLDataSet = l_SQLDataSet;
+		return i_SQLDataSet;
 	}
 
 	public void connectToDb()
@@ -221,62 +226,6 @@ public class SwingDemo
 		{
 
 		}
-
-	}
-
-	private DataSet getDataSet()
-	{
-		DataSet l_DataSet = new DataSet();
-
-		String[] lS_Columns = { "java.lang.Integer", "java.lang.String", "java.sql.Timestamp" };
-
-		//l_DataSet.setModelRowObject(new BasicRow(l_Objects));
-		// OR
-		l_DataSet.defineRow(lS_Columns);
-
-		int li_row;
-
-		l_DataSet.setReadEngine(new ReadEngine()
-		{
-			private int ii_rowId = 0;
-			public Row readStart(Row a_Row_Model) throws DataSetException
-			{
-				return a_Row_Model;
-			}
-
-			public int readRow(Row a_Row) throws DataSetException
-			{
-				if (ii_rowId >= 10)
-				{
-					return DataSet.NO_MORE_ROWS;
-				}
-				ii_rowId++;
-				a_Row.setValueAt(1, new Integer(ii_rowId));
-				a_Row.setValueAt(2, "Hello world '" + ii_rowId + "'");
-				a_Row.setValueAt(3, null);
-
-				return ii_rowId;
-			}
-
-			/** Last action when all the rows are retrieved
-			 * @return How may rows are retrieved
-			 */
-			public int readEnd() throws DataSetException
-			{
-				return ii_rowId - 1;
-			}
-
-		});
-
-		try
-		{
-			l_DataSet.read();
-		}
-		catch (DataSetException l_DataSetException)
-		{
-		}
-		i_DataSet = l_DataSet;
-		return l_DataSet;
 
 	}
 

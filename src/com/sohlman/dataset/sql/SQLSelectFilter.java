@@ -13,7 +13,7 @@ import java.sql.ResultSetMetaData;
 /**
  * With this interface is possible make special retrieve handling for dataset or other objects that are reading database. <br><br>
  *
- * Use l_SQLReadEngine.setFilter(..) in your code if you want some special behavior.<br><br>
+ * Use <code>l_SQLReadEngine.setFilter(..)</code> in your code if you want some special behavior.<br><br>
  *
  * @author  Sampsa Sohlman
  * @version
@@ -28,8 +28,6 @@ public interface SQLSelectFilter
      */
     public Object[] getColumnObjects(ResultSet a_ResultSet) throws SQLException;
     
-    public int[] getColumnTypes(ResultSetMetaData a_ResultSetMetaData) throws SQLException;
-    
-    public int getColumnCount();
+    public SQLColumnsInfo getColumnsInfo(ResultSetMetaData a_ResultSetMetaData) throws SQLException;
 }
 

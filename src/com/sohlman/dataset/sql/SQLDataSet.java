@@ -1,7 +1,7 @@
 package com.sohlman.dataset.sql;
 
 import com.sohlman.dataset.DataSet;
-import com.sohlman.dataset.BasicRow;
+import com.sohlman.dataset.Row;
 import com.sohlman.dataset.DataSetException;
 
 /**
@@ -68,10 +68,18 @@ public class SQLDataSet extends DataSet
 		
 	}
 
+
+
+	/**
+	 * Method getColumnTypes.
+	 * @return int[] java.sql.Types array which SQL types are in columns
+	 */
+	/*
 	public int[] getColumnTypes()
 	{
-		return ii_columnTypes;
-	}
+			
+		return ((SQLColumnsInfo)getColumnsInfo()).get;
+	}*/
 
 	public void setConnectionContainer(ConnectionContainer a_ConnectionContainer) throws DataSetException
 	{
@@ -93,10 +101,19 @@ public class SQLDataSet extends DataSet
 		setUpIfPossible();
 	}
 
+	public void setWriteSQLStametents(String aS_InsertSQL, String aS_UpdateSQL, String aS_DeleteSQL) throws DataSetException
+	{
+		iS_InsertSQL = aS_InsertSQL;
+		iS_UpdateSQL = aS_UpdateSQL;
+		iS_DeleteSQL = aS_DeleteSQL;
+		setUpIfPossible();		
+	}
+
 	/**
-	 * Set's parameter for SQL select statement.
-	 *
-	 *
+	 * Set's parameter for SQL select statement.<br>
+	 * Select statement has to be set before to this work.
+	 * 
+	 * @see com.sohlman.dataset.sql.SQLReadEngine#setParameter
 	 */
 
 	public void setParameter(int ai_index, Object a_Object)
@@ -176,41 +193,49 @@ public class SQLDataSet extends DataSet
 			}
 		}
 	}
-
+	/**
+	 * Method getSelectSQL.
+	 * @return String which contains current Select statement
+	 */
 	public String getSelectSQL()
 	{
 		return iS_SelectSQL;
 	}
-
+	/**
+	 * Method getInsertSQL.
+	 * @return String which contains current Insert statement
+	 */
 	public String getInsertSQL()
 	{
 		return iS_InsertSQL;
 	}
-
+	/**
+	 * Method getUpdateSQL.
+	 * @return String which contains current Update statement
+	 */
 	public String getUpdateSQL()
 	{
 		return iS_UpdateSQL;
 	}
-
+	
+	/**
+	 * Method getDeleteSQL.
+	 * @return String which contains current Delete statement
+	 */
 	public String getDeleteSQL()
 	{
 		return iS_DeleteSQL;
 	}
-
+	
+	/**
+	 * @see com.sohlman.dataset.DataSet#save
+	 */
 	public int save() throws DataSetException
 	{
 		setUpIfPossible();
 		return super.save();
 	}
-
-	public int read() throws DataSetException
-	{
-		int li_rowCount = super.read();
-		if (li_rowCount >= 0 && ii_columnTypes == null)
-		{
-		}
-		return 0;
-	}
+	
 	/**
 	 * Method setErrorOnNoRowsInserted.
 	 * No rows is not updated on database based on SQL statement, is error generated.
