@@ -93,7 +93,7 @@ public class Row
 		}
 	}
 	
-	public RowInfo getColumnsInfo()
+	public RowInfo getRowInfo()
 	{
 		return	i_RowInfo;
 	}

@@ -850,28 +850,50 @@ public class DataSet
 	 */
 	public final int search(Row a_Row)
 	{
-		for (int li_index = 1; li_index <= getRowCount(); li_index++)
-		{
-			if (a_Row.equals(getRow(li_index)))
-			{
-				return li_index;
-			}
-		}
-		return 0;
+		return search(a_Row,null);
 	}
 	/** Seach matching row from dataset.
 	* @param a_Row Row which contains data that wanted to be found.
 	* @param ai_columns array of column numbers that are used to find row.
-	* @return row number where row has been found 0 if not
+	* @return row number where row has been found 0 if not found
 	*/
 	public final int search(Row a_Row, int[] ai_columns)
 	{
-		for (int li_index = 1; li_index <= getRowCount(); li_index++)
+		RowInfo l_RowInfo = a_Row.getRowInfo();
+		
+		if(!l_RowInfo.equals(i_RowInfo))
 		{
-			if (a_Row.equals(getRow(li_index)))
+			throw new IllegalArgumentException("Rows has to be same types");
+		}
+		
+		if(ai_columns!=null)
+		{
+			for(int li_index = 0 ; li_index < ai_columns.length ; li_index++ )
 			{
-				return li_index;
+				if(a_Row.getColumnCount()>ai_columns[li_index])
+				{
+					throw new IllegalArgumentException("Column " + ai_columns[li_index] + " is out of range.");
+				}
 			}
+			
+			
+			for (int li_index = 1; li_index <= getRowCount(); li_index++)
+			{		
+				if (a_Row.equals(getRow(li_index),ai_columns))
+				{
+					return li_index;
+				}						
+			}
+		}
+		else
+		{		
+			for (int li_index = 1; li_index <= getRowCount(); li_index++)
+			{
+				if (a_Row.equals(getRow(li_index)))
+				{
+					return li_index;
+				}
+			}			
 		}
 		return 0;
 	}
