@@ -203,7 +203,7 @@ public class Row
 	{
 		int li_count = 0;
 
-		for (int li_x = 0; li_x <= ai_columns.length; li_x++)
+		for (int li_x = 0; li_x < ai_columns.length; li_x++)
 		{
 			if (getValueAt(ai_columns[li_x]) != null && a_Row.getValueAt(ai_columns[li_x]) != null)
 			{
@@ -217,7 +217,7 @@ public class Row
 				li_count++;
 			}
 		}
-
+		
 		return li_count == ai_columns.length;
 	}
 	
