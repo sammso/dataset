@@ -1,0 +1,53 @@
+	DataSet Library 1.0 RC 1
+-------------------------------------------------------------
+ I currently using this version of DataSet on my projects.
+ I'm using DataSet on production.
+ - Web applications
+ - DataTransfer applications.
+ - Small Swing application
+
+Changes 
+------------------------------------------------------------- 
+ Before Beta 4 - Read from Earlier releases
+ RC1
+ - Fixed bug on removeRow event generation
+ - syncronizeFrom functionality has been rewritten. API has
+   been changed. It is better now.
+ - Row and DataSet getValueAt throws ArrayIndexOutOfBoundsException 
+   if row or column is out of range.
+ - New CVS and package structure.
+   - build.xml to create newest version from CVS
+   - swing functionality removed and transferred to another .jar
+ - Swing support removed it is not on own .jar file.
+Future Ideas
+-------------------------------------------------------------
+ - Column level tracking for changed columns. (It is now
+   row level)
+ - Tight integration to Swing (After v1.0)
+ - Tight SWT (Eclipse) integration
+ - SQL Taglib for JSP
+
+Installation instructions:
+-------------------------------------------------------------
+ put dataset.jar from ./lib directory to your classpath
+ if you are using com.sohlman.dataset.swing classes
+ put also dataset-swing.jar to your classpath
+ 
+Demo
+-------------------------------------------------------------
+ Go to ./lib and read SQLTool.ini file and do necesary 
+ changes.
+
+How to use
+-------------------------------------------------------------
+ See demo, javadocs and tutorials on 
+ http://dataset.sohlman.com
+
+Licence
+-------------------------------------------------------------
+ LGPL - Lesser General Public License
+
+Author
+-------------------------------------------------------------
+ Sampsa Sohlman (http://sampsa.sohlman.com)
+  - All comments are more than welcome
