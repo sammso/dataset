@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import com.sohlman.dataset.DataSet;
 import com.sohlman.dataset.DataSetEvent;
 import com.sohlman.dataset.DataSetListener;
+import com.sohlman.dataset.DataSetService;
 
 /**
  * TableModel wrapper for DataSet
@@ -102,7 +103,7 @@ public class DataSetTableModel extends AbstractTableModel implements DataSetList
 		{
 			try
 			{
-				a_Object = StringToSpecifiedType(a_Object, lS_ColumnClassName);
+				a_Object = DataSetService.StringToSpecifiedType(a_Object, lS_ColumnClassName);
 			}
 			catch (Exception a_Exception)
 			{
@@ -117,64 +118,7 @@ public class DataSetTableModel extends AbstractTableModel implements DataSetList
 		}
 	}
 
-	public Object StringToSpecifiedType(Object a_Object, String aS_ClassName)
-	{
-		if (a_Object == null)
-		{
-			return null;
-		}
-		if (aS_ClassName.equals("java.lang.Boolean"))
-		{
-			return new Boolean(Boolean.getBoolean((String) a_Object));
-		}
-		if (aS_ClassName.equals("java.lang.Byte"))
-		{
-			return new Byte(Byte.parseByte((String) a_Object));
-		}
-		if (aS_ClassName.equals("java.lang.BigInteger"))
-		{
-			return new BigInteger((String) a_Object);
-		}
-		if (aS_ClassName.equals("java.lang.BigDecimal"))
-		{
-			return new BigDecimal((String) a_Object);
-		}
-		if (aS_ClassName.equals("java.sql.Date") || aS_ClassName.equals("java.util.Date"))
-		{
-			return Date.valueOf((String) a_Object);
-		}
 
-		if (aS_ClassName.equals("java.sql.Time") || aS_ClassName.equals("java.util.Time"))
-		{
-			return Time.valueOf((String) a_Object);
-		}
-
-		if (aS_ClassName.equals("java.sql.Timestamp"))
-		{
-			return Timestamp.valueOf((String) a_Object);
-		}
-
-		if (aS_ClassName.equals("java.lang.Double"))
-		{
-			return new Double(Double.parseDouble((String) a_Object));
-		}
-		if (aS_ClassName.equals("java.lang.Float"))
-		{
-			return new Float(Float.parseFloat((String) a_Object));
-		}
-
-		if (aS_ClassName.equals("java.lang.Integer"))
-		{
-			return new Integer(Integer.parseInt((String) a_Object));
-		}
-
-		if (aS_ClassName.equals("java.lang.String"))
-		{
-			return a_Object.toString();
-		}
-
-		throw new IllegalArgumentException(a_Object.getClass().getName() + " is not supported class type");
-	}
 
 	/**
 	 * @see com.sohlman.dataset.DataSet#getValueAt(int,int)

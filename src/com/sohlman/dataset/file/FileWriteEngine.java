@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 
 import com.sohlman.dataset.DataSet;
 import com.sohlman.dataset.DataSetException;
+import com.sohlman.dataset.DataSetService;
 import com.sohlman.dataset.Row;
 import com.sohlman.dataset.RowContainer;
 import com.sohlman.dataset.WriteEngine;
@@ -115,7 +116,7 @@ public class FileWriteEngine implements WriteEngine
 	
 	private void writeRow(PrintWriter a_PrintWriter, Row a_Row, FileRowInfo a_FileRowInfo) throws DataSetException
 	{
-		StringBuffer l_StringBuffer = createSpaceFilledStringBuffer(ii_rowSize);
+		StringBuffer l_StringBuffer = DataSetService.createSpaceFilledStringBuffer(ii_rowSize);
 				
 		for(int li_index = 1 ; li_index <= a_FileRowInfo.getColumnCount() ; li_index++)
 		{
@@ -123,54 +124,13 @@ public class FileWriteEngine implements WriteEngine
 
 			String l_String = getFormattedString(l_FileColumnInfo, a_Row.getValueAt(li_index));
 
-			setStringToStringBuffer(l_StringBuffer,l_String,l_FileColumnInfo.getStartPosition());			
+			DataSetService.setStringToStringBuffer(l_StringBuffer,l_String,l_FileColumnInfo.getStartPosition());			
 		}
 		
 		a_PrintWriter.println(l_StringBuffer.toString());
 	}
 
-	/**
-	 * Create String buffer which is filled with space " "
-	 * @param ai_size Size of new StringBuffer
-	 * @return StringBuffer Space filled Stringbuffer
-	 */
-	public StringBuffer createSpaceFilledStringBuffer(int ai_size)
-	{
-		StringBuffer l_StringBuffer = new StringBuffer(ai_size);
 
-		for (int li_c = 0; li_c < ai_size; li_c++)
-		{
-			l_StringBuffer.append(" ");
-		}
-		return l_StringBuffer;
-	}
-	
-	/**
-	 * Puts String to StringBuffer to wanted position by replacing data that are there.
-	 * @param a_StringBuffer StringBuffer object to modified
-	 * @param a_String Modifiying String. 
-	 * @param ai_pos Position where to start modification. 
-	 * @return boolean false if position is larger that size of StringBuffer othervice true or String is null
-	 */
-	public boolean setStringToStringBuffer(StringBuffer a_StringBuffer, String a_String, int ai_pos)
-	{
-		int li_size = a_StringBuffer.length();
-		if (a_String == null)
-			return false;
-		if (li_size <= ai_pos)
-			return false;
-		int li_end = ai_pos + a_String.length();
-		if (li_end > li_size)
-		{
-			li_end = li_size;
-		}
-
-		for (int li_x = ai_pos; li_x < li_end; li_x++)
-		{
-			a_StringBuffer.setCharAt(li_x, a_String.charAt(li_x - ai_pos));
-		}
-		return true;
-	}	
 
 	/**
 	 * @see com.sohlman.dataset.WriteEngine#writeEnd()

@@ -1002,6 +1002,21 @@ public class DataSet
 	{
 		i_DataSetComparator = new DataSetComparator(a_RowComparator);
 	}
+	
+	/**
+	* Set comparator for sorting. 
+	* @return current RowComparator object
+	*/	
+	public RowComparator getComparator()
+	{
+		if(i_DataSetComparator==null)
+		{
+			return null;
+		}
+		
+		return i_DataSetComparator.getRowComparator();
+	}
+	
 	/**
 	* This with this method it is possible to change row status.
 	* <i>Currently this is only skelenton and under design.</i>
