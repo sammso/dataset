@@ -1364,15 +1364,7 @@ public class DataSet
 								li_modifyCount++;
 							}
 						}
-						li_dIndex++;
-						
-						// -- DEBUG --
-//						lS_S = String.valueOf(l_Row_Source.getValueAt(1));
-//						if(li_dIndex <= li_destinationCount)
-//							lS_D = String.valueOf(getReferenceToRow(li_dIndex).getValueAt(1));						
-//						else
-//							lS_D = "";
-						// -- DEBUG --						
+						li_dIndex++;					
 					}
 					while (li_dIndex <= li_destinationCount
 						&& compareRows(l_Row_Source, getReferenceToRow(li_dIndex), ai_sourceKeys, ai_destinationKeys) == 0
@@ -1420,8 +1412,7 @@ public class DataSet
 		else if (li_sourceCount > 0 && li_destinationCount == 0)
 		{
 			// Add all to Destination
-			iVe_Data.ensureCapacity(li_sourceCount);
-			iVe_New.ensureCapacity(li_sourceCount);
+			
 			for (int li_index = 1; li_index <= li_sourceCount; li_index++)
 			{
 				int li_row = addRow();
@@ -1444,7 +1435,7 @@ public class DataSet
 	{
 		int li_copyCount = 0;
 
-		//for (int li_x = 1; li_x <= a_DataSet_Source.getColumnCount(); li_x++)
+		// Has to be optimized
 
 		Row l_Row_Source = a_DataSet_Source.getReferenceToRow(ai_sourceIndex);
 		Row l_Row_Destination = a_DataSet_Destination.getReferenceToRow(ai_destinationIndex);

@@ -12,8 +12,9 @@ Changes
  Changes in RC 1
  - Row setValueAt checking class is now corrected. Before it used to use 
    class name now it is using Class.instanceOf() method which is working 
-   more presise
+   more precise
  - RowInfo.getColumnClass(int) index is now 1 - size
+ - Fixed bug on SQLWriteEngine.keyWordSearchIndexOf(..)
 
  Changes in Beta 6
  - Package structure fix. 
