@@ -34,7 +34,7 @@ public class FileReadEngine implements ReadEngine
 	private File i_File;
 	private BufferedReader i_BufferedReader;
 	private FileRowInfo i_FileRowInfo;
-	private int ii_counter;
+	private int ii_counter = 0;
 	private String iS_LastReadLine = null;
 
 	public FileReadEngine(File a_File, FileRowInfo a_FileRowInfo)

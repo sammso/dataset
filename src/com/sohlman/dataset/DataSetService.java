@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 /**
  * DataSetService contains commonly used methods for DataSet library.
@@ -59,27 +60,48 @@ public class DataSetService
 	* Puts String to StringBuffer to wanted position by replacing data that are there.
 	* @param a_StringBuffer StringBuffer object to modified
 	* @param a_String Modifiying String. 
-	* @param ai_pos Position where to start modification. 
+	* @param ai_start Position where to start modification. 
 	* @param ai_end Position where to end modification
+	* @param ab_leftToRight Aligment true if left to right false if right to left
 	* @return boolean false if position is larger that size of StringBuffer othervice true or String is null
 	*/
-	private boolean setStringToStringBuffer(StringBuffer a_StringBuffer, String a_String, int ai_pos, int ai_end)
+	public static boolean setStringToStringBuffer(StringBuffer a_StringBuffer, String a_String, int ai_start, int ai_end, boolean ab_leftToRight)
 	{
 		int li_size = a_StringBuffer.length();
+		
 		if (a_String == null)
 			return false;
-		if (li_size <= ai_pos)
+		if (li_size <= ai_start)
 			return false;
 
 		if (ai_end > li_size)
 		{
 			ai_end = li_size;
 		}
-
-		for (int li_x = ai_pos; li_x < ai_end; li_x++)
+		
+		
+		if((ai_end - ai_start)>a_String.length())
 		{
-			a_StringBuffer.setCharAt(li_x, a_String.charAt(li_x - ai_pos));
+			
 		}
+		int li_stringLength= a_String.length();
+		if(ab_leftToRight)
+		{
+			
+			for (int li_x = ai_start; li_x < ai_end && (li_x - ai_start) < li_stringLength; li_x++)
+			{
+				a_StringBuffer.setCharAt(li_x, a_String.charAt(li_x - ai_start));
+			}
+		}
+		else
+		{
+			
+			for (int li_x = ai_end; li_x >= ai_start && li_stringLength>0; li_x--)
+			{
+				a_StringBuffer.setCharAt(li_x, a_String.charAt( --li_stringLength ));
+			}
+		}
+		
 		return true;
 	}	
 	
@@ -150,5 +172,56 @@ public class DataSetService
 		}
 
 		throw new IllegalArgumentException(aS_Object.getClass().getName() + " is not supported class type");
+	}
+	
+	public static String timestampToString(Timestamp a_Timestamp, String aS_Format, String aS_NullValue)
+	{	
+		if(a_Timestamp==null)
+		{
+			return aS_NullValue;
+		}
+
+		if(aS_Format==null)
+		{
+			return a_Timestamp.toString();	
+		}		
+		
+		SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(aS_Format);
+	
+		return l_SimpleDateFormat.format(a_Timestamp);		
+	}
+	
+	public static String dateToString(java.util.Date a_Date, String aS_Format, String aS_NullValue)
+	{
+		if(a_Date==null)
+		{
+			return aS_NullValue;
+		}
+
+		if(aS_Format==null)
+		{
+			return a_Date.toString();	
+		}		
+		
+		SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(aS_Format);
+	
+		return l_SimpleDateFormat.format(a_Date);	
+	} 
+	
+	public static String timeToString(Time a_Time, String aS_Format, String aS_NullValue)
+	{
+		if(a_Time==null)
+		{
+			return aS_NullValue;
+		}
+
+		if(aS_Format==null)
+		{
+			return a_Time.toString();	
+		}		
+		
+		SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(aS_Format);
+	
+		return l_SimpleDateFormat.format(a_Time);	
 	}
 }

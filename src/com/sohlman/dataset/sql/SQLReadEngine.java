@@ -77,16 +77,51 @@ public class SQLReadEngine implements ReadEngine
 		i_ConnectionContainer = a_ConnectionContainer;
 	}
 
-	public void setParameter(int ai_index, Object a_Object, int ai_sqlType)
+	/* Removed
+		/**
+		 * Method setParameter.
+		 * @param ai_index Select parameter index
+		 * @param a_Object Select parameter
+		 * @param ai_sqlType java.sql.Types type
+	
+			public void setParameter(int ai_index, Object a_Object, int ai_sqlType)
+		{
+			i_SQLStament.setParameter(ai_index, a_Object, a_Object, ai_sqlType);
+		}
+	*/
+
+	/**
+	 * Method setParameter.
+	 * @param ai_index parameter index
+	 * @param a_Object which is parameter
+	 */
+	public void setParameter(int ai_index, Object a_Object)
 	{
-		i_SQLStament.setParameter(ai_index, a_Object, a_Object, ai_sqlType);
+		if (ai_index <= 0)
+		{
+			throw new ArrayIndexOutOfBoundsException("Select parameter index has to be greater than 0");
+		}
+
+		if (a_Object == null)
+		{
+			i_SQLStament.setParameter(ai_index, a_Object, a_Object, Types.NULL);
+		}
+		i_SQLStament.setParameter(ai_index, a_Object, a_Object);
+	}
+	/**
+	 * Method setParameter.
+	 * @param ai_index parameter to be set null
+	 */
+	public void setParameterNull(int ai_index)
+	{
+		setParameter(ai_index, null);
 	}
 
 	public Object getParameter(int ai_index)
 	{
 		if (i_SQLStament == null)
 		{
-			throw new IllegalStateException("You have to set SQL First");
+			throw new IllegalStateException("Parameter no:" + ai_index + " not exist. You have to first set Select parameter");
 		}
 
 		return i_SQLStament.getParameterOrig(ai_index);
@@ -114,7 +149,7 @@ public class SQLReadEngine implements ReadEngine
 	{
 		return iS_ReadSQL;
 	}
-	
+
 	/** This is first method to call retrieve operation.
 	 *
 	 */
@@ -157,10 +192,14 @@ public class SQLReadEngine implements ReadEngine
 				}
 				else
 				{
-					
+
 					for (int li_c = 1; li_c <= li_columnCount; li_c++)
 					{
-						l_SQLColumnInfos[li_c - 1] = new SQLColumnInfo(l_ResultSetMetaData.getColumnName(li_c), l_ResultSetMetaData.getColumnClassName(li_c), l_ResultSetMetaData.getColumnType(li_c));
+						l_SQLColumnInfos[li_c - 1] =
+							new SQLColumnInfo(
+								l_ResultSetMetaData.getColumnName(li_c),
+								l_ResultSetMetaData.getColumnClassName(li_c),
+								l_ResultSetMetaData.getColumnType(li_c));
 					}
 					l_SQLRowInfo = new SQLRowInfo(l_SQLColumnInfos);
 				}
@@ -174,7 +213,7 @@ public class SQLReadEngine implements ReadEngine
 					if (a_RowInfo instanceof SQLRowInfo)
 					{
 						// Check Column types and class names are same
-						
+
 						l_SQLRowInfo = (SQLRowInfo) a_RowInfo;
 						for (int li_c = 1; li_c <= l_SQLRowInfo.getColumnCount(); li_c++)
 						{

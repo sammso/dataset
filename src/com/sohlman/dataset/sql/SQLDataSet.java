@@ -145,14 +145,24 @@ public class SQLDataSet extends DataSet
 	 * @see com.sohlman.dataset.sql.SQLReadEngine#setParameter
 	 */
 
-	public void setParameter(int ai_index, Object a_Object, int ai_sqlTypes)
+	public void setParameter(int ai_index, Object a_Object)
 	{
 		SQLReadEngine l_SQLReadEngine = (SQLReadEngine) getReadEngine();
 		if (l_SQLReadEngine != null)
 		{
-			l_SQLReadEngine.setParameter(ai_index, a_Object, ai_sqlTypes);
+			l_SQLReadEngine.setParameter(ai_index, a_Object);
 		}
 	}
+	
+	public void setParameterNull(int ai_index)
+	{
+		SQLReadEngine l_SQLReadEngine = (SQLReadEngine) getReadEngine();
+		if (l_SQLReadEngine != null)
+		{
+			l_SQLReadEngine.setParameterNull(ai_index);
+		}		
+	}
+	
 
 	/**
 	 * Sets {@link SQLWriteFilter SQLWriteFilter} object
