@@ -1,4 +1,4 @@
-	DataSet Library 1.0 RC 1
+	DataSet Library 1.0 RC 2
 -------------------------------------------------------------
  I currently using this version of DataSet on my projects.
  I'm using DataSet on production.
@@ -9,6 +9,8 @@
 
 Changes 
 ------------------------------------------------------------- 
+ Changes in RC 2
+ - Bug fix on SQLWriteEngine.getTableName()
  Changes in RC 1
  - Row setValueAt checking class is now corrected. Before it used to use 
    class name now it is using Class.instanceOf() method which is working 

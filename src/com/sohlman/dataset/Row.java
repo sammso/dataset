@@ -13,6 +13,7 @@ public class Row
 	public final static int ERROR = -1;
 
 	Object[] iO_Columns;
+	Object[] iO_Columns_Current;
 	RowInfo i_RowInfo;
 
 	/** Constructor
@@ -173,7 +174,7 @@ public class Row
 	public boolean equals(Row a_Row)
 	{
 		int li_count = 0;
-
+		
 		for (int li_x = 1; li_x <= getColumnCount(); li_x++)
 		{
 			if (getValueAt(li_x) != null && a_Row.getValueAt(li_x) != null)
