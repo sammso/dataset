@@ -24,6 +24,12 @@ public class SwingDemo
 	private JButton i_JButton_Add;
 	private JButton i_JButton_Delete;
 	private JButton i_JButton_Print;
+	
+	private JButton i_JButton_Read;
+	private JButton i_JButton_Save;
+
+
+	
 	private JTextArea i_JTextArea_SQL;
 	private JFrame i_JFrame;
 	private JTable i_JTable;
@@ -50,14 +56,41 @@ public class SwingDemo
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Print)
 			{
-				i_DataSet.printBuffers(System.out);
+				//i_DataSet.printBuffers(System.out);
 				
 				
+				SQLReadEngine l_SQLReadEngine = (SQLReadEngine)i_DataSet.getReadEngine();
+				
+				int li_columnCount = i_DataSet.getColumnCount();
 				
 				
+				for(int li_x = 1 ; li_x <= li_columnCount ; li_x++ )
+				{
+					
+					System.out.println(l_SQLReadEngine.getColumnTableName(li_x));
+				}
 				
-				//System.out.println("Table name is \"" + getTableNameFromSelectSQL(i_JTextArea_SQL.getText()) + "\"");
+				
+				System.out.println("Table name is \"" + getTableNameFromSelectSQL(i_JTextArea_SQL.getText()) + "\"");
 			}
+			if (a_ActionEvent.getSource() == i_JButton_Read)
+			{
+				System.out.println("Read");
+				try
+				{
+					((SQLDataSet)i_DataSet).setSQLStatements(i_JTextArea_SQL.getText(),null,null,null);
+					i_DataSet.read();
+					System.out.println(i_DataSet.getRowCount());
+					i_JTable.setAutoCreateColumnsFromModel(true);
+					i_JTable.doLayout();
+					i_JTable.updateUI();
+				}
+				catch(DataSetException l_DataSetException)
+				{
+					l_DataSetException.printStackTrace();
+				}
+			}
+			
 		}
 	};
 
@@ -84,6 +117,14 @@ public class SwingDemo
 		l_JPanel_Buttons.setLayout(new BoxLayout(l_JPanel_Buttons, BoxLayout.Y_AXIS));
 		l_JPanel_Buttons.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
+		i_JButton_Read = new JButton("Read");
+		i_JButton_Read.addActionListener(i_ActionListener);
+		l_JPanel_Buttons.add(i_JButton_Read);
+		
+		i_JButton_Save = new JButton("Save");
+		i_JButton_Save.addActionListener(i_ActionListener);
+		l_JPanel_Buttons.add(i_JButton_Save);
+
 		i_JButton_Add = new JButton("Add");
 		i_JButton_Add.addActionListener(i_ActionListener);
 		l_JPanel_Buttons.add(i_JButton_Add);
@@ -94,7 +135,7 @@ public class SwingDemo
 
 		i_JButton_Print = new JButton("Print");
 		i_JButton_Print.addActionListener(i_ActionListener);
-		l_JPanel_Buttons.add(i_JButton_Print);
+		l_JPanel_Buttons.add(i_JButton_Print);		
 
 		JPanel l_JPanel_List = new JPanel();
 		l_JPanel_List.setLayout(new BorderLayout());
@@ -156,8 +197,8 @@ public class SwingDemo
 		try
 		{
 			l_SQLDataSet.setConnectionContainer(l_ConnectionContainer);
-			l_SQLDataSet.setSQLStatements("select * from test", null, null, null);
-			l_SQLDataSet.read();
+//			l_SQLDataSet.setSQLStatements("select * from test", null, null, null);
+//			l_SQLDataSet.read();
 		}
 		catch (DataSetException l_DataSetException)
 		{
@@ -243,7 +284,12 @@ public class SwingDemo
 	{
 		String lS_SQL = aS_Sql.toUpperCase();
 
-		int li_tableNameStart = lS_SQL.indexOf("FROM") + 4;
+		int li_tableNameStart = lS_SQL.indexOf("FROM");
+		
+		if(li_tableNameStart==-1) return null;
+		
+		li_tableNameStart += 4;
+		
 		int li_tableNameEnd = lS_SQL.indexOf("WHERE", li_tableNameStart);
 		if (li_tableNameEnd == -1)
 		{
@@ -260,7 +306,14 @@ public class SwingDemo
 		}
 
 		String lS_TableName = aS_Sql.substring(li_tableNameStart, li_tableNameEnd).trim();
-		
+
+		// If space found more than one table defintion found 
+		// this don't support alias tables with as or "" named tables		
+		if(lS_TableName.indexOf(" ") > 0)
+		{
+			return null;
+		}
+			
 
 		return lS_TableName;
 	}
