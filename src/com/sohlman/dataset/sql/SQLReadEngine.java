@@ -206,42 +206,8 @@ public class SQLReadEngine implements ReadEngine
 					}
 					l_SQLRowInfo = new SQLRowInfo(l_SQLColumnInfos);
 				}
-				if (a_RowInfo == null || (!l_SQLRowInfo.equals(a_RowInfo)))
-				{
-					return (RowInfo)l_SQLRowInfo;
-				}
-				else
-				{
-					// Check that columns info type is SQLRowInfo
-					if (a_RowInfo instanceof SQLRowInfo)
-					{
-						// Check Column types and class names are same
-
-						l_SQLRowInfo = (SQLRowInfo)a_RowInfo;
-						for (int li_c = 1; li_c <= l_SQLRowInfo.getColumnCount(); li_c++)
-						{
-							if (l_SQLRowInfo.getColumnType(li_c) != li_columnTypes[li_c - 1])
-							{
-								throw new DataSetException("Database and predefined column types are different");
-							}
-							if (!l_SQLRowInfo.getColumnClassName(li_c).equals(lS_ClassNames[li_c - 1]))
-							{
-								throw new DataSetException("Database and predefined column classes are different");
-							}
-						}
-						for (int li_c = 1; li_c <= l_SQLRowInfo.getColumnCount(); li_c++)
-						{
-							l_SQLRowInfo.setColumnName(li_c, lS_ColumnNames[li_c - 1]);
-						}
-						return (RowInfo)l_SQLRowInfo;
-					}
-					else
-					{
-						// Throw Illegal argumentException because we don't want that it will be cached by DataSetException
-						// catchers
-						throw new IllegalArgumentException("DataSet ColumnInfo object is not SQLColumnInfo or it's child class");
-					}
-				}
+				
+				return l_SQLRowInfo;
 			}
 			else
 			{

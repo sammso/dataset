@@ -2,7 +2,7 @@
 	<description>
 		DataSet build.xml
 	</description>
-	<property name="title" value="DataSet 1.0 Final"/>
+	<property name="title" value="DataSet 1.0 RC 4"/>
 	<property name="zipfile" value="DataSet.zip"/>
 	<property name="datasetsrc" location="src"/>
 	<property name="sqltoolsrc" location="examples/sqltool"/>
