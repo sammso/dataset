@@ -41,4 +41,14 @@ public class RowContainer
     {
     	return i_Row_Current;
     }
+	/**
+	 * Returns current row. 
+	 * (helps debugging)
+	 * 
+	 * @return Row Current row in DataSet
+	 */    
+    public String toString()
+    {
+    	return i_Row_Current.toString();
+    }
 }

@@ -63,18 +63,25 @@ public class RowToComponentConnector
 		{
 			throw new ArrayIndexOutOfBoundsException("index out of range.");
 		}
-		
+		Enumeration l_Enumeration;
 		// Before we have to be sure that all rows are stored to DataSet as they should
 		// Focus is not enough
 		
-		Enumeration l_Enumeration = iHt_Components.elements();
-		while(l_Enumeration.hasMoreElements())
-		{
-			Object l_Object = l_Enumeration.nextElement();
-			RowComponentContainer l_RowComponentContainer = (RowComponentContainer)l_Object;
-			i_DataSet.setValueAt(l_RowComponentContainer.getValue(),ii_row,l_RowComponentContainer.getColumnIndex());
-		}		
 		
+		// Row changed only this case read the values
+		if(ai_index != ii_row)
+		{
+			l_Enumeration = iHt_Components.elements();
+		 
+		 
+			while(l_Enumeration.hasMoreElements())
+			{
+				Object l_Object = l_Enumeration.nextElement();
+				RowComponentContainer l_RowComponentContainer = (RowComponentContainer)l_Object;
+				i_DataSet.setValueAt(l_RowComponentContainer.getValue(),ii_row,l_RowComponentContainer.getColumnIndex());
+			}			
+		}	
+			
 		ii_row = ai_index;
 		
 		l_Enumeration = iHt_Components.elements();

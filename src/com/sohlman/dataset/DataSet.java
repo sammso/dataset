@@ -188,6 +188,8 @@ public class DataSet
 		// doReset never throws exception so we don't need to catch it.
 
 		li_return = doRemoveRow(ai_index);
+		//System.out.println("DataSet.removeRow " + ai_index + " " + iVe_Data.get(ai_index).toString());
+		
 		if (li_return > 0 && iVe_Listeners != null)
 		{
 			Enumeration l_Enumeration;

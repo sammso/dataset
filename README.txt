@@ -12,6 +12,7 @@ Changes
  Changes in RC 3
  - Row.setValueAt throws now ClassCastException, this helps to find errors on application 
    code.
+ - Swing package developement
  Changes in RC 2
  - Bug fix on SQLWriteEngine.getTableName()
  Changes in RC 1

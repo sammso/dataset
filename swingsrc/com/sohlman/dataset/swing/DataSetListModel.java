@@ -1,8 +1,6 @@
 package com.sohlman.dataset.swing;
 
 import javax.swing.AbstractListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 import com.sohlman.dataset.DataSet;
 import com.sohlman.dataset.DataSetEvent;
@@ -17,7 +15,7 @@ public class DataSetListModel extends AbstractListModel
 	protected int ii_visibleColumn;
 	protected DataSet i_DataSet;
 	private DataSetListModel i_DataSetListModel_This = this;
-
+	
 	private DataSetListener i_DataSetListener = new DataSetListener()
 	{
 		/**
@@ -29,7 +27,6 @@ public class DataSetListModel extends AbstractListModel
 			{
 				if (ii_visibleColumn == a_DataSetEvent.getColumn())
 				{
-					//				fireContentsChanged(i_DataSetListModel_This, 0 i_DataSet.getRowCount());
 					fireContentsChanged(i_DataSetListModel_This, a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1);
 				}
 			}
@@ -43,32 +40,12 @@ public class DataSetListModel extends AbstractListModel
 			}
 			else if (a_DataSetEvent.getAction() == DataSetEvent.ROW_INSERTED)
 			{
-				//fireIntervalAdded(i_DataSetListModel_This, a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1);
+				fireContentsChanged(i_DataSetListModel_This, a_DataSetEvent.getRow() , a_DataSetEvent.getRow());
 			}
 			else if (a_DataSetEvent.getAction() == DataSetEvent.ROW_REMOVED)
 			{
-				fireIntervalRemoved(i_DataSetListModel_This, a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1);
-				//fireContentsChanged(i_DataSetListModel_This, , a_DataSetEvent.getRow() - 1);
+				fireContentsChanged(i_DataSetListModel_This, 0 , i_DataSet.getRowCount());
 			}
-		}
-	};
-
-	ListDataListener i_ListDataListener = new ListDataListener()
-	{
-		public void contentsChanged(ListDataEvent a_ListDataEvent)
-		{
-			System.out.println("contentsChanged");
-			System.out.println("\t" + a_ListDataEvent);
-		}
-		public void intervalAdded(ListDataEvent a_ListDataEvent)
-		{
-			System.out.println("intervalAdded");
-			System.out.println("\t" + a_ListDataEvent);
-		}
-		public void intervalRemoved(ListDataEvent a_ListDataEvent)
-		{
-			System.out.println("intervalRemoved");
-			System.out.println("\t" + a_ListDataEvent);
 		}
 	};
 
@@ -77,7 +54,6 @@ public class DataSetListModel extends AbstractListModel
 		i_DataSet = a_DataSet;
 		i_DataSet.addListener(i_DataSetListener);
 		ii_visibleColumn = ai_visibleColumnNumber;
-		//addListDataListener(i_ListDataListener);
 	}
 
 	/**
