@@ -194,6 +194,24 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		return -1;
 	}
 
+	private static boolean isSpaceTabReturnNothing(String a_String, int ai_index)
+	{
+		if (ai_index < 0)
+			return true;
+		if (ai_index >= a_String.length())
+			return true;
+
+		char l_char = a_String.charAt(ai_index);
+		switch (l_char)
+		{
+			case ' ' :
+			case '\t' :
+			case '\n' :
+				return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Get's table name from SELECT string. If there is more than one table then
 	 * DataSetException is thrown
@@ -210,18 +228,37 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		//int li_tableNameStart = lS_SQL.indexOf("FROM");
 		int li_tableNameStart = keyWordSearchIndexOf(lS_SQL, "FROM", 0);
 
+		// Check if 
+
+		if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameStart - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameStart + 5)))
+		{
+			li_tableNameStart = -1;
+		}
 		if (li_tableNameStart == -1)
 			throw new DataSetException("FROM keyword not found");
 
 		li_tableNameStart += 4;
 
 		int li_tableNameEnd = keyWordSearchIndexOf(lS_SQL, "WHERE", li_tableNameStart);
+		if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd + 6)))
+		{
+			li_tableNameEnd = -1;
+		}		
 		if (li_tableNameEnd == -1)
 		{
 			li_tableNameEnd = keyWordSearchIndexOf(lS_SQL, "ORDER", li_tableNameStart);
+			if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd + 6)))
+			{
+				li_tableNameEnd = -1;
+			}		
 			if (li_tableNameEnd == -1)
 			{
 				li_tableNameEnd = keyWordSearchIndexOf(lS_SQL, "GROUP", li_tableNameStart);
+				if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd + 6)))
+				{
+					li_tableNameEnd = -1;
+				}		
+				
 			}
 		}
 
