@@ -13,8 +13,7 @@ public class DataSetComboBoxModel extends DataSetListModel implements ComboBoxMo
 	 */
 	public void setSelectedItem(Object arg0)
 	{
-		// TODO Auto-generated method stub
-
+		// TODO Need to get
 	}
 
 	/**
