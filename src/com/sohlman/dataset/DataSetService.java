@@ -282,4 +282,32 @@ public class DataSetService
 	
 		return l_SimpleDateFormat.format(a_Time);	
 	}
+	
+	
+	/**
+	 * Method compareComparables compares two comparables and checks also null values.
+	 * null is smaller than not null value.
+	 * @param aCo_1
+	 * @param aCo_2
+	 * @return int
+	 */
+	public static int compareComparables(Comparable aCo_1, Comparable aCo_2)
+	{
+		if(aCo_1==null && aCo_2==null)
+		{
+			return 0;
+		}
+		else if(aCo_1==null && aCo_2!=null)
+		{
+			return -1;	
+		}
+		else if(aCo_1!=null && aCo_2==null)
+		{
+			return 1;	
+		}
+		else
+		{
+			return aCo_1.compareTo(aCo_2);
+		}
+	}	
 }

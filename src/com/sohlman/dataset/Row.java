@@ -1,17 +1,12 @@
-/*
- * Row.java
- *
- * Created on 2. heinäkuuta 2001, 13:25
- *
- */
-
 package com.sohlman.dataset;
+
+import java.io.Serializable;
 
 
 /** Row object represent row in {@link DataSet DataSet} object.<br>
  *
  * @author Sampsa Sohlman
- * @version 2002-10-9
+ * @version 2002-10-09
  */
 
 public class Row
@@ -67,6 +62,7 @@ public class Row
 	/** Returns value of selected column
 	 * @param ai_index Index of column
 	 * @return Object that column is containing
+	 * @throws ArrayIndexOutOfBoundsException if row or column is out of range
 	 */
 	public final Object getValueAt(int ai_index)
 	{
@@ -76,7 +72,7 @@ public class Row
 		}
 		else
 		{
-			return null;
+			throw new ArrayIndexOutOfBoundsException("Column index " + ai_index + " is out of range");
 		}
 	}
 

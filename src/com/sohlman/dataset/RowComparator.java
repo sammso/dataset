@@ -39,7 +39,7 @@ public class RowComparator implements Comparator
 			
 			for(int li_index = 1 ; li_index <= li_columnCount ; li_index ++)
 			{
-				int li_value = compareComparables((Comparable)a_Row_1.getValueAt(li_index), (Comparable)a_Row_2.getValueAt(li_index));
+				int li_value = DataSetService.compareComparables((Comparable)a_Row_1.getValueAt(li_index), (Comparable)a_Row_2.getValueAt(li_index));
 				if(li_value > 0)
 				{
 					return li_value;
@@ -58,7 +58,7 @@ public class RowComparator implements Comparator
 				// Ignore wrong indexes
 				if( ii_sortOrder[li_index] > 0 && ii_sortOrder[li_index] <= li_columnCount )
 				{
-					int li_value = compareComparables((Comparable)a_Row_1.getValueAt(ii_sortOrder[li_index]), (Comparable)a_Row_2.getValueAt(ii_sortOrder[li_index]));
+					int li_value = DataSetService.compareComparables((Comparable)a_Row_1.getValueAt(ii_sortOrder[li_index]), (Comparable)a_Row_2.getValueAt(ii_sortOrder[li_index]));
 					if(li_value > 0)
 					{
 						return li_value;
@@ -71,25 +71,5 @@ public class RowComparator implements Comparator
 			}			
 		}
 		return 0;	
-	}
-	
-	public static int compareComparables(Comparable aCo_1, Comparable aCo_2)
-	{
-		if(aCo_1==null && aCo_2==null)
-		{
-			return 0;
-		}
-		else if(aCo_1==null && aCo_2!=null)
-		{
-			return -1;	
-		}
-		else if(aCo_1!=null && aCo_2==null)
-		{
-			return 1;	
-		}
-		else
-		{
-			return aCo_1.compareTo(aCo_2);
-		}
 	}
 }
