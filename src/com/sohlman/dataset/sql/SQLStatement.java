@@ -248,7 +248,7 @@ class SQLStatement
 		if (!iS_FinalSQL_Last.equals(lS_SQL))
 		{
 			// Prepared statement has to be closed
-			i_PreparedStatement_Current.close();
+			// i_PreparedStatement_Current.close();
 			l_PreparedStatement = a_Connection.prepareStatement(lS_SQL);
 			iS_FinalSQL_Last = lS_SQL;
 		}
