@@ -525,8 +525,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 			{
 				if (l_PreparedStatement != null)
 				{
-					// This made serious bug
-					/*
+					
 					try
 					{
 						l_PreparedStatement.close();
@@ -537,7 +536,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 						{
 							l_DataSetException = new DataSetException(EX_CLOSE_PREPARED_STATEMENT, l_SQLException);
 						}
-					}*/
+					}
 				}
 			}
 			if (l_DataSetException != null)

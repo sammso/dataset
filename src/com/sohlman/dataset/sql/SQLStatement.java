@@ -245,17 +245,17 @@ class SQLStatement
 		lS_SQL = createFinalSQL(lS_SQL);
 		// set parameters.
 		PreparedStatement l_PreparedStatement;
-		if (!iS_FinalSQL_Last.equals(lS_SQL))
-		{
+//		if (!iS_FinalSQL_Last.equals(lS_SQL))
+//		{
 			// Prepared statement has to be closed
 			// i_PreparedStatement_Current.close();
 			l_PreparedStatement = a_Connection.prepareStatement(lS_SQL);
-			iS_FinalSQL_Last = lS_SQL;
-		}
-		else
-		{
-			l_PreparedStatement = i_PreparedStatement_Current;
-		}
+//			iS_FinalSQL_Last = lS_SQL;
+//		}
+//		else
+//		{
+//			l_PreparedStatement = i_PreparedStatement_Current;
+//		}
 
 		for (int li_c = 0; li_c < li_keys.length; li_c++)
 		{
