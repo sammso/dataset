@@ -19,6 +19,7 @@ Changes
    - build.xml to create newest version from CVS
    - swing functionality removed and transferred to another .jar
  - Swing support removed it is now on own .jar file.
+ - Write statements generation developed further
 Future Ideas
 -------------------------------------------------------------
  - Column level tracking for changed columns. (It is now

@@ -1,0 +1,87 @@
+<project name="DataSet" default="CreateDist" basedir=".">
+	<description>
+		DataSet build.xml
+	</description>
+	<property name="title" value="DataSet 1.0 RC1"/>
+	<property name="zipfile" value="DataSet.zip"/>
+	<property name="datasetsrc" location="src"/>
+	<property name="sqltoolsrc" location="examples/sqltool"/>
+	<property name="swingsrc" location="swingsrc"/>	
+	<property name="builddir" location="build"/>
+	<property name="distdir"  location="DataSet"/>
+	
+	<target name="Init">
+		<tstamp/>
+		<mkdir dir="${distdir}"/>
+		<mkdir dir="${distdir}/libs"/>
+	</target>
+	
+	<target name="CompileDataSet" depends="Init" description="Compile DataSet Source" >
+	<!-- Complile and create jar -->
+		<mkdir dir="${builddir}"/>
+		<javac srcdir="${datasetsrc}" destdir="${builddir}" optimize="true" nowarn="true"/>
+		<jar jarfile="${distdir}/libs/dataset.jar" basedir="${builddir}" compress="true"/>
+		<delete dir="${builddir}" failonerror="false"/>
+	</target>
+
+	<target name="CompileSwing" depends="CompileDataSet" description="Compile SQLTool Source" >
+	<!-- Complile and create jar -->
+		<mkdir dir="${builddir}"/>
+		<javac srcdir="${swingsrc}" destdir="${builddir}" classpath="${distdir}/libs/dataset.jar" optimize="true" nowarn="true"/>
+		<jar jarfile="${distdir}/libs/dataset-swing.jar" basedir="${builddir}" compress="true"/>
+		<delete dir="${builddir}" failonerror="false"/>
+	</target>	
+	
+	<target name="CompileSQLTool" depends="CompileSwing" description="Compile SQLTool Source" >
+	<!-- Complile and create jar -->
+		<mkdir dir="${builddir}"/>
+		<javac srcdir="${sqltoolsrc}" destdir="${builddir}"  optimize="true" nowarn="true">
+			<classpath path="${distdir}/libs/dataset.jar"/>
+			<classpath path="${distdir}/libs/dataset-swing.jar"/>
+		</javac>
+		<jar jarfile="${distdir}/libs/sqltool.jar" basedir="${builddir}" manifest="examples/sqltool.manifest" compress="true"/>
+		<delete dir="${builddir}" failonerror="false"/>
+	</target>	
+
+	<target name="CreateDist" depends="CompileDataSet, CompileSQLTool, JavaDoc" description="Create Distribution Package" >
+		<!-- Main -->
+		
+		<copy todir="${distdir}/src">
+			<fileset dir="${datasetsrc}">
+			</fileset>
+		</copy>
+		
+		<copy file="build.xml"  todir="${distdir}"/>
+		<copy file="README.txt"  todir="${distdir}"/>		
+		
+		<!-- JavaDoc -->		
+		
+		<javadoc access="protected" packagelist="com.sohlman.dataset" destdir="${distdir}/docs">
+			<sourcepath path="${datasetsrc}"/>
+			<sourcepath path="${swingsrc}"/>
+		</javadoc>
+		
+		<!-- Swing library -->
+		<copy todir="${distdir}">
+			<fileset dir="${swingsrc}"/>
+		</copy>
+		
+		<!-- SQL Tool Example -->
+		<copy todir="${distdir}/examples/sqltool">
+			<fileset dir="${sqltoolsrc}"/>
+		</copy>
+		
+		<copy file="examples/SQLTool.ini" todir="${distdir}/libs"/>
+		<copy file="examples/SQLTool.ini" todir="${distdir}/examples"/>
+		<copy file="examples/SQLTool.ini" todir="${distdir}/examples"/>		
+		
+		<zip zipfile="${zipfile}" basedir="${distdir}" compress="true"/>
+		<delete dir="${distdir}"/>
+	</target>
+	
+	<target name="Clean" description="Clean Up" >
+		<delete file="${zipfile}"/>
+		<delete dir="${distdir}"/>
+		<delete dir="${builddir}"/>
+	</target>
+</project>
