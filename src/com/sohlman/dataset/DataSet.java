@@ -1160,8 +1160,10 @@ public class DataSet
 	 * 
 	 * 
 	 * @param a_DataSet_Source
-	 * @param a_RowComparator This tells if which rows are match. NOTE! Both DataSet are also ordered after this operation by using  selected RowComparator class
-	 * @param ai_columns Columns to be copied from source to destination.
+	 * @param ai_sourceKeys
+	 * @param ai_destinationKeys
+	 * @param ai_sourceColumns
+	 * @param ai_destinationColumns
 	 * @param ab_doAdd if add to operation should be is made to destination 
 	 * @param ab_doUpdate if update to operation should be is made to destination 
 	 * @param ab_doDelete if delete to operation should be is made to destination 
@@ -1301,12 +1303,12 @@ public class DataSet
 							removeRow(li_dIndex);
 							li_destinationCount--;
 							li_removeCount++;
-							if (li_dIndex <= li_destinationCount)
-							{
-								li_result = compareRows(l_Row_Source, l_Row_Destination, ai_sourceKeys, ai_destinationKeys);
-							}
 						}
-						while (li_result > 0);
+						while (li_dIndex <= li_destinationCount && compareRows(l_Row_Source, getReferenceToRow(li_dIndex), ai_sourceKeys, ai_destinationKeys) > 0);
+					}
+					else
+					{
+						li_dIndex++;
 					}
 				}
 				else if (li_result < 0)
@@ -1336,15 +1338,15 @@ public class DataSet
 					}
 					while (li_dIndex <= li_destinationCount
 						&& compareRows(l_Row_Source, getReferenceToRow(li_dIndex), ai_sourceKeys, ai_destinationKeys) == 0
-						&& (li_sIndex == li_sourceCount
-							|| compareRows(l_Row_Source, a_DataSet_Source.getReferenceToRow(li_sIndex + 1), ai_sourceKeys, ai_sourceKeys) != 0));
+						&& (li_sIndex < li_sourceCount
+							&& compareRows(l_Row_Source, a_DataSet_Source.getReferenceToRow(li_sIndex + 1), ai_sourceKeys, ai_sourceKeys) != 0));
 				}
 				li_sIndex++;
 			}
 			while (li_dIndex <= li_destinationCount && li_sIndex <= li_sourceCount);
 			
 			// Some where left to added
-			
+
 			while(li_sIndex<=li_sourceCount)
 			{
 				// Destination smaller so let's add
@@ -1355,6 +1357,15 @@ public class DataSet
 					li_addCount++;
 				}	
 				li_sIndex++;			
+			}
+			if (ab_doDelete)
+			{			
+				while(li_dIndex<=li_destinationCount)
+				{
+					removeRow(li_dIndex);
+					li_destinationCount--;
+					li_removeCount++;							
+				}
 			}
 		}
 		else if (li_sourceCount == 0 && li_destinationCount > 0)
