@@ -53,6 +53,11 @@ public class FileReadEngine implements ReadEngine
 		return iS_LastReadLine;
 	}
 
+	public File getFile()
+	{
+		return i_File;
+	}
+
 	/** 
 	 * @see com.sohlman.dataset.ReadEngine#readStart
 	 */
