@@ -132,24 +132,100 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		setSQL(lS_Insert, lS_Update, lS_Delete);
 	}
 
-	private String getTableNameFromSelectSQL(String aS_Sql) throws DataSetException
+	private static int keyWordSearchIndexOf(String aS_From, String aS_What, int ai_start)
+	{
+		int li_length = aS_From.length() - aS_What.length();
+		char[] lc_from = aS_From.toCharArray();
+		char[] lc_what = aS_What.toCharArray();
+		
+		char lc_lastChar = 'S';	
+		boolean lb_doubleQuote = false;
+		boolean lb_singleQuote = false;
+			
+		for(int li_index = ai_start ; li_index < li_length ; li_index ++ )
+		{
+			char lc_char = lc_from[li_index];
+			
+			
+			if(lc_char=='"') // We are now in column name or 
+			{
+				if(lb_doubleQuote)
+				{
+					if(li_index == ai_start || lc_lastChar!='"')
+					{
+						lb_doubleQuote = false;
+					}
+				}
+				else
+				{
+					lb_doubleQuote = true;
+				}
+			}
+			else if(lc_char=='\'')
+			{
+				if(lb_singleQuote)
+				{
+					if(li_index == ai_start || lc_lastChar!='\'')
+					{
+						lb_singleQuote = false;
+					}
+				}
+				else
+				{
+					lb_singleQuote = true;
+				}
+			}
+			else
+			{
+				if((!lb_doubleQuote) && (!lb_singleQuote) && lc_what[0]==lc_char)
+				{
+					int li_i = lc_what.length - 1;
+					for( ; li_i > 0 ; li_i --)
+					{
+						if(lc_what[li_i] != lc_from[li_i + li_index])
+						{
+							continue;							
+						}
+					}
+					if(li_i == 0)
+					{
+						return li_index;					
+					}
+				}
+			}
+			lc_lastChar = lc_char;
+		}
+		return -1;
+	} 
+
+	/**
+	 * Get's table name from SELECT string. If there is more than one table then
+	 * DataSetException is thrown
+	 * 
+	 * @param aS_Sql
+	 * @return String containing table name. If tablename is inside "" then "" are 
+	 * also returned
+	 * @throws DataSetException On error this exception is thrown
+	 */
+	public static String getTableNameFromSelectSQL(String aS_Sql) throws DataSetException
 	{
 		String lS_SQL = aS_Sql.toUpperCase();
 
-		int li_tableNameStart = lS_SQL.indexOf("FROM");
+		//int li_tableNameStart = lS_SQL.indexOf("FROM");
+		int li_tableNameStart = keyWordSearchIndexOf(lS_SQL,"FROM",0);
 
 		if (li_tableNameStart == -1)
-			throw new DataSetException("FROM clause not found");
+			throw new DataSetException("FROM keyword not found");
 
 		li_tableNameStart += 4;
 
-		int li_tableNameEnd = lS_SQL.indexOf("WHERE", li_tableNameStart);
+		int li_tableNameEnd = keyWordSearchIndexOf(lS_SQL,"WHERE", li_tableNameStart);
 		if (li_tableNameEnd == -1)
 		{
-			li_tableNameEnd = lS_SQL.indexOf("ORDER", li_tableNameStart);
+			li_tableNameEnd = keyWordSearchIndexOf(lS_SQL,"ORDER", li_tableNameStart);
 			if (li_tableNameEnd == -1)
 			{
-				li_tableNameEnd = lS_SQL.indexOf("GROUP", li_tableNameStart);
+				li_tableNameEnd = keyWordSearchIndexOf(lS_SQL,"GROUP", li_tableNameStart);
 			}
 		}
 
@@ -162,10 +238,15 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 		// If space found more than one table defintion found 
 		// this don't support alias tables with as or "" named tables		
-		if (lS_TableName.indexOf(" ") > 0)
+		if (keyWordSearchIndexOf(lS_TableName,",", 0) > 0)
 		{
 			throw new DataSetException(EX_MORE_THAN_ONE_TABLE_DEF);
 		}
+		if (keyWordSearchIndexOf(lS_TableName," ", 0) > 0)
+		{
+			throw new DataSetException("JOIN or AS keyword found from 'FROM' statement");
+		}		
+		
 		return lS_TableName;
 	}
 

@@ -693,7 +693,7 @@ public class DataSet
 	*/
 	private void printColumnNames(PrintStream a_PrintStream)
 	{
-		int li_countRows, li_countColumns;
+		int li_countColumns;
 		li_countColumns = getColumnCount();
 		StringBuffer l_StringBuffer = createSpaceFilledStringBuffer(li_countColumns * 18);
 		for (int li_c2 = 0; li_c2 < li_countColumns; li_c2++)
@@ -736,7 +736,6 @@ public class DataSet
 
 	private final int doSave() throws DataSetException
 	{
-		boolean lb_failed = false;
 		if (i_WriteEngine != null)
 		{
 			int li_return = 0;
@@ -1074,7 +1073,7 @@ public class DataSet
 	*/
 	public void setBufferAll(int ai_targetBuffer)
 	{
-		if (ai_targetBuffer == this.NEW)
+		if (ai_targetBuffer == NEW)
 		{
 			iVe_Modified.removeAllElements();
 			iVe_Deleted.removeAllElements();
@@ -1086,7 +1085,7 @@ public class DataSet
 				iVe_New.add(l_RowContainer);
 			}
 		}
-		else if (ai_targetBuffer == this.MODIFIED)
+		else if (ai_targetBuffer == MODIFIED)
 		{
 			iVe_Modified.removeAllElements();
 			iVe_Deleted.removeAllElements();
@@ -1101,7 +1100,7 @@ public class DataSet
 
 			}
 		}
-		else if (ai_targetBuffer == this.NOTMODIFIED)
+		else if (ai_targetBuffer == NOTMODIFIED)
 		{
 			for (int li_y = 0; li_y < iVe_Modified.size(); li_y++)
 			{
@@ -1303,8 +1302,8 @@ public class DataSet
 			{
 				Row l_Row_Destination = getReferenceToRow(li_dIndex);
 				Row l_Row_Source = a_DataSet_Source.getReferenceToRow(li_sIndex);
-				String lS_S = String.valueOf(l_Row_Source.getValueAt(1));
-				String lS_D = String.valueOf(l_Row_Destination.getValueAt(1));
+//				String lS_S = String.valueOf(l_Row_Source.getValueAt(1));
+//				String lS_D = String.valueOf(l_Row_Destination.getValueAt(1));
 
 				int li_result = compareRows(l_Row_Source, l_Row_Destination, ai_sourceKeys, ai_destinationKeys);
 
@@ -1318,8 +1317,8 @@ public class DataSet
 							removeRow(li_dIndex);
 							li_destinationCount--;
 							li_removeCount++;
-							lS_S = String.valueOf(l_Row_Source.getValueAt(1));
-							lS_D = String.valueOf(getReferenceToRow(li_dIndex).getValueAt(1));
+//							lS_S = String.valueOf(l_Row_Source.getValueAt(1));
+//							lS_D = String.valueOf(getReferenceToRow(li_dIndex).getValueAt(1));
 							
 						}
 						while (li_dIndex <= li_destinationCount
@@ -1357,11 +1356,11 @@ public class DataSet
 						li_dIndex++;
 						
 						// -- DEBUG --
-						lS_S = String.valueOf(l_Row_Source.getValueAt(1));
-						if(li_dIndex <= li_destinationCount)
-							lS_D = String.valueOf(getReferenceToRow(li_dIndex).getValueAt(1));						
-						else
-							lS_D = "";
+//						lS_S = String.valueOf(l_Row_Source.getValueAt(1));
+//						if(li_dIndex <= li_destinationCount)
+//							lS_D = String.valueOf(getReferenceToRow(li_dIndex).getValueAt(1));						
+//						else
+//							lS_D = "";
 						// -- DEBUG --						
 					}
 					while (li_dIndex <= li_destinationCount
@@ -1601,8 +1600,6 @@ public class DataSet
 
 		// Search
 
-		Row l_Row_Found = null;
-
 		for (int li_row = getRowCount(); li_row > 0; li_row--)
 		{
 			// First find secuense of mached rows
@@ -1618,11 +1615,6 @@ public class DataSet
 				{
 					li_row--;
 					l_Row_Before = getReferenceToRow(li_row);
-
-					if (l_Row_Before == null)
-					{
-						li_row = li_row;
-					}
 
 					if (l_Row_Current.equals(l_Row_Before, ai_groupColumns))
 					{

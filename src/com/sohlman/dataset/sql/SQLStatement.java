@@ -424,7 +424,6 @@ class SQLStatement
 	{
 		int li_index = 0;
 		int[] li_keys = new int[100];
-		int[] li_oldKeys = new int[100];
 
 		int[] li_keysTmp;
 		int li_key = 0;
@@ -580,9 +579,8 @@ class SQLStatement
 	private int getNumber(String a_String)
 	{
 		StringBuffer lSb_Number = new StringBuffer();
-		char lc_number, lc_newOrOld;
-		boolean lb_firstZero = false;
-		int li_error = 0;
+		char lc_number;
+
 		for (int li_c = 0; li_c < a_String.length(); li_c++)
 		{
 			// Parameter

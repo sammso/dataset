@@ -181,7 +181,6 @@ public class SQLReadEngine implements ReadEngine
 				int[] li_columnTypes = new int[li_columnCount];
 
 				SQLColumnInfo[] l_SQLColumnInfos = new SQLColumnInfo[li_columnCount];
-				String[] lS_ColumnTableNames = new String[li_columnCount];
 				String[] lS_ClassNames = new String[li_columnCount];
 				String[] lS_ColumnNames = new String[li_columnCount];
 
@@ -205,7 +204,7 @@ public class SQLReadEngine implements ReadEngine
 				}
 				if (a_RowInfo == null || (!l_SQLRowInfo.equals(a_RowInfo)))
 				{
-					return (RowInfo) l_SQLRowInfo;
+					return (RowInfo)l_SQLRowInfo;
 				}
 				else
 				{
@@ -214,7 +213,7 @@ public class SQLReadEngine implements ReadEngine
 					{
 						// Check Column types and class names are same
 
-						l_SQLRowInfo = (SQLRowInfo) a_RowInfo;
+						l_SQLRowInfo = (SQLRowInfo)a_RowInfo;
 						for (int li_c = 1; li_c <= l_SQLRowInfo.getColumnCount(); li_c++)
 						{
 							if (l_SQLRowInfo.getColumnType(li_c) != li_columnTypes[li_c - 1])
@@ -230,7 +229,7 @@ public class SQLReadEngine implements ReadEngine
 						{
 							l_SQLRowInfo.setColumnName(li_c, lS_ColumnNames[li_c - 1]);
 						}
-						return (RowInfo) l_SQLRowInfo;
+						return (RowInfo)l_SQLRowInfo;
 					}
 					else
 					{
@@ -250,9 +249,9 @@ public class SQLReadEngine implements ReadEngine
 		{
 			throw new DataSetException("readStart - SQL Error", l_SQLException);
 		}
-		catch(ClassNotFoundException l_ClassNotFoundException)
+		catch (ClassNotFoundException l_ClassNotFoundException)
 		{
-			throw new DataSetException("ClassNotFound", l_ClassNotFoundException);	
+			throw new DataSetException("ClassNotFound", l_ClassNotFoundException);
 		}
 	}
 
@@ -315,8 +314,6 @@ public class SQLReadEngine implements ReadEngine
 	 */
 	public int readEnd() throws DataSetException
 	{
-		String lS_SQLError;
-
 		if (i_PreparedStatement != null)
 		{
 			try
@@ -325,24 +322,21 @@ public class SQLReadEngine implements ReadEngine
 			}
 			catch (SQLException l_SQLException)
 			{
-				lS_SQLError = "Failed to close PreparedStatement message = " + l_SQLException.getMessage() + "\n";
+				throw new DataSetException("Failed to close PreparedStatement message = " + l_SQLException.getMessage());
 			}
-			i_PreparedStatement=null;
+			i_PreparedStatement = null;
 		}
 
 		if (i_ResultSet != null)
 		{
 			try
 			{
-
-				{
-					i_ResultSet.close();
-				}
+				i_ResultSet.close();
 				i_ResultSet = null;
 			}
 			catch (SQLException l_SQLException)
 			{
-				lS_SQLError = "Failed to close ResultSet message = " + l_SQLException.getMessage() + "\n";
+				throw new DataSetException("Failed to close ResultSet message = " + l_SQLException.getMessage());
 			}
 		}
 		if (i_Connection != null)
@@ -354,7 +348,7 @@ public class SQLReadEngine implements ReadEngine
 			}
 			catch (SQLException l_SQLException)
 			{
-				lS_SQLError = "Failed to close releaseConnection to connection container." + l_SQLException.getMessage() + "\n";
+				throw new DataSetException("Failed to close releaseConnection to connection container." + l_SQLException.getMessage());
 			}
 		}
 		return ii_rowCount;

@@ -65,8 +65,6 @@ public class FileWriteEngine implements WriteEngine
 	 */
 	public void write(DataSet a_DataSet) throws DataSetException
 	{
-		List l_List = a_DataSet.getAllRows();
-
 		FileRowInfo l_FileRowInfo = (FileRowInfo)a_DataSet.getRowInfo();
 		ii_rowSize = 0;		
 		for(int li_index = 1 ; li_index <= l_FileRowInfo.getColumnCount() ; li_index++)

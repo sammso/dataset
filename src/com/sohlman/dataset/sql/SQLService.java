@@ -248,9 +248,7 @@ public class SQLService
 	private static int getNumber(String a_String)
 	{
 		StringBuffer lSb_Number = new StringBuffer();
-		char lc_number, lc_newOrOld;
-		boolean lb_firstZero = false;
-		int li_error = 0;
+		char lc_number;
 		for (int li_c = 0; li_c < a_String.length(); li_c++)
 		{
 			// Parameter

@@ -92,8 +92,6 @@ public class FileReadEngine implements ReadEngine
 	{
 		Object[] l_Objects = new Object[a_RowInfo.getColumnCount()];
 
-		Row l_Row = new Row(l_Objects, a_RowInfo);
-
 		try
 		{
 			String lS_Line = null;

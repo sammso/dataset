@@ -103,8 +103,6 @@ public class DataSetException extends java.lang.Exception
 
 	public String getMessage()
 	{
-		String lS_Message;
-
 		super.getMessage();
 
 		if (i_Exception_Source != null)
