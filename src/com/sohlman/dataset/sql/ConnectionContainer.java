@@ -20,7 +20,7 @@ public abstract class ConnectionContainer
 	private boolean ib_errorFlag = false;
 
 	/** 
-	 * Use this method inside {@link #endTransAction endTransaction} method to check if error has occurred or not.
+	 * Use this method inside {@link #endTransaction() endTransaction} method to check if error has occurred or not.
 	 *
 	 * @return true if error has been occurred false if not
 	 */
@@ -36,6 +36,7 @@ public abstract class ConnectionContainer
 	{
 		ib_errorFlag = ab_flag;
 	}
+	
 	/** Use this to tell what is your connection object. 
 	 * <br>Call this method in {@link #beginTransaction beginTransaction} method which you have implemented.
 	 * @param a_Connection your current connection object.
@@ -83,8 +84,7 @@ public abstract class ConnectionContainer
 	 * <ul>
 	 * <li>Create connection or get handle to connection from connection pool</li>
 	 * <li>Start transaction <i>Optional</i></li>
-	 * <li>Clear or error flag {@link #setErrorFlag setErrorFlag(false)}</li>
-	 * <li>Set Connection with {@link #setConnection setConnection} method.</li>
+	 * <li>Clear or error flag {@link #setErrorFlag(boolean) setErrorFlag(false)}</li>
 	 * </ul>
 	 */
 	public abstract void beginTransaction() throws SQLException;
@@ -92,10 +92,10 @@ public abstract class ConnectionContainer
 	/** <b><u>Implement this method</u></b><br>
 	 * 
 	 * <ul>
-	 * <li>Do commit or rollback depending of status {@link #hasError hasError()}</li>
+	 * <li>Do commit or rollback depending of status {@link #hasErrorFlag() hasErrorFlag()}</li>
 	 * <li>End connection <i>Optional</i></li>
 	 * <li>Release connection to connection pool or disconnect</li>
-	 * <li>Set Connection to null with {@link #setConnection setConnection} method.</li>
+	 * <li>Set Connection to null with {@link #setConnection(Connection) setConnection} method.</li>
 	 * </ul>
 	 */
 

@@ -16,7 +16,7 @@ import java.sql.ResultSetMetaData;
  * Use <code>l_SQLReadEngine.setFilter(..)</code> in your code if you want some special behavior.<br><br>
  *
  * @author  Sampsa Sohlman
- * @version
+ * @version 2002-03-20
  */
 public interface SQLSelectFilter
 {

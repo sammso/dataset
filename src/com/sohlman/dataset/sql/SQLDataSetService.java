@@ -1,8 +1,3 @@
-/*
- * SQLKeyParser.java
- *
- * Created on 17. lokakuuta 2001, 11:28
- */
 
 package com.sohlman.dataset.sql;
 
@@ -21,7 +16,7 @@ import com.sohlman.dataset.Row;
 /**
  *
  * @author  Sampsa Sohlman
- * @version
+ * @version 2002-10-10
  */
 public class SQLDataSetService
 {

@@ -5,15 +5,33 @@ import com.sohlman.dataset.Row;
 import com.sohlman.dataset.DataSetException;
 
 /**
- * SQLDataSet Object give high level layer for creating SQL database related applicaitions with small amount of code.<br><br>
- * <b>Example 1</b><br>
- * <pre>
- * SQLDataSet l_SQLDataSet = new SQLDataSet();
- * l_SQLDataSet.setConnectionContainer(l_ConnectionContainer);
- * </pre>
- *
+ * <p>SQLDataSet class give high level layer for creating SQL database related 
+ * applicaitions with small amount of code. It already includes 
+ *  functionality of {@link SQLReadEngine SQLReadEngine} and {@link SQLWriteEngine SQLWriteEngine}</p>
+ * <p><b>Usage</b></p>
+ * <ol>        
+ * <li>First create {@link SQLColumnsInfo SQLColumnsInfo} which defines ColumnStructure for SQLDataSet. <i>(optional)</i><br> 
+ * If you always read data from database before writing there is not need to define {@link SQLColumnsInfo SQLColumnsInfo}
+ *  object.
+ * </li> 
+ * <li>Set SQLStamements using {@link #setSQLStatements setSQLStatements} 
+ *     or {@link #setSQLSelect setSQLSelect} 
+ *     or {@link #setWriteSQLStametents setWriteSQLStametents }
+ *     depending of need of use of SQLDataSet.
+ * </li>      
+ * <li>Read data, using {@link com.sohlman.dataset.DataSet#read() read} method <i>(optional)</i></li>
+ * <li>Modify data using {@link com.sohlman.dataset.DataSet#addRow addRow}, {@link com.sohlman.dataset.DataSet#insertRow insertRow}, 
+ * {@link com.sohlman.dataset.DataSet#removeRow removeRow}, {@link com.sohlman.dataset.DataSet#setValueAt setValueAt} and 
+ * {@link com.sohlman.dataset.DataSet#setRowAt setRowAt} methods <i>(optional)</i>
+ * </li> 
+ * <li>Save changes, using {@link com.sohlman.dataset.DataSet#save() save()} <i>(optional)</i><li>
+ * <li>You can ask Databata base information from {@link SQLColumnsInfo SQLColumnsInfo} object, which you can
+ * object, which you can get with {@link com.sohlman.dataset.DataSet#getColumnsInfo() getColumnsInfo} object.
+ * </li>
+ * </ol>  
+ * 
  * @author  Sampsa Sohlman
- * @version
+ * @version 2002-10-10
  */
 public class SQLDataSet extends DataSet
 {
@@ -31,66 +49,41 @@ public class SQLDataSet extends DataSet
 	{
 
 	}
-/*
-	public SQLDataSet(int[] ai_columnTypes) throws DataSetException
-	{
-		setColumnTypes(ai_columnTypes);
-	}*/
-	/**
-	 * Set's column types for DataSet<br>
-	 * @see
-	 */
-/*	public void setColumnTypes(int[] ai_columnTypes) throws DataSetException
-	{
-		ii_columnTypes = ai_columnTypes;
-		setModelRowObject(SQLDataSetService.createRowModelObject(ai_columnTypes));
-	}
-*/
 
 	/**
-	 * 
-	 * @see SQLReadEngine#getColumnName
-	 * 
+	 * Set {@link ConnectionContainer ConnectionContainer} object for SQLDataSet.
+	 * It is required for connection to database.
+	 * @param a_ConnectionContainer
+	 * @throws DataSetException
 	 */
-
-	public String getColumnName(int ai_index)
-	{
-		SQLReadEngine l_SQLReadEngine = (SQLReadEngine) getReadEngine();
-		if(l_SQLReadEngine!=null)
-		{
-			return l_SQLReadEngine.getColumnName(ai_index);
-		}
-		else
-		{
-			return null;
-		}
-		
-	}
-
-
-
-	/**
-	 * Method getColumnTypes.
-	 * @return int[] java.sql.Types array which SQL types are in columns
-	 */
-	/*
-	public int[] getColumnTypes()
-	{
-			
-		return ((SQLColumnsInfo)getColumnsInfo()).get;
-	}*/
-
 	public void setConnectionContainer(ConnectionContainer a_ConnectionContainer) throws DataSetException
 	{
 		i_ConnectionContainer = a_ConnectionContainer;
 		setUpIfPossible();
 	}
 
+	/**
+	 * Return current {@link ConnectionContainer ConnectionContainer} object
+	 * @return ConnectionContainer
+	 */
 	public ConnectionContainer getConnectionContainer()
 	{
 		return i_ConnectionContainer;
 	}
 
+	/**
+	 * <p>Sets SQL Statements for reading and writing.<p>
+	 * <p>Stamenets can took parameters and these parameters start with semi colon ":"</p>
+	 * <p>With update and delete staments also has to tell if the value is new (changed) or old (not changed).
+	 *  New value has prefix ":n" and old value has value ":o". Select and insert prefix is only ":"</p>
+	 * 
+	 * 
+	 * @param aS_SelectSQL Select statement example SELECT column1, column2 FROM mytable WHERE column1 = :1
+	 * @param aS_InsertSQL Insert statement example INSERT INTO mytable ( column1, column2 ) VALUES ( :1, :2 )
+	 * @param aS_UpdateSQL Update statement example UPDATE mytable set column1 = :n1, column2 = :n2 WHERE column1 = :o1
+	 * @param aS_DeleteSQL Update statement example DELETE FROM mytable WHERE column1 = :o1
+	 * @throws DataSetException
+	 */
 	public void setSQLStatements(String aS_SelectSQL, String aS_InsertSQL, String aS_UpdateSQL, String aS_DeleteSQL) throws DataSetException
 	{
 		iS_SelectSQL = aS_SelectSQL;
@@ -99,13 +92,33 @@ public class SQLDataSet extends DataSet
 		iS_DeleteSQL = aS_DeleteSQL;
 		setUpIfPossible();
 	}
+	
+	/**
+	 * <p>Set select statement. <p>
+	 * <p>@see #setSQLStatements constructing SQL</p>
+	 * @param aS_SelectSQL
+	 * @throws DataSetException
+	 */
+	public void setSQLSelect(String aS_SelectSQL) throws DataSetException
+	{
+		iS_SelectSQL = aS_SelectSQL;
+		setUpIfPossible();
+	}	
 
+	/**
+	 * <p>Set write SQL statements</p>
+	 * <p>@see #setSQLStatements constructing SQL</p>
+	 * @param aS_InsertSQL
+	 * @param aS_UpdateSQL
+	 * @param aS_DeleteSQL
+	 * @throws DataSetException
+	 */
 	public void setWriteSQLStametents(String aS_InsertSQL, String aS_UpdateSQL, String aS_DeleteSQL) throws DataSetException
 	{
 		iS_InsertSQL = aS_InsertSQL;
 		iS_UpdateSQL = aS_UpdateSQL;
 		iS_DeleteSQL = aS_DeleteSQL;
-		setUpIfPossible();		
+		setUpIfPossible();
 	}
 
 	/**
@@ -124,16 +137,17 @@ public class SQLDataSet extends DataSet
 		}
 	}
 
+	/**
+	 * Sets {@link SQLWriteFilter SQLWriteFilter} object
+	 * @param a_SQLWriteFilter
+	 * @throws DataSetException
+	 */
 	public void setSQLWriteFilter(SQLWriteFilter a_SQLWriteFilter) throws DataSetException
 	{
 		i_SQLWriteFilter = a_SQLWriteFilter;
 		setUpIfPossible();
 	}
 
-	/**
-	 *
-	 *
-	 */
 	private void setUpIfPossible() throws DataSetException
 	{
 		// Connection container is important
@@ -159,20 +173,21 @@ public class SQLDataSet extends DataSet
 				}
 			}
 
-			if ( getColumnsInfo() != null && (iS_InsertSQL != null || iS_DeleteSQL != null || iS_UpdateSQL != null))
+			if (getColumnsInfo() != null && (iS_InsertSQL != null || iS_DeleteSQL != null || iS_UpdateSQL != null))
 			{
 				SQLWriteEngine l_SQLWriteEngine = (SQLWriteEngine) getWriteEngine();
 				if (l_SQLWriteEngine == null)
 				{
 					if (getColumnsInfo() != null)
 					{
-						l_SQLWriteEngine = new SQLWriteEngine(i_ConnectionContainer, iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL, (SQLColumnsInfo)getColumnsInfo());
+						l_SQLWriteEngine =
+							new SQLWriteEngine(i_ConnectionContainer, iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL, (SQLColumnsInfo) getColumnsInfo());
 						setWriteEngine(l_SQLWriteEngine);
 					}
 				}
 				else
 				{
-					l_SQLWriteEngine.setSQLColumnsInfo((SQLColumnsInfo)getColumnsInfo());
+					l_SQLWriteEngine.setSQLColumnsInfo((SQLColumnsInfo) getColumnsInfo());
 					l_SQLWriteEngine.setSQL(iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL);
 				}
 			}
@@ -208,7 +223,7 @@ public class SQLDataSet extends DataSet
 	{
 		return iS_UpdateSQL;
 	}
-	
+
 	/**
 	 * Method getDeleteSQL.
 	 * @return String which contains current Delete statement
@@ -217,7 +232,7 @@ public class SQLDataSet extends DataSet
 	{
 		return iS_DeleteSQL;
 	}
-	
+
 	/**
 	 * @see com.sohlman.dataset.DataSet#save
 	 */
@@ -226,7 +241,7 @@ public class SQLDataSet extends DataSet
 		setUpIfPossible();
 		return super.save();
 	}
-	
+
 	/**
 	 * Method setErrorOnNoRowsInserted.
 	 * No rows is not updated on database based on SQL statement, is error generated.
@@ -235,9 +250,9 @@ public class SQLDataSet extends DataSet
 	 * @param ab_noRowsUpdatedError
 	 * @param ab_noRowsDeletedError
 	 */
-    public void setErrorOnNoRowsInserted(boolean ab_noRowsInsertedError, boolean ab_noRowsUpdatedError, boolean ab_noRowsDeletedError)	
-    {
-    	SQLWriteEngine l_SQLWriteEngine = (SQLWriteEngine) getWriteEngine();
-    	l_SQLWriteEngine.setErrorOnNoRowsInserted(ab_noRowsInsertedError, ab_noRowsUpdatedError, ab_noRowsDeletedError);
-    }
+	public void setErrorOnNoRowsInserted(boolean ab_noRowsInsertedError, boolean ab_noRowsUpdatedError, boolean ab_noRowsDeletedError)
+	{
+		SQLWriteEngine l_SQLWriteEngine = (SQLWriteEngine) getWriteEngine();
+		l_SQLWriteEngine.setErrorOnNoRowsInserted(ab_noRowsInsertedError, ab_noRowsUpdatedError, ab_noRowsDeletedError);
+	}
 }

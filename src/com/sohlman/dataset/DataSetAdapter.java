@@ -1,15 +1,10 @@
-/*
- * DataSetAdapter.java
- *
- * Created on 7. huhtikuuta 2002, 21:30
- */
 
 package com.sohlman.dataset;
 
 /**
  *
  * @author  Sampsa Sohlman
- * @version
+ * @version 2002-04-07
  */
 public abstract class DataSetAdapter implements DataSetListener
 {

@@ -11,7 +11,7 @@ import com.sohlman.dataset.*;
 /**
  *
  * @author  Sampsa Sohlman
- * @version
+ * @version 2001-09-10
  */
 public class RowContainer
 {

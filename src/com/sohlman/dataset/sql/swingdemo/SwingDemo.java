@@ -201,7 +201,7 @@ public class SwingDemo
 			 */
 			public void endTransaction() throws SQLException
 			{	
-				setConnection(null);	
+				setConnection(null);		
 			}
 		};
 

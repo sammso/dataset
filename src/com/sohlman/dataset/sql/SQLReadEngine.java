@@ -25,7 +25,6 @@ import com.sohlman.dataset.DataSetException;
  * @author Sampsa Sohlman
  * 
  * @version 2002-10-10 Inteface has been changed
- * @see Update object
  */
 public class SQLReadEngine implements ReadEngine
 {

@@ -12,28 +12,28 @@ import java.io.PrintStream;
 import java.util.List;
 
 /** 
-* <p>DataSet is common component to handle data in table from.
-* variable sources like SQL database, tabular file, XML file etc</p>
+* <p>DataSet is common component to handle data in table form.
+* It is possible to use different sources like SQL database, tabular file, XML file etc.</p>
 * <p><b>Usage</b></p>
 * <ol>        
 * <li>First create {@link ColumnsInfo ColumnsInfo} which defines ColumnStructure for DataSet</li>
-* <li>Set ReadEngine class <b><i>(optional)</i></b></li>
+* <li>Implement {@link ReadEngine ReadEngine} class <i>(optional)</i></li>
 * <ul>        
-* 	There is no need to create {@link ReadEngine ReadEngine} or some common solution is used like {@link com.sohlman.library.dataset.sql.SQLReadEngine SQLReadEngine}.
+* 	There is no need to create {@link ReadEngine ReadEngine} or some common solution is used like {@link com.sohlman.dataset.sql.SQLReadEngine SQLReadEngine}.
 * </ul>       
-* <li>Implement {@link WriteEngine WriteEngine} class <b><i>(optional)</i></b></li>
+* <li>Implement {@link WriteEngine WriteEngine} class <i>(optional)</i></li>
 * <ul>        
-* 	There is no need to create WriteEngine if datasource is readonly(*) or some common solution is used like {@link com.sohlman.library.dataset.sql.SQLWriteEngine SQLWriteEngine}.<br>
+* 	There is no need to create WriteEngine if datasource is readonly(*) or some common solution is used like {@link com.sohlman.dataset.sql.SQLWriteEngine SQLWriteEngine}.<br>
 * 	<i>(*)Data is still updateable through datamodification methods, but save() method returns -1.</i>
 * </ul>
 * <li>Instantiate DataSet</li>
-* <li>Assign {@link ReadEngine ReadEngine}, {@link WriteEngine WriteEngine} to DataSet <b><i>(optional)</i></b></li>
-* <li>Read data, using {@link #read() read()} method<b> <i>(optional)</i></b></li>
-* <li>Modify data using {@link #addRow() addRow()}, {@link #insertRow() insertRow()}, {@link #RemoveRow() RemoveRow()}, {@link #setItemAt() setItemAt()} and {@link #setRowAt() setRowAt()} methods<b> <i>(optional)</i></b></li>
-* <li>Save changes, using {@link #save() save()} <b> <i>(optional)</i></b>
+* <li>Assign {@link ReadEngine ReadEngine}, {@link WriteEngine WriteEngine} to DataSet <i>(optional)</i></li>
+* <li>Read data, using {@link #read read()} method<i>(optional)</i></li>
+* <li>Modify data using {@link #addRow addRow}, {@link #insertRow insertRow}, {@link #removeRow(int) removeRow}, {@link #setValueAt setValueAt} and {@link #setRowAt setRowAt} methods<i>(optional)</i></li>
+* <li>Save changes, using {@link #save save} method <i>(optional)</i></li>
 * </ol>              
  * @author Sampsa Sohlman
- * @version 2002-10-09
+ * @version 2002-10-10
  */
 
 public class DataSet
@@ -513,7 +513,7 @@ public class DataSet
 
 		lSb_Sep = new StringBuffer(18 * getColumnCount());
 		for (int li_x = 0; li_x < getColumnCount(); li_x++)
-			lSb_Sep.append("------------------");		
+			lSb_Sep.append("------------------");
 		String lS_Sep2 = lSb_Sep.toString();
 
 		a_PrintStream.println(lS_Sep1);
@@ -583,7 +583,7 @@ public class DataSet
 			{
 				setStringToStringBuffer(l_StringBuffer, " " + l_Row.getValueAt(li_c2 + 1) + " ", li_c2 * 18);
 			}
-			setStringToStringBuffer(l_StringBuffer, " ", li_countColumns * 18 - 1);			
+			setStringToStringBuffer(l_StringBuffer, " ", li_countColumns * 18 - 1);
 			a_PrintStream.print(l_StringBuffer.toString());
 			a_PrintStream.println();
 		}
@@ -987,6 +987,159 @@ public class DataSet
 		}
 	}
 
+	private final static int DESTINATION_MISSING = 1;
+	private final static int SOURCE_MISSING = 2;
+
+	private final static int COPY = 3;
+
+	/**
+	 * Method copyFrom.
+	 * @param a_DataSet_Source
+	 */
+	public void copyFrom(DataSet a_DataSet_Source)
+	{
+
+		int li_sourceCounter = 1, li_destinationCounter = 1;
+		int li_sourceCount = a_DataSet_Source.getRowCount();
+		int li_destinationCount = getRowCount();
+
+		boolean lb_loop = true;
+		if (li_sourceCount > 0 || li_destinationCount > 0)
+		{
+			while (lb_loop)
+			{
+				lb_loop = false;
+				int li_result = compareRows(a_DataSet_Source, this, li_sourceCounter, li_destinationCounter, li_sourceCount, li_destinationCount);
+				//if (li_sourceCounter >= li_sourceCount && li_destinationCounter >= li_destinationCount)
+				// lb_loop = false;	
+				if (li_result == COPY)
+				{
+					copyRow(a_DataSet_Source, this, li_sourceCounter, li_destinationCounter);
+					if (li_sourceCounter < li_sourceCount)
+						li_sourceCounter++;
+					if (li_destinationCounter < li_destinationCount)
+						li_destinationCounter++;
+					lb_loop = true;
+				}
+				else if (li_result == DESTINATION_MISSING)
+				{
+					addRow(a_DataSet_Source, this, li_sourceCounter);
+					if (li_sourceCounter < li_sourceCount)
+						li_sourceCounter++;
+						lb_loop = true;
+				}
+				else if (li_result == SOURCE_MISSING)
+				{
+					this.removeRow(li_destinationCounter);
+					li_destinationCount--;
+					lb_loop = true;
+				}
+			}
+		}
+
+	}
+
+	private void copyRow(DataSet a_DataSet_Source, DataSet a_DataSet_Destination, int ai_sourceCounter, int ai_destinationCounter)
+	{
+		int li_copy = 0;
+		for (int li_x = 2; li_x <= a_DataSet_Source.getColumnCount(); li_x++)
+		{
+			Object aO_Source = a_DataSet_Source.getValueAt(ai_sourceCounter, li_x);
+			Object aO_Destination = a_DataSet_Destination.getValueAt(ai_destinationCounter, li_x);
+			// Source has to be null if it's string and empty with trim
+			if (aO_Source != null && aO_Source instanceof String)
+			{
+				String l_String = (String) aO_Source;
+				if (l_String.trim().equals(""))
+				{
+					aO_Source = null;
+				}
+			}
+			if ((aO_Source != null && aO_Destination == null) || (aO_Source == null && aO_Destination != null))
+			{
+				a_DataSet_Destination.setValueAt(aO_Source, ai_destinationCounter, li_x);
+				li_copy = 1;
+			}
+			else if (aO_Source == null && aO_Destination == null)
+			{
+
+			}
+			else if (!aO_Source.equals(aO_Destination))
+			{
+				a_DataSet_Destination.setValueAt(aO_Source, ai_destinationCounter, li_x);
+				li_copy = 1;
+			}
+		}
+		//       ii_copyCount = ii_copyCount + li_copy;
+	}
+
+	private void addRow(DataSet a_DataSet_Source, DataSet a_DataSet_Destination, int li_ys)
+	{
+		int li_row = a_DataSet_Destination.addRow();
+		int li_add = 0;
+		for (int li_x = 1; li_x <= a_DataSet_Source.getColumnCount(); li_x++)
+		{
+			Object aO_Source = a_DataSet_Source.getValueAt(li_ys, li_x);
+			//System.out.print(aO_Source + "\t");
+			a_DataSet_Destination.setValueAt(aO_Source, li_row, li_x);
+			li_add = 1;
+		}
+		//       ii_addCount = ii_addCount + li_add;
+		//System.out.println();
+	}
+
+	private int compareRows(DataSet a_DataSet_Source, DataSet a_DataSet_Destination, int ai_sourceCounter, int ai_destinationCounter, int ai_sourceCount, int ai_destinationCount)
+	{
+
+		if (ai_sourceCount < ai_sourceCounter)
+		{
+			return SOURCE_MISSING;
+		}
+		if (ai_destinationCount < ai_destinationCounter)
+		{
+			return DESTINATION_MISSING;
+		}
+		Comparable l_Comparable_Source = (Comparable) a_DataSet_Source.getValueAt(ai_sourceCounter, 1);
+		Comparable l_Comparable_Destination = (Comparable) a_DataSet_Destination.getValueAt(ai_destinationCounter, 1);
+
+		int li_result = l_Comparable_Source.compareTo(l_Comparable_Destination);
+
+		if (ai_sourceCount == ai_destinationCounter && ai_destinationCount > ai_destinationCounter && li_result != 0)
+		{
+			return SOURCE_MISSING;
+		}
+		if (ai_destinationCount == ai_destinationCounter && ai_sourceCount > ai_destinationCounter && li_result != 0)
+		{
+			return DESTINATION_MISSING;
+		}
+
+		if (li_result > 0)
+		{
+			if (ai_sourceCounter < ai_destinationCounter)
+			{
+				return DESTINATION_MISSING;
+			}
+			else
+			{
+				return SOURCE_MISSING;
+			}
+		}
+		else if (li_result < 0)
+		{
+			if (ai_sourceCounter >= ai_destinationCounter)
+			{
+				return DESTINATION_MISSING;
+			}
+			else
+			{
+				return SOURCE_MISSING;
+			}
+		}
+		else
+		{
+			return COPY;
+		}
+	}
 
 	/**
 	 * Method getDeleted.

@@ -12,7 +12,7 @@ package com.sohlman.dataset;
  * This object is only for internal use
  *
  * @author  Sampsa Sohlman
- * @version
+ * @version 2002-10-10
  */
 final class DataSetVector extends java.util.Vector
 {

@@ -1,9 +1,3 @@
-/*
- * DataSetComparator.java
- *
- * Created on 3. maaliskuuta 2002, 13:45
- */
-
 package com.sohlman.dataset;
 
 import java.util.Comparator;
@@ -11,7 +5,7 @@ import java.util.Comparator;
 /**
  *
  * @author  Sampsa Sohlman
- * @version
+ * @version 2002-03-03
  */
 public final class DataSetComparator implements Comparator
 {    

@@ -15,7 +15,7 @@ import java.sql.PreparedStatement;
  *
  *
  * @author  Sampsa Sohlman
- * @version
+ * @version 2002-10-10
  */
 public class SQLService
 {

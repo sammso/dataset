@@ -1,20 +1,13 @@
-/*
- * SQLWriteFilter.java
- *
- * Created on 19. maaliskuuta 2002, 10:09
- */
-
 package com.sohlman.dataset.sql;
 
 import com.sohlman.dataset.Row;
 
 /**
- * This interface gives opportunity to do something when DataSet writes 
+ * This interface gives opportunity to do something just before when DataSet writes 
  * Data to database
- * DOCUMENT THIS LATER SEE EVENT CALEDAR SOLUTION
  *
  * @author  Sampsa Sohlman
- * @version
+ * @version 2002-03-19
  */
 public interface SQLWriteFilter
 {

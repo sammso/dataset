@@ -176,7 +176,7 @@ public class JDataSet extends AbstractTableModel implements DataSetListener
 	}
 
 	/**
-	 * @see com.sohlman.dataset.DataSet#getValueAt()
+	 * @see com.sohlman.dataset.DataSet#getValueAt(int,int)
 	 */
 	public Object getValueAt(int ai_rowIndex, int ai_columnIndex)
 	{

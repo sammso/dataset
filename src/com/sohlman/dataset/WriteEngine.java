@@ -5,7 +5,7 @@ package com.sohlman.dataset;
  * <p>This is designed for mainly for future use</p>
  *
  * @author  Sampsa Sohlman
- * @version 
+ * @version 2002-10-10
  */
 public interface WriteEngine
 {
