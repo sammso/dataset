@@ -32,6 +32,7 @@ public class SQLReadEngine implements ReadEngine
 	/** Creates new SQLRetrieveEngine */
 	private ConnectionContainer i_ConnectionContainer = null;
 	private Connection i_Connection = null;
+	private PreparedStatement i_PreparedStatement = null;
 	private ResultSet i_ResultSet = null;
 	//private PreparedStatement i_PreparedStatement = null;
 	private String iS_ReadSQL = null;
@@ -164,14 +165,14 @@ public class SQLReadEngine implements ReadEngine
 				throw new DataSetException("Couldn't retrieve conneciton from ConnectionContainer");
 			}
 
-			PreparedStatement l_PreparedStatement = i_SQLStament.getPreparedStatement(i_Connection);
+			i_PreparedStatement = i_SQLStament.getPreparedStatement(i_Connection);
 			//				i_Connection.prepareStatement(iS_ReadSQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 			//				for (int li_c = 0; li_c < ii_parameterOrder.length; li_c++)
 			//				{
 			//					l_PreparedStatement.setObject(li_c + 1, iO_Parameters[ii_parameterOrder[li_c] - 1]);
 			//				}
 
-			i_ResultSet = l_PreparedStatement.executeQuery();
+			i_ResultSet = i_PreparedStatement.executeQuery();
 			ResultSetMetaData l_ResultSetMetaData = i_ResultSet.getMetaData();
 
 			int li_columnCount = l_ResultSetMetaData.getColumnCount();
@@ -310,33 +311,46 @@ public class SQLReadEngine implements ReadEngine
 	 */
 	public int readEnd() throws DataSetException
 	{
-		try
+		String lS_SQLError;
+
+		if (i_PreparedStatement != null)
 		{
-			if (i_ResultSet != null)
+			try
 			{
-				Statement l_Statement = i_ResultSet.getStatement();				
-				i_ResultSet.close();
-				l_Statement.close();
+				i_PreparedStatement.close();
 			}
-			i_ResultSet = null;
-		}
-		catch (SQLException a_SQLException)
-		{
-			throw new DataSetException("readEnd - SQL Error", a_SQLException);
-		}
-		finally
-		{
-			if (i_Connection != null)
+			catch (SQLException l_SQLException)
 			{
-				try
+				lS_SQLError = "Failed to close PreparedStatement message = " + l_SQLException.getMessage() + "\n";
+			}
+			i_PreparedStatement=null;
+		}
+
+		if (i_ResultSet != null)
+		{
+			try
+			{
+
 				{
-					i_ConnectionContainer.releaseConnection();
-					i_Connection = null;
+					i_ResultSet.close();
 				}
-				catch (SQLException a_SQLException_2)
-				{
-					throw new DataSetException("readEnd - Unable, to release connection.", a_SQLException_2);
-				}
+				i_ResultSet = null;
+			}
+			catch (SQLException l_SQLException)
+			{
+				lS_SQLError = "Failed to close ResultSet message = " + l_SQLException.getMessage() + "\n";
+			}
+		}
+		if (i_Connection != null)
+		{
+			try
+			{
+				i_ConnectionContainer.releaseConnection();
+				i_Connection = null;
+			}
+			catch (SQLException l_SQLException)
+			{
+				lS_SQLError = "Failed to close releaseConnection to connection container." + l_SQLException.getMessage() + "\n";
 			}
 		}
 		return ii_rowCount;

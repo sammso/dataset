@@ -36,7 +36,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	public final static String EX_GETCONNECTION_FAILED = "Get connection failed";
 	public final static String EX_RELEASECONNECTION_FAILED = "Release connection failed";
 	public final static String EX_MORE_THAN_ONE_TABLE_DEF = "More than one table definitions exists";
-	public final static String EX_CLOSE_PREPARED_STATEMENT = "Error while closing prepared statement";	
+	public final static String EX_CLOSE_PREPARED_STATEMENT = "Error while closing prepared statement";
 
 	private SQLStatement i_SQLStatement_Insert;
 	private SQLStatement i_SQLStatement_Update;
@@ -475,6 +475,8 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 			throw new DataSetException(EX_NO_COLUMNINFO_DEFINED);
 		}
 
+		DataSetException l_DataSetException = null;
+
 		if (a_SQLStatement != null)
 		{
 			PreparedStatement l_PreparedStatement = null;
@@ -490,31 +492,34 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 				int li_return = l_PreparedStatement.executeUpdate();
 
-				if (li_return == 0 && ib_noRowsUpdatedError && a_SQLStatement == i_SQLStatement_Update)
+				if(li_return == 0 && ib_noRowsUpdatedError)
 				{
-					i_ConnectionContainer.setErrorFlag(true);
-					DataSetException l_DataSetException = new DataSetException(EX_UPDATE_NO_ROWS_UPDATED);
-					throw l_DataSetException;
+					if ( a_SQLStatement == i_SQLStatement_Update)
+					{
+						i_ConnectionContainer.setErrorFlag(true);
+						l_DataSetException = new DataSetException(EX_UPDATE_NO_ROWS_UPDATED);
+					}
+					else if( a_SQLStatement == i_SQLStatement_Insert)
+					{
+						i_ConnectionContainer.setErrorFlag(true);
+						l_DataSetException = new DataSetException(EX_INSERT_NO_ROWS_INSERTED);
+					}
+					else if ( a_SQLStatement == i_SQLStatement_Delete)
+					{
+						i_ConnectionContainer.setErrorFlag(true);
+						l_DataSetException = new DataSetException(EX_DELETE_NO_ROWS_DELETED);
+					}				
+					if(l_DataSetException!=null)
+					{	
+						ii_updateCount++;
+					}
 				}
-				if (li_return == 0 && ib_noRowsInsertedError && a_SQLStatement == i_SQLStatement_Insert)
-				{
-					i_ConnectionContainer.setErrorFlag(true);
-					DataSetException l_DataSetException = new DataSetException(EX_INSERT_NO_ROWS_INSERTED);
-					throw l_DataSetException;
-				}
-				if (li_return == 0 && ib_noRowsDeletedError && a_SQLStatement == i_SQLStatement_Delete)
-				{
-					i_ConnectionContainer.setErrorFlag(true);
-					DataSetException l_DataSetException = new DataSetException(EX_DELETE_NO_ROWS_DELETED);
-					throw l_DataSetException;
-				}
-
-				ii_updateCount++;
+				
 			}
 			catch (SQLException l_SQLException)
 			{
 				i_ConnectionContainer.setErrorFlag(true);
-				throw new DataSetException(EX_SQLEXCEPTION, l_SQLException);
+				l_DataSetException = new DataSetException(EX_SQLEXCEPTION, l_SQLException);
 			}
 			finally
 			{
@@ -526,11 +531,17 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 					}
 					catch (SQLException l_SQLException)
 					{
-						throw new DataSetException(EX_CLOSE_PREPARED_STATEMENT, l_SQLException);	
+						if (l_DataSetException == null)
+						{
+							l_DataSetException = new DataSetException(EX_CLOSE_PREPARED_STATEMENT, l_SQLException);
+						}
 					}
 				}
 			}
-
+			if (l_DataSetException != null)
+			{
+				throw l_DataSetException;
+			}
 		}
 	}
 
