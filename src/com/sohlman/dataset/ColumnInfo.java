@@ -1,5 +1,7 @@
 package com.sohlman.dataset;
 
+import org.apache.xpath.operations.Equals;
+
 /**
  * Column  info contains all needed data from column
  * 
@@ -32,9 +34,9 @@ public class ColumnInfo
 		return i_Class.getName();
 	}
 	
-	public Class getColumnClass() throws ClassNotFoundException
+	public Class getColumnClass()
 	{
-		return i_Class;//Class.forName(iS_ClassName);
+		return i_Class;
 	}
 	
 	protected void setClass(Class a_Class)
@@ -59,4 +61,9 @@ public class ColumnInfo
 		}
 		iS_Name = aS_Name;
 	}
+	
+	public boolean equals(ColumnInfo a_ColumnInfo)
+	{
+		return i_Class.getName().equals(a_ColumnInfo.getColumnClass().getName());
+	}	
 }
