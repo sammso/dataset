@@ -118,7 +118,7 @@ public class RowToComponentConnector
 
 	public void setJComponent(JList a_JList, int ai_columnIndex)
 	{
-	
+		
 	}
 
 	public void setJComponent(JLabel a_JLabel, int ai_columnIndex)
@@ -126,6 +126,11 @@ public class RowToComponentConnector
 		//setRowComponentContainer(new RowComponentContainer(a_JLabel, ai_columnIndex, null));
 	}
 
+	/**
+	 * Set enable status to all connected components. 
+	 * 
+	 * @param ab_value
+	 */
 	public void setEnabled(boolean ab_value)
 	{
 		Enumeration l_Enumeration = iHt_Components.elements();
@@ -138,6 +143,11 @@ public class RowToComponentConnector
 		}
 	}
 	
+	/**
+	 * Set visible status to all connected components. 
+	 * 
+	 * @param ab_value
+	 */
 	public void setVisible(boolean ab_value)
 	{
 		Enumeration l_Enumeration = iHt_Components.elements();

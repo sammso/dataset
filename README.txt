@@ -1,4 +1,4 @@
-	DataSet Library 1.0 RC 1
+	DataSet Library 1.0 Beta 5
 -------------------------------------------------------------
  I currently using this version of DataSet on my projects.
  I'm using DataSet on production.
@@ -9,7 +9,7 @@
 Changes 
 ------------------------------------------------------------- 
  Before Beta 4 - Read from Earlier releases
- RC1
+ Beta 5
  - Fixed bug on removeRow event generation
  - syncronizeFrom functionality has been rewritten. API has
    been changed. It is better now.
@@ -25,11 +25,8 @@ Changes
  
 Future Ideas
 -------------------------------------------------------------
- - Column level tracking for changed columns. (It is now
-   row level)
- - Tight integration to Swing (After v1.0)
  - Tight SWT (Eclipse) integration
- - DataSet Taglib for JSP
+ - DataSet Taglib for JSP for reporting purposes
 
 Installation instructions:
 -------------------------------------------------------------

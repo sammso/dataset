@@ -1,6 +1,5 @@
 package com.sohlman.dataset;
 
-import com.sohlman.dataset.*;
 
 /**
  * @author  Sampsa Sohlman
@@ -31,9 +30,7 @@ public class RowContainer
     public Row getOrigRow()
     {
     	return i_Row_Orig;
-    }
-    
-    
+    } 
     
 	/**
 	 * Returns current row. 

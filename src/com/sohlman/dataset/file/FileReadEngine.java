@@ -5,29 +5,24 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import com.sohlman.dataset.ColumnInfo;
-import com.sohlman.dataset.RowInfo;
 import com.sohlman.dataset.DataSetException;
 import com.sohlman.dataset.ReadEngine;
 import com.sohlman.dataset.Row;
-
-import java.math.BigInteger;
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.text.NumberFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import com.sohlman.dataset.RowInfo;
 
 /**
- * This class fills DataSet from where columns are certain positions.
+ * This class fills DataSet from fixed position text files.
  * <br> In future there should be also feature for comma separated reader. 
  * 
  * @author Sampsa Sohlman
  *
- * @version 2002-10-22
+ * @version 2003-05-02
  */
 public class FileReadEngine implements ReadEngine
 {	
@@ -36,6 +31,9 @@ public class FileReadEngine implements ReadEngine
 	private FileRowInfo i_FileRowInfo;
 	private int ii_counter = 0;
 	private String iS_LastReadLine = null;
+	private Timestamp iTs_RangeStart;
+	private Timestamp iTs_RangeEnd;
+	
 
 	public FileReadEngine(File a_File, FileRowInfo a_FileRowInfo)
 	{
@@ -204,8 +202,16 @@ public class FileReadEngine implements ReadEngine
 				{
 					SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(l_FileColumnInfo.getFormat());
 					java.util.Date l_Date = l_SimpleDateFormat.parse(aS_Data);
-
-					return (java.sql.Date) new java.sql.Date(l_Date.getTime());
+					l_Date = new java.sql.Date(l_Date.getTime());
+					
+					if(l_Date==null)
+					{
+						return null;
+					}
+					else if(l_Date.before(iTs_RangeStart) || l_Date.after(iTs_RangeEnd))
+					{
+						return null;
+					}
 				}
 			}
 			else if (lS_ClassName.equals("java.sql.Time"))
@@ -220,6 +226,7 @@ public class FileReadEngine implements ReadEngine
 				{
 					SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(l_FileColumnInfo.getFormat());
 					java.util.Date l_Date = l_SimpleDateFormat.parse(aS_Data);
+					
 					return new java.sql.Time(l_Date.getTime());
 				}
 			}
@@ -235,7 +242,18 @@ public class FileReadEngine implements ReadEngine
 				{
 					SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(l_FileColumnInfo.getFormat());
 					java.util.Date l_Date = l_SimpleDateFormat.parse(aS_Data);
-					return new java.sql.Timestamp(l_Date.getTime());
+					Timestamp l_Timestamp = new Timestamp(l_Date.getTime());
+					
+					if(l_Timestamp==null)
+					{
+						return null;
+					}
+					else if(l_Timestamp.before(iTs_RangeStart) || l_Timestamp.after(iTs_RangeEnd))
+					{
+						return null;
+					}
+					
+					return l_Timestamp;
 				}
 			}
 			else if (lS_ClassName.equals("java.lang.Double"))
@@ -271,5 +289,41 @@ public class FileReadEngine implements ReadEngine
 	public int readEnd() throws DataSetException
 	{
 		return ii_counter;
+	}
+	
+	
+	
+	/**
+	 * Set range for Timestamp handling. If parsed date or Timestamp is outside then
+	 * it is handled as null
+	 * 
+	 * @param aTs_Start Start time for period
+	 * @param aTs_End End time for period
+	 */
+	public void setTimestampRange(Timestamp aTs_Start, Timestamp aTs_End)
+	{
+		iTs_RangeStart = aTs_Start;
+		iTs_RangeEnd = aTs_End;
+	}	
+	
+	
+	/**
+	 * @see #setTimestampRange(Timestamp, Timestamp)
+	 * 
+	 * @return Timestamp StartRange
+	 */
+	public Timestamp getTimestampStartRange()
+	{
+		return iTs_RangeStart;
+	}
+
+	/**
+	 * @see #setTimestampRange(Timestamp, Timestamp)
+	 * 
+	 * @return Timestamp StartRange
+	 */	
+	public Timestamp getTimestampEndRange()
+	{
+		return iTs_RangeEnd;
 	}
 }

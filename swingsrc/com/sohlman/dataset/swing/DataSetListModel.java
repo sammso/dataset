@@ -28,12 +28,16 @@ public class DataSetListModel extends AbstractListModel
 			{
 				fireIntervalAdded(i_DataSetListModel_This, i_DataSet.getRowCount(), 0);
 			}
-			if(a_DataSetEvent.getAction()==DataSetEvent.COLUMN_CHANGED)
+			else if(a_DataSetEvent.getAction()==DataSetEvent.COLUMN_CHANGED)
 			{
 				if(ii_visibleColumn == a_DataSetEvent.getColumn())
 				{
 					fireContentsChanged(i_DataSetListModel_This, a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1);
 				}
+			}
+			else if(a_DataSetEvent.getAction()==DataSetEvent.ROW_INSERTED)
+			{
+				fireIntervalAdded(i_DataSetListModel_This, a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1);
 			}
 		}
 	};

@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Locale;
 
 /**
  * DataSetService contains commonly used methods for DataSet library.
@@ -23,54 +23,54 @@ public class DataSetService
 	 */
 	public static Number sum(Number a_Number_1, Number a_Number_2)
 	{
-		if(a_Number_1==null && a_Number_2 != null)
+		if (a_Number_1 == null && a_Number_2 != null)
 		{
-			return a_Number_2;	
+			return a_Number_2;
 		}
-		if(a_Number_2==null && a_Number_1 != null)
+		if (a_Number_2 == null && a_Number_1 != null)
 		{
-			return a_Number_1;	
-		}		
-		
-		if (a_Number_1 instanceof Integer )
+			return a_Number_1;
+		}
+
+		if (a_Number_1 instanceof Integer)
 		{
 			return new Integer(((Integer)a_Number_1).intValue() + ((Integer)a_Number_2).intValue());
 		}
-		else if (a_Number_1 instanceof Long )
+		else if (a_Number_1 instanceof Long)
 		{
 			return new Long(((Long)a_Number_1).longValue() + ((Long)a_Number_2).longValue());
 		}
-		else if (a_Number_1 instanceof Double )
+		else if (a_Number_1 instanceof Double)
 		{
 			return new Double(((Double)a_Number_1).doubleValue() + ((Double)a_Number_2).doubleValue());
 		}
-		else if (a_Number_1 instanceof Float )
+		else if (a_Number_1 instanceof Float)
 		{
 			return new Float(((Float)a_Number_1).floatValue() + ((Float)a_Number_2).floatValue());
 		}
-		else if (a_Number_1 instanceof Short )
+		else if (a_Number_1 instanceof Short)
 		{
 			short ls_value1 = ((Short)a_Number_1).shortValue();
-			short ls_value2 = ((Short)a_Number_1).shortValue();			
-			short ls_value = (short)(ls_value1 + ls_value2);
-			return new Short( ls_value );
-		}		
-		else if (a_Number_1 instanceof BigInteger )
+			short ls_value2 = ((Short)a_Number_1).shortValue();
+			short ls_value = (short) (ls_value1 + ls_value2);
+			return new Short(ls_value);
+		}
+		else if (a_Number_1 instanceof BigInteger)
 		{
-			BigInteger l_BigInteger_1 = (BigInteger) a_Number_1;
-			BigInteger l_BigInteger_2 = (BigInteger) a_Number_2;	
-		
+			BigInteger l_BigInteger_1 = (BigInteger)a_Number_1;
+			BigInteger l_BigInteger_2 = (BigInteger)a_Number_2;
+
 			return l_BigInteger_1.add(l_BigInteger_2);
 		}
-		else if (a_Number_1 instanceof BigDecimal )
+		else if (a_Number_1 instanceof BigDecimal)
 		{
-			BigDecimal l_BigDecimal_1 = (BigDecimal) a_Number_1;
-			BigDecimal l_BigDecimal_2 = (BigDecimal) a_Number_2;	
-		
+			BigDecimal l_BigDecimal_1 = (BigDecimal)a_Number_1;
+			BigDecimal l_BigDecimal_2 = (BigDecimal)a_Number_2;
+
 			return l_BigDecimal_1.add(l_BigDecimal_2);
-		}		
-		return null;				
-	} 	
+		}
+		return null;
+	}
 
 	/**
 	 * Create String buffer which is filled with space " "
@@ -87,7 +87,7 @@ public class DataSetService
 		}
 		return l_StringBuffer;
 	}
-		
+
 	/**
 	 * Puts String to StringBuffer to wanted position by replacing data that are there.
 	 * @param a_StringBuffer StringBuffer object to modified
@@ -113,7 +113,7 @@ public class DataSetService
 			a_StringBuffer.setCharAt(li_x, a_String.charAt(li_x - ai_pos));
 		}
 		return true;
-	}	
+	}
 	/**
 	* Puts String to StringBuffer to wanted position by replacing data that are there.
 	* @param a_StringBuffer StringBuffer object to modified
@@ -126,7 +126,7 @@ public class DataSetService
 	public static boolean setStringToStringBuffer(StringBuffer a_StringBuffer, String a_String, int ai_start, int ai_end, boolean ab_leftToRight)
 	{
 		int li_size = a_StringBuffer.length();
-		
+
 		if (a_String == null)
 			return false;
 		if (li_size <= ai_start)
@@ -136,16 +136,15 @@ public class DataSetService
 		{
 			ai_end = li_size;
 		}
-		
-		
-		if((ai_end - ai_start)>a_String.length())
+
+		if ((ai_end - ai_start) > a_String.length())
 		{
-			
+
 		}
-		int li_stringLength= a_String.length();
-		if(ab_leftToRight)
+		int li_stringLength = a_String.length();
+		if (ab_leftToRight)
 		{
-			
+
 			for (int li_x = ai_start; li_x < ai_end && (li_x - ai_start) < li_stringLength; li_x++)
 			{
 				a_StringBuffer.setCharAt(li_x, a_String.charAt(li_x - ai_start));
@@ -153,16 +152,16 @@ public class DataSetService
 		}
 		else
 		{
-			
-			for (int li_x = ai_end; li_x >= ai_start && li_stringLength>0; li_x--)
+
+			for (int li_x = ai_end; li_x >= ai_start && li_stringLength > 0; li_x--)
 			{
-				a_StringBuffer.setCharAt(li_x, a_String.charAt( --li_stringLength ));
+				a_StringBuffer.setCharAt(li_x, a_String.charAt(--li_stringLength));
 			}
 		}
-		
+
 		return true;
-	}	
-	
+	}
+
 	/**
 	 * Method StringToSpecifiedObject.
 	 * 
@@ -180,48 +179,48 @@ public class DataSetService
 		}
 		if (aS_ObjectClassName.equals("java.lang.Boolean"))
 		{
-			return new Boolean(Boolean.getBoolean((String) aS_Object));
+			return new Boolean(Boolean.getBoolean((String)aS_Object));
 		}
 		if (aS_ObjectClassName.equals("java.lang.Byte"))
 		{
-			return new Byte(Byte.parseByte((String) aS_Object));
+			return new Byte(Byte.parseByte((String)aS_Object));
 		}
 		if (aS_ObjectClassName.equals("java.math.BigInteger"))
 		{
-			return new BigInteger((String) aS_Object);
+			return new BigInteger((String)aS_Object);
 		}
 		if (aS_ObjectClassName.equals("java.math.BigDecimal"))
 		{
-			return new BigDecimal((String) aS_Object);
-		}
-		
-		if( aS_ObjectClassName.equals("java.sql.Date") || aS_ObjectClassName.equals("java.util.Date"))
-		{
-			return java.sql.Date.valueOf((String) aS_Object);
+			return new BigDecimal((String)aS_Object);
 		}
 
-		if (aS_ObjectClassName.equals("java.sql.Time") )
+		if (aS_ObjectClassName.equals("java.sql.Date") || aS_ObjectClassName.equals("java.util.Date"))
 		{
-			return Time.valueOf((String) aS_Object);
+			return java.sql.Date.valueOf((String)aS_Object);
+		}
+
+		if (aS_ObjectClassName.equals("java.sql.Time"))
+		{
+			return Time.valueOf((String)aS_Object);
 		}
 
 		if (aS_ObjectClassName.equals("java.sql.Timestamp"))
 		{
-			return Timestamp.valueOf((String) aS_Object);
+			return Timestamp.valueOf((String)aS_Object);
 		}
 
 		if (aS_ObjectClassName.equals("java.lang.Double"))
 		{
-			return new Double(Double.parseDouble((String) aS_Object));
+			return new Double(Double.parseDouble((String)aS_Object));
 		}
 		if (aS_ObjectClassName.equals("java.lang.Float"))
 		{
-			return new Float(Float.parseFloat((String) aS_Object));
+			return new Float(Float.parseFloat((String)aS_Object));
 		}
 
 		if (aS_ObjectClassName.equals("java.lang.Integer"))
 		{
-			return new Integer(Integer.parseInt((String) aS_Object));
+			return new Integer(Integer.parseInt((String)aS_Object));
 		}
 
 		if (aS_ObjectClassName.equals("java.lang.String"))
@@ -231,59 +230,58 @@ public class DataSetService
 
 		throw new IllegalArgumentException(aS_Object.getClass().getName() + " is not supported class type");
 	}
-	
+
 	public static String timestampToString(Timestamp a_Timestamp, String aS_Format, String aS_NullValue)
-	{	
-		if(a_Timestamp==null)
+	{
+		if (a_Timestamp == null)
 		{
 			return aS_NullValue;
 		}
 
-		if(aS_Format==null)
+		if (aS_Format == null)
 		{
-			return a_Timestamp.toString();	
-		}		
-		
+			return a_Timestamp.toString();
+		}
+
 		SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(aS_Format);
-	
-		return l_SimpleDateFormat.format(a_Timestamp);		
+
+		return l_SimpleDateFormat.format(a_Timestamp);
 	}
-	
+
 	public static String dateToString(java.util.Date a_Date, String aS_Format, String aS_NullValue)
 	{
-		if(a_Date==null)
+		if (a_Date == null)
 		{
 			return aS_NullValue;
 		}
 
-		if(aS_Format==null)
+		if (aS_Format == null)
 		{
-			return a_Date.toString();	
-		}		
-		
+			return a_Date.toString();
+		}
+
 		SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(aS_Format);
-	
-		return l_SimpleDateFormat.format(a_Date);	
-	} 
-	
+
+		return l_SimpleDateFormat.format(a_Date);
+	}
+
 	public static String timeToString(Time a_Time, String aS_Format, String aS_NullValue)
 	{
-		if(a_Time==null)
+		if (a_Time == null)
 		{
 			return aS_NullValue;
 		}
 
-		if(aS_Format==null)
+		if (aS_Format == null)
 		{
-			return a_Time.toString();	
-		}		
-		
+			return a_Time.toString();
+		}
+
 		SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(aS_Format);
-	
-		return l_SimpleDateFormat.format(a_Time);	
+
+		return l_SimpleDateFormat.format(a_Time);
 	}
-	
-	
+
 	/**
 	 * Method compareComparables compares two comparables and checks also null values.
 	 * null is smaller than not null value.
@@ -293,21 +291,51 @@ public class DataSetService
 	 */
 	public static int compareComparables(Comparable aCo_1, Comparable aCo_2)
 	{
-		if(aCo_1==null && aCo_2==null)
+		if (aCo_1 == null && aCo_2 == null)
 		{
 			return 0;
 		}
-		else if(aCo_1==null && aCo_2!=null)
+		else if (aCo_1 == null && aCo_2 != null)
 		{
-			return -1;	
+			return -1;
 		}
-		else if(aCo_1!=null && aCo_2==null)
+		else if (aCo_1 != null && aCo_2 == null)
 		{
-			return 1;	
+			return 1;
 		}
 		else
 		{
 			return aCo_1.compareTo(aCo_2);
+		}
+	}
+
+	public static java.sql.Timestamp stringToTimestamp(String aS_Value, String aS_Format, Timestamp aTs_Default)
+	{
+		try
+		{
+			SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(aS_Format);
+			java.util.Date l_Date = l_SimpleDateFormat.parse(aS_Value);
+
+			return new java.sql.Timestamp(l_Date.getTime());
+		}
+		catch (ParseException l_ParseException)
+		{
+			return aTs_Default;
+		}
+	}
+	
+	public static java.sql.Date stringToDate(String aS_Value, String aS_Format, java.sql.Date aDt_Default)
+	{
+		try
+		{
+			SimpleDateFormat l_SimpleDateFormat = new SimpleDateFormat(aS_Format);
+			java.util.Date l_Date = l_SimpleDateFormat.parse(aS_Value);
+
+			return new java.sql.Date(l_Date.getTime());
+		}
+		catch (ParseException l_ParseException)
+		{
+			return aDt_Default;
 		}
 	}	
 }

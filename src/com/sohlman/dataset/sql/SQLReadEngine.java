@@ -281,7 +281,16 @@ public class SQLReadEngine implements ReadEngine
 
 						for (int li_c = 1; li_c <= l_Objects.length; li_c++)
 						{
-							l_Objects[li_c - 1] = i_ResultSet.getObject(li_c);
+//							if(l_Objects[li_c - 1] instanceof String )
+//							{
+//								String l_String = i_ResultSet.getString(li_c);
+//								l_String.trim();
+//								l_Objects[li_c - 1] = l_String;
+//							}
+//							else
+//							{
+								l_Objects[li_c - 1] = i_ResultSet.getObject(li_c);
+//							}
 						}
 					}
 

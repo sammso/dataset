@@ -990,7 +990,7 @@ public class DataSet
 			}
 		}
 		return li_row;
-	}
+	}	
 
 	/** Current status of row<br>
 	* With key action is possible deside if we hare doing just 'modify' or 'insert / delete' when setting item.<br>
@@ -1601,7 +1601,7 @@ public class DataSet
 
 		for (int li_row = getRowCount(); li_row > 0; li_row--)
 		{
-			// First find secuense of mached rows
+			// First find sequence of mached rows
 			Row l_Row_Current = getReferenceToRow(li_row);
 			int li_rowEnd = li_row;
 			int li_rowStart = li_row;
@@ -1647,5 +1647,10 @@ public class DataSet
 				}
 			}
 		}
+	}
+	
+	public void mapRowToClass(int ai_row, int li_column, Object a_Object)
+	{
+		//return null;
 	}
 }

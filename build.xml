@@ -8,27 +8,28 @@
 	<property name="sqltoolsrc" location="examples/sqltool"/>
 	<property name="swingsrc" location="swingsrc"/>	
 	<property name="builddir" location="build"/>
-	<property name="distdir"  location="DataSet"/>
+	<property name="distribution"  location="distribution"/>
+	<property name="DataSet.zip"  location="distribution/DataSet"/>
 	
 	<target name="Init">
 		<tstamp/>
-		<mkdir dir="${distdir}"/>
-		<mkdir dir="${distdir}/libs"/>
+		<mkdir dir="${DataSet.zip}"/>
+		<mkdir dir="${DataSet.zip}/libs"/>
 	</target>
 	
 	<target name="CompileDataSet" depends="Init" description="Compile DataSet Source" >
 	<!-- Complile and create jar -->
 		<mkdir dir="${builddir}"/>
 		<javac srcdir="${datasetsrc}" destdir="${builddir}" optimize="true" nowarn="true"/>
-		<jar jarfile="${distdir}/libs/dataset.jar" basedir="${builddir}" compress="true"/>
+		<jar jarfile="${DataSet.zip}/libs/dataset.jar" basedir="${builddir}" compress="true"/>
 		<delete dir="${builddir}" failonerror="false"/>
 	</target>
 
 	<target name="CompileSwing" depends="CompileDataSet" description="Compile SQLTool Source" >
 	<!-- Complile and create jar -->
 		<mkdir dir="${builddir}"/>
-		<javac srcdir="${swingsrc}" destdir="${builddir}" classpath="${distdir}/libs/dataset.jar" optimize="true" nowarn="true"/>
-		<jar jarfile="${distdir}/libs/dataset-swing.jar" basedir="${builddir}" compress="true"/>
+		<javac srcdir="${swingsrc}" destdir="${builddir}" classpath="${DataSet.zip}/libs/dataset.jar" optimize="true" nowarn="true"/>
+		<jar jarfile="${DataSet.zip}/libs/dataset-swing.jar" basedir="${builddir}" compress="true"/>
 		<delete dir="${builddir}" failonerror="false"/>
 	</target>	
 	
@@ -36,28 +37,28 @@
 	<!-- Complile and create jar -->
 		<mkdir dir="${builddir}"/>
 		<javac srcdir="${sqltoolsrc}" destdir="${builddir}"  optimize="true" nowarn="true">
-			<classpath path="${distdir}/libs/dataset.jar"/>
-			<classpath path="${distdir}/libs/dataset-swing.jar"/>
+			<classpath path="${DataSet.zip}/libs/dataset.jar"/>
+			<classpath path="${DataSet.zip}/libs/dataset-swing.jar"/>
 		</javac>
-		<jar jarfile="${distdir}/libs/sqltool.jar" basedir="${builddir}" manifest="examples/sqltool.manifest" compress="true"/>
+		<jar jarfile="${DataSet.zip}/libs/sqltool.jar" basedir="${builddir}" manifest="examples/sqltool.manifest" compress="true"/>
 		<delete dir="${builddir}" failonerror="false"/>
 	</target>	
 
 	<target name="CreateDist" depends="CompileDataSet, CompileSQLTool" description="Create Distribution Package" >
 		<!-- Main -->
 		
-		<copy todir="${distdir}/src">
+		<copy todir="${DataSet.zip}/src">
 			<fileset dir="${datasetsrc}">
 			</fileset>
 		</copy>
 		
-		<copy file="build.xml"  todir="${distdir}"/>
-		<copy file="README.txt"  todir="${distdir}"/>		
+		<copy file="build.xml"  todir="${DataSet.zip}"/>
+		<copy file="README.txt"  todir="${DataSet.zip}"/>		
 		
 		<!-- JavaDoc -->		
 		
 		<javadoc 
-			destdir="${distdir}/docs/"
+			destdir="${DataSet.zip}/docs/"
 			author="true"
 			version="true"
 			use="true"
@@ -72,21 +73,20 @@
 		</javadoc>		
 		
 		<!-- Swing library -->
-		<copy todir="${distdir}">
+		<copy todir="${DataSet.zip}">
 			<fileset dir="${swingsrc}"/>
 		</copy>
 		
 		<!-- SQL Tool Example -->
-		<copy todir="${distdir}/examples/sqltool">
+		<copy todir="${DataSet.zip}/examples/sqltool">
 			<fileset dir="${sqltoolsrc}"/>
 		</copy>
 		
-		<copy file="examples/SQLTool.ini" todir="${distdir}/libs"/>
-		<copy file="examples/SQLTool.ini" todir="${distdir}/examples"/>
-		<copy file="examples/SQLTool.ini" todir="${distdir}/examples"/>		
+		<copy file="examples/SQLTool.ini" todir="${DataSet.zip}/libs"/>
+		<copy file="examples/SQLTool.ini" todir="${DataSet.zip}/examples"/>
 		
-		<zip zipfile="${zipfile}" basedir="${distdir}" compress="true"/>
-		<delete dir="${distdir}"/>
+		<zip zipfile="${zipfile}" basedir="${distribution}" compress="true"/>
+		<delete dir="${distribution}"/>
 	</target>
 	
 	<target name="Clean" description="Clean Up" >
