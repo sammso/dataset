@@ -15,6 +15,7 @@ import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -73,13 +74,40 @@ public class SQLTool
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Execute)
 			{
+				String lS_SQL;
 
-				SQLClauseTokenizer l_SQLClauseTokenizer = new SQLClauseTokenizer(i_JTextArea_SQL.getText());
+				lS_SQL = i_JTextArea_SQL.getSelectedText();
 				
-				while (l_SQLClauseTokenizer.hasMoreTokens())
+				if(lS_SQL==null || lS_SQL.trim().equals(""))
 				{
-					String lS_SQL = l_SQLClauseTokenizer.nextToken();
-					i_JTextArea_ResultText.append("\n" + ii_index + " : \n");
+					i_JTextArea_ResultText.append("\n (" + new Timestamp(System.currentTimeMillis()) + ") - Executing selected statements : \n");
+					lS_SQL = i_JTextArea_SQL.getText().trim();
+				}
+				else
+				{
+					i_JTextArea_ResultText.append("\n (" + new Timestamp(System.currentTimeMillis()) + ") - Executing statements : \n");
+				}
+				
+				
+				SQLClauseTokenizer l_SQLClauseTokenizer = new SQLClauseTokenizer(lS_SQL);
+
+				if (l_SQLClauseTokenizer.hasMoreTokens())
+				{
+					while (l_SQLClauseTokenizer.hasMoreTokens())
+					{
+						lS_SQL = l_SQLClauseTokenizer.nextToken();
+						i_JTextArea_ResultText.append("\n " + ii_index + " - (" + new Timestamp(System.currentTimeMillis()) +") : \n");
+						SQLResultJPanel l_SQLResultJPanel = SQLResultJPanel.createInstance(lS_SQL, i_Connection);
+						i_JTabbedPane.add(l_SQLResultJPanel, String.valueOf(ii_index));
+						l_SQLResultJPanel.setJTabbedPane(i_JTabbedPane);
+						l_SQLResultJPanel.setResultJTextArea(i_JTextArea_ResultText);
+						l_SQLResultJPanel.execute();
+						ii_index++;
+					}
+				}
+				else
+				{
+					i_JTextArea_ResultText.append("\n " + ii_index + " - (" + new Timestamp(System.currentTimeMillis()) + ") : \n");
 					SQLResultJPanel l_SQLResultJPanel = SQLResultJPanel.createInstance(lS_SQL, i_Connection);
 					i_JTabbedPane.add(l_SQLResultJPanel, String.valueOf(ii_index));
 					l_SQLResultJPanel.setJTabbedPane(i_JTabbedPane);

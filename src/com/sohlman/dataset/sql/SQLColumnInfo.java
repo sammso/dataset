@@ -1,6 +1,6 @@
 package com.sohlman.dataset.sql;
+import java.sql.ResultSetMetaData;
 
-import com.sap.dbtech.jdbc.trace.ResultSetMetaData;
 import com.sohlman.dataset.ColumnInfo;
 
 
