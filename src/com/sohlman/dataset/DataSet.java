@@ -30,7 +30,7 @@ import java.util.Vector;
 * <li>Save changes, using {@link #save save} method <i>(optional)</i></li>
 * </ol>              
  * @author Sampsa Sohlman
- * @version 2002-10-10
+ * @version 2003-02-26
  */
 
 public class DataSet
@@ -369,7 +369,7 @@ public class DataSet
 			return false;
 		}
 	}
-	
+
 	/** Get certain value from row or column.<br>
 	 * {@link #setValueAt(Object, int, int) setValueAt(Object a_Object, int ai_rowIndex, int ai_columnIndex)} is much faster method.
 	 * @param ai_rowIndex Row to read value
@@ -388,7 +388,7 @@ public class DataSet
 			return false;
 		}
 		return setValueAt(a_Object, ai_rowIndex, li_columnIndex);
-	}	
+	}
 
 	/**
 	 * Tells if DataSet can save changes
@@ -492,31 +492,31 @@ public class DataSet
 	{
 		i_KeyAction = a_KeyAction;
 	} /** Set setReadEngine for DataSet
-							 * @param a_ReadEngine Assigned read engine.
-							 */
+									 * @param a_ReadEngine Assigned read engine.
+									 */
 	public final void setReadEngine(ReadEngine a_ReadEngine)
 	{
 		// future when many types of
 		// write engines exists. Do check and set all other nulls.
 		i_ReadEngine = a_ReadEngine;
 	} /** Set WriteEngine for DataSet
-						 * @param a_WriteEngine Refrence to new WriteEngine.
-						 */
+								 * @param a_WriteEngine Refrence to new WriteEngine.
+								 */
 	public final void setWriteEngine(WriteEngine a_WriteEngine)
 	{
 		i_WriteEngine = a_WriteEngine;
 	} /** Removes ReadEngine from DataSet
-							 */
+									 */
 	public final void removeReadEngine()
 	{
 		i_ReadEngine = null;
 	} /** Removes KeyAction object from DataSet
-							 */
+									 */
 	public final void removeKeyAction()
 	{
 		i_KeyAction = null;
 	} /** Removes WriteEngine from DataSet
-							 */
+									 */
 	public final void removeWriteEngine()
 	{
 		i_WriteEngine = null;
@@ -562,8 +562,8 @@ public class DataSet
 		}
 		return i_RowInfo.getColumnName(ai_index);
 	} /** Returns row count of DataSet
-							 * @return Row count of DataSet
-							 */
+									 * @return Row count of DataSet
+									 */
 	public int getRowCount()
 	{
 		return iVe_Data.size();
@@ -847,7 +847,7 @@ public class DataSet
 	 */
 	public final int search(Row a_Row)
 	{
-		return search(a_Row,null);
+		return search(a_Row, null);
 	}
 	/** Seach matching row from dataset.
 	* @param a_Row Row which contains data that wanted to be found.
@@ -857,40 +857,39 @@ public class DataSet
 	public final int search(Row a_Row, int[] ai_columns)
 	{
 		RowInfo l_RowInfo = a_Row.getRowInfo();
-		
-		if(!l_RowInfo.equals(i_RowInfo))
+
+		if (!l_RowInfo.equals(i_RowInfo))
 		{
 			throw new IllegalArgumentException("Rows has to be same types");
 		}
-		
-		if(ai_columns!=null)
+
+		if (ai_columns != null)
 		{
-			for(int li_index = 0 ; li_index < ai_columns.length ; li_index++ )
+			for (int li_index = 0; li_index < ai_columns.length; li_index++)
 			{
-				if(a_Row.getColumnCount()>ai_columns[li_index])
+				if (a_Row.getColumnCount() > ai_columns[li_index])
 				{
 					throw new IllegalArgumentException("Column " + ai_columns[li_index] + " is out of range.");
 				}
 			}
-			
-			
+
 			for (int li_index = 1; li_index <= getRowCount(); li_index++)
-			{		
-				if (a_Row.equals(getRow(li_index),ai_columns))
+			{
+				if (a_Row.equals(getRow(li_index), ai_columns))
 				{
 					return li_index;
-				}						
+				}
 			}
 		}
 		else
-		{		
+		{
 			for (int li_index = 1; li_index <= getRowCount(); li_index++)
 			{
 				if (a_Row.equals(getRow(li_index)))
 				{
 					return li_index;
 				}
-			}			
+			}
 		}
 		return 0;
 	}
@@ -922,16 +921,16 @@ public class DataSet
 	public final Row getRow(int ai_index)
 	{
 		Row l_Row = getReferenceToRow(ai_index);
-		if(l_Row!=null)
+		if (l_Row != null)
 		{
-			return (Row)l_Row.clone();
+			return (Row) l_Row.clone();
 		}
 		else
 		{
-			return null;		
+			return null;
 		}
 	}
-	
+
 	/** Returns Row from ai_index location. Don't return reference to row.
 	* @param ai_index Index of row
 	* @return Copy of the row object in DataSet
@@ -947,8 +946,8 @@ public class DataSet
 		{
 			return null;
 		}
-	}	
-	
+	}
+
 	/** Set Row object to DataSet.
 	* @param ai_index Row where to modify row.
 	* @param a_Row Row object which is modifying
@@ -969,7 +968,7 @@ public class DataSet
 		}
 		return li_row;
 	}
-	
+
 	/** Current status of row<br>
 	* With key action is possible deside if we hare doing just 'modify' or 'insert / delete' when setting item.<br>
 	* If this method is not all the objects are always considered as modified.
@@ -997,7 +996,7 @@ public class DataSet
 		}
 		return ERROR;
 	}
-	
+
 	/**
 	* Sorts data using current comparator.
 	* 
@@ -1015,21 +1014,21 @@ public class DataSet
 	{
 		i_DataSetComparator = new DataSetComparator(a_RowComparator);
 	}
-	
+
 	/**
 	* Set comparator for sorting. 
 	* @return current RowComparator object
-	*/	
+	*/
 	public RowComparator getComparator()
 	{
-		if(i_DataSetComparator==null)
+		if (i_DataSetComparator == null)
 		{
 			return null;
 		}
-		
+
 		return i_DataSetComparator.getRowComparator();
 	}
-	
+
 	/**
 	* This with this method it is possible to change row status.
 	* <i>Currently this is only skelenton and under design.</i>
@@ -1097,13 +1096,12 @@ public class DataSet
 	private final static int SOURCE_MISSING = 2;
 	private final static int COPY = 3;
 
-
 	/**
 	 * @see #synchronizeFrom(DataSet , RowComparator , boolean , boolean , boolean ) throws DataSetException
 	 */
-	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator) throws DataSetException	
+	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator) throws DataSetException
 	{
-		return synchronizeFrom(a_DataSet_Source,a_RowComparator, true, true, true);
+		return synchronizeFrom(a_DataSet_Source, a_RowComparator, true, true, true);
 	}
 
 	/**
@@ -1122,7 +1120,8 @@ public class DataSet
 	 * 
 	 * @return int[] Index 0 addcount 1 modify 2 remove count
 	 */
-	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator, boolean ab_doAdd, boolean ab_doUpdate, boolean ab_doDelete) throws DataSetException
+	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator, boolean ab_doAdd, boolean ab_doUpdate, boolean ab_doDelete)
+		throws DataSetException
 	{
 		// At first ai_columns, ai_keys don't work
 
@@ -1156,7 +1155,7 @@ public class DataSet
 					compareRows(a_DataSet_Source, this, a_RowComparator, li_sourceCounter, li_destinationCounter, li_sourceCount, li_destinationCount);
 				if (li_result == COPY)
 				{
-					if(ab_doUpdate)
+					if (ab_doUpdate)
 					{
 						if (copyRow(a_DataSet_Source, this, li_sourceCounter, li_destinationCounter))
 						{
@@ -1169,7 +1168,7 @@ public class DataSet
 				}
 				else if (li_result == DESTINATION_MISSING)
 				{
-					if(ab_doAdd)
+					if (ab_doAdd)
 					{
 						if (addRow(a_DataSet_Source, this, li_sourceCounter))
 						{
@@ -1181,7 +1180,7 @@ public class DataSet
 				}
 				else if (li_result == SOURCE_MISSING)
 				{
-					if(ab_doDelete)
+					if (ab_doDelete)
 					{
 						removeRow(li_destinationCounter);
 						li_removeCount++;
@@ -1362,31 +1361,32 @@ public class DataSet
 	{
 		return iVe_Data;
 	}
-	
-	
-/*
+
 	public void sumRows(int[] ai_groupColumns, int[] ai_sumColumns)
-	{	
+	{
 		setComparator(new RowComparator(ai_groupColumns));
 		sort();
-		
-		for(int li_row = getRowCount() ; li_row > 1  ; li_row-- )
+
+		for (int li_row = getRowCount(); li_row > 1; li_row--)
 		{
 			Row l_Row_Current = getReferenceToRow(li_row);
 			Row l_Row_Before = getReferenceToRow(li_row - 1);
-			
-			if(l_Row_Current.equals(l_Row_Before, ai_groupColumns))
+
+			if (l_Row_Current.equals(l_Row_Before, ai_groupColumns))
 			{
-				for(int li_index = 0 ; li_index < ai_sumColumns.length ; li_index++)
+				for (int li_index = 0; li_index < ai_sumColumns.length; li_index++)
 				{
-					Number l_Number = DataSetService.sum((Number)l_Row_Current.getValueAt(ai_sumColumns[li_index]), (Number)l_Row_Before.getValueAt(ai_sumColumns[li_index]));
+					Number l_Number =
+						DataSetService.sum(
+							(Number) l_Row_Current.getValueAt(ai_sumColumns[li_index]),
+							(Number) l_Row_Before.getValueAt(ai_sumColumns[li_index]));
 					l_Row_Before.setValueAt(ai_sumColumns[li_index], l_Number);
 				}
-				removeRow(li_row);	
-			}	
+				removeRow(li_row);
+			}
 		}
 	}
-*/	
+
 	/**
 	 * Method getValuesAt returns range of values from certain column
 	 * @param ai_startRow Start row
@@ -1396,117 +1396,116 @@ public class DataSet
 	 */
 	public Object[] getValuesAt(int ai_startRow, int ai_endRow, int ai_columnIndex)
 	{
-		if(ai_startRow>ai_endRow)
+		if (ai_startRow > ai_endRow)
 		{
 			throw new IllegalArgumentException("Start row value has be smaller than end row value");
 		}
-		if(ai_startRow <= 0)
+		if (ai_startRow <= 0)
 		{
-			throw new IllegalArgumentException("Start row has to be from 1 to rowCount");	
+			throw new IllegalArgumentException("Start row has to be from 1 to rowCount");
 		}
-		if(ai_endRow > getRowCount())
+		if (ai_endRow > getRowCount())
 		{
-			throw new IllegalArgumentException("End row cannot be larger than rowcount");	
+			throw new IllegalArgumentException("End row cannot be larger than rowcount");
 		}
-		
-		
-		
-		Object[] l_Objects = new Object[ai_endRow - ai_startRow  + 1];
-	
+
+		Object[] l_Objects = new Object[ai_endRow - ai_startRow + 1];
+
 		int li_counter = 0;
-		for(int li_index = ai_startRow ; li_index <= ai_endRow ; li_index++)
+		for (int li_index = ai_startRow; li_index <= ai_endRow; li_index++)
 		{
-			l_Objects[li_counter] = getValueAt(li_index,ai_columnIndex);
+			l_Objects[li_counter] = getValueAt(li_index, ai_columnIndex);
 			li_counter++;
 		}
-		
+
 		return l_Objects;
 	}
-	
-	public void groupBy(int [] ai_groupColums)
+
+	public void groupBy(int[] ai_groupColums)
 	{
 		GroupCalc[] l_GroupCalcs = null;
-		groupBy(ai_groupColums,l_GroupCalcs);
+		groupBy(ai_groupColums, l_GroupCalcs);
 	}
-	
+
 	/**
 	 * Method groupBy
 	 * @param ai_compareColumns
 	 * @param a_GroupCalc
-	 */	
+	 */
 	public void groupBy(int[] ai_groupColumns, GroupCalc a_GroupCalc)
 	{
 		GroupCalc[] l_GroupCalcs = new GroupCalc[1];
 		l_GroupCalcs[0] = a_GroupCalc;
-		groupBy(ai_groupColumns,l_GroupCalcs);
+		groupBy(ai_groupColumns, l_GroupCalcs);
 	}
-	
-	
+
 	/**
 	 * Method groupBy
 	 * @param ai_compareColumns
 	 * @param a_GroupCalcs
 	 */
 	public void groupBy(int[] ai_groupColumns, GroupCalc[] a_GroupCalcs)
-	{	
+	{
 		setComparator(new RowComparator(ai_groupColumns));
 		sort();
-		
+
 		// Search
-		
+
 		Row l_Row_Found = null;
 
-		
-		for(int li_row = getRowCount() ; li_row > 1  ; li_row-- )
+		for (int li_row = getRowCount(); li_row > 0; li_row--)
 		{
 			// First find secuense of mached rows
 			Row l_Row_Current = getReferenceToRow(li_row);
 			int li_rowEnd = li_row;
-			int li_rowStart = li_row;			
+			int li_rowStart = li_row;
 			Row l_Row_Before;
 			boolean lb_continue = true;
-			do
+
+			if (li_row > 1)
 			{
-				li_row--;
-				l_Row_Before = getReferenceToRow(li_row);
-				
-				if(l_Row_Before==null)
+				do
 				{
-					li_row = li_row;
+					li_row--;
+					l_Row_Before = getReferenceToRow(li_row);
+
+					if (l_Row_Before == null)
+					{
+						li_row = li_row;
+					}
+
+					if (l_Row_Current.equals(l_Row_Before, ai_groupColumns))
+					{
+						li_rowStart = li_row;
+					}
+					else
+					{
+						lb_continue = false;
+					}
 				}
-				
-				if(l_Row_Current.equals(l_Row_Before, ai_groupColumns))
-				{
-					li_rowStart = li_row;	
-				}
-				else
-				{
-					lb_continue = false;
-				}
-			} while(li_row > 1 && lb_continue);
-			li_row++; // move cursor
-			
-			
+				while (li_row > 1 && lb_continue);
+				li_row++; // move cursor
+			}
 			// Then  calculate group
-			if(li_rowStart < li_rowEnd)
+			if (li_rowStart <= li_rowEnd)
 			{
-				if(a_GroupCalcs!=null)
+				if (a_GroupCalcs != null)
 				{
 					// Calculate grouping
-					for(int li_index = 0 ; li_index < a_GroupCalcs.length ; li_index++)
+					for (int li_index = 0; li_index < a_GroupCalcs.length; li_index++)
 					{
 						int li_column = a_GroupCalcs[li_index].getColumnIndex();
-						Object[] l_Objects = getValuesAt(li_rowStart, li_rowEnd,li_column);
-						setValueAt(a_GroupCalcs[li_index].calculateGroupBy(l_Objects),li_row, li_column);
+						Object[] l_Objects = getValuesAt(li_rowStart, li_rowEnd, li_column);
+						setValueAt(a_GroupCalcs[li_index].calculateGroupBy(l_Objects), li_row, li_column);
 					}
-				}				
+				}
 				// Remove rows that are used in grouping
-				for(int li_index = li_rowEnd ;  li_index > li_rowStart ; li_index --)
+				for (int li_index = li_rowEnd; li_index > li_rowStart; li_index--)
 				{
 					removeRow(li_index);
 				}
 			}
 		}
-	}	
-	
+	}
+
 }
