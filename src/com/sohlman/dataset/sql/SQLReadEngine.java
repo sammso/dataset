@@ -153,12 +153,13 @@ public class SQLReadEngine implements ReadEngine
 					{
 						li_columnTypes[li_c - 1] = l_ResultSetMetaData.getColumnType(li_c);
 						lS_ColumnNames[li_c - 1] = l_ResultSetMetaData.getColumnName(li_c);
-						lS_ColumnTableNames[li_c - 1] = l_ResultSetMetaData.getTableName(li_c);
+						//lS_ColumnTableNames[li_c - 1] = l_ResultSetMetaData.getTableName(li_c);
+//						System.out.println(l_ResultSetMetaData.getSchemaName(li_c));
 						lS_ClassNames[li_c - 1] = l_ResultSetMetaData.getColumnClassName(li_c);
 					}
 					l_SQLColumnsInfo = new SQLColumnsInfo(lS_ClassNames, lS_ColumnNames, li_columnTypes);
 				}
-				if (a_ColumnsInfo == null)
+				if (a_ColumnsInfo == null || (!l_SQLColumnsInfo.equals(a_ColumnsInfo)))
 				{
 					return (ColumnsInfo) l_SQLColumnsInfo;
 				}
@@ -168,6 +169,7 @@ public class SQLReadEngine implements ReadEngine
 					if (a_ColumnsInfo instanceof SQLColumnsInfo)
 					{
 						// Check Column types and class names are same
+						
 						l_SQLColumnsInfo = (SQLColumnsInfo) a_ColumnsInfo;
 						for (int li_c = 1; li_c <= l_SQLColumnsInfo.getColumnCount(); li_c++)
 						{

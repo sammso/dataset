@@ -139,7 +139,7 @@ public class ColumnsInfo
 		
 		for(int li_x = 0 ; li_x < ii_columnCount ; li_x ++)
 		{
-			if(!getColumnClassName(li_x).equals(a_ColumnsInfo.getColumnClassName(li_x)))
+			if(!getColumnClassName(li_x + 1).equals(a_ColumnsInfo.getColumnClassName(li_x + 1)))
 			{
 				return false;	
 			}

@@ -11,6 +11,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 
 import com.sohlman.dataset.DataSet;
+import com.sohlman.dataset.DataSetEvent;
 import com.sohlman.dataset.DataSetListener;
 
 /**
@@ -193,6 +194,11 @@ public class DataSetTableModel extends AbstractTableModel implements DataSetList
 		return i_DataSet.getColumnCount();
 	}
 
+	public String getColumnName(int ai_index)
+	{
+		return i_DataSet.getColumnName(ai_index  + 1);
+	}
+
 	/**
 	 * @see com.sohlman.dataset.DataSet#getRowCount()
 	 */
@@ -211,35 +217,31 @@ public class DataSetTableModel extends AbstractTableModel implements DataSetList
 		return lb_isNotEditableCells[ai_columnIndex - 1];
 	}
 
-	public void rowInserted(int ai_rowIndex)
+	
+	public void dataSetChanged(DataSetEvent a_DataSetEvent)
 	{
-		fireTableRowsInserted(ai_rowIndex - 1, ai_rowIndex - 1);		
-	}
-
-	public void rowModified(int ai_rowIndex, int a_columnIndex)
-	{
-		fireTableCellUpdated(ai_rowIndex - 1, a_columnIndex - 1);		
-	}
-
-	public void rowRemoved(int ai_rowIndex)
-	{
-		fireTableRowsDeleted(ai_rowIndex - 1, ai_rowIndex - 1);
-	}
-
-	public void readStart()
-	{
-	}
-
-	public void readEnd(int ai_rowCount)
-	{
-		fireTableStructureChanged();
-	}
-
-	public void writeStart()
-	{
-	}
-
-	public void writeEnd(int ai_rowCount)
-	{
+		if(a_DataSetEvent.getAction() == DataSetEvent.COLUMN_CHANGED)
+		{
+			if(a_DataSetEvent.getColumn()==DataSetEvent.ALL)
+			{
+//				fireTableCellUpdated(new TableModelEvent((TableModel)this, a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1, TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE));
+			}
+			else 
+			{
+				fireTableCellUpdated(a_DataSetEvent.getRow() - 1, a_DataSetEvent.getColumn() - 1);	
+			}
+		}
+		if(a_DataSetEvent.getAction()==DataSetEvent.READ_END)
+		{
+			fireTableStructureChanged();
+		}
+		if(a_DataSetEvent.getAction() == DataSetEvent.ROW_REMOVED)
+		{
+			fireTableRowsDeleted(a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1);
+		}
+		if(a_DataSetEvent.getAction() == DataSetEvent.ROW_INSERTED)
+		{
+			fireTableRowsInserted(a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1);
+		}	
 	}
 }

@@ -165,7 +165,7 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).rowInserted(li_return);
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.ROW_INSERTED,li_return,DataSetEvent.NOTVALID));
 			}
 		}
 		return li_return;
@@ -176,20 +176,20 @@ public class DataSet
 	 */
 	public final int addRow()
 	{
-		int li_return = 0;
-		li_return = insertRow(-1);
+		int li_row = 0;
+		li_row = insertRow(-1);
 
-		if (li_return > 0 && iVe_Listeners != null)
+		if (li_row > 0 && iVe_Listeners != null)
 		{
 			Enumeration l_Enumeration;
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).rowInserted(li_return);
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.ROW_INSERTED,li_row,DataSetEvent.NOTVALID));
 			}
 		}
 
-		return li_return;
+		return li_row;
 	}
 
 	/** Removes row from DataSet.
@@ -209,7 +209,7 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).rowRemoved(ai_index);
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.ROW_REMOVED,ai_index));
 			}
 		}
 		return li_return;
@@ -236,6 +236,17 @@ public class DataSet
 		{
 			iVe_Deleted.removeAllElements();
 		};
+		
+		if (iVe_Listeners != null)
+		{
+			Enumeration l_Enumeration;
+			l_Enumeration = iVe_Listeners.elements();
+			while (l_Enumeration.hasMoreElements())
+			{
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.RESET));
+			}
+		}		
+		
 	}
 
 	/** Read data with using ReadEngine
@@ -244,7 +255,7 @@ public class DataSet
 	 */
 	public int read() throws DataSetException
 	{
-		int li_return;
+		int li_count;
 
 		if (iVe_Listeners != null)
 		{
@@ -252,11 +263,11 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).readStart();
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.READ_START));
 			}
 		}
 
-		li_return = doRead();
+		li_count = doRead();
 
 		if (iVe_Listeners != null)
 		{
@@ -264,10 +275,10 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).readEnd(li_return);
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.READ_END, li_count));
 			}
 		}
-		return li_return;
+		return li_count;
 	}
 
 	/** Writes data with using WriteEngine
@@ -276,7 +287,7 @@ public class DataSet
 	 */
 	public int save() throws DataSetException
 	{
-		int li_return;
+		int li_count;
 
 		if (iVe_Listeners != null)
 		{
@@ -284,20 +295,20 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).writeStart();
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.SAVE_START));
 			}
 		}
-		li_return = doSave();
+		li_count = doSave();
 		if (iVe_Listeners != null)
 		{
 			Enumeration l_Enumeration;
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).writeEnd(li_return);
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.READ_END, li_count));
 			}
 		}
-		return li_return;
+		return li_count;
 	}
 
 	/** Modify whole row object.
@@ -355,7 +366,7 @@ public class DataSet
 				l_Enumeration = iVe_Listeners.elements();
 				while (l_Enumeration.hasMoreElements())
 				{
-					((DataSetListener) l_Enumeration.nextElement()).rowModified(ai_rowIndex, ai_columnIndex);
+					((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.COLUMN_CHANGED, ai_rowIndex, ai_columnIndex));
 				}
 			}
 			return true;
@@ -878,7 +889,18 @@ public class DataSet
 	 */
 	public final int setRowAt(int ai_index, Row a_Row)
 	{
-		return doModifyRow(ai_index, a_Row);
+		
+		int li_row = doModifyRow(ai_index, a_Row);
+		if (iVe_Listeners != null)
+		{
+			Enumeration l_Enumeration;
+			l_Enumeration = iVe_Listeners.elements();
+			while (l_Enumeration.hasMoreElements())
+			{
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.COLUMN_CHANGED, li_row, DataSetEvent.ALL));
+			}
+		}
+		return li_row;
 	}
 	/** Current status of row<br>
 	 * With key action is possible deside if we hare doing just 'modify' or 'insert / delete' when setting item.<br>
