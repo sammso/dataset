@@ -2,7 +2,6 @@ package com.sohlman.sqltool;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -27,15 +26,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
-
-import com.sohlman.dataset.DataSetException;
-import com.sohlman.dataset.sql.ConnectionContainer;
-import com.sohlman.dataset.sql.SQLDataSet;
-import com.sohlman.dataset.swing.DataSetTableModel;
-
 
 /**
  * Demo application which demonstrate database connection from Swing
@@ -57,9 +49,8 @@ public class SQLTool
 	private JTabbedPane i_JTabbedPane;
 
 	private JFrame i_JFrame;
-	private JTable i_JTable;
-	private SQLDataSet i_SQLDataSet = null;
 	private Connection i_Connection = null;
+	private int ii_index = 1;
 
 	private ActionListener i_ActionListener = new ActionListener()
 	{
@@ -70,101 +61,50 @@ public class SQLTool
 		{
 			if (a_ActionEvent.getSource() == i_JButton_Add)
 			{
-				i_SQLDataSet.addRow();
 				setEnabledDisabled();
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Delete)
 			{
-				int[] li_rows = i_JTable.getSelectedRows();
-
-				for (int li_y = li_rows.length - 1; li_y > 0; li_y--)
-				{
-					System.out.println(li_rows[li_y]);
-					i_SQLDataSet.removeRow(li_rows[li_y] + 1);
-				}
 				setEnabledDisabled();
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Print)
 			{
-				i_SQLDataSet.printBuffers(System.out);
+				//i_SQLDataSet.printBuffers(System.out);
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Execute)
 			{
-				try
-				{
-					i_SQLDataSet = getSQLDataSet();
-					i_JTable.setModel(new DataSetTableModel(getSQLDataSet()));
-					i_SQLDataSet.setSQLSelect(i_JTextArea_SQL.getText());
-					i_SQLDataSet.setAutoGenerateWriteSQL(true);
-					i_SQLDataSet.read();
-					
-					i_JTextArea_ResultText.append(i_SQLDataSet.getRowCount() + " rows read \r\n");
-					i_JTabbedPane.setSelectedIndex(0);
 
-				}
-				catch (DataSetException l_DataSetException)
+				SQLClauseTokenizer l_SQLClauseTokenizer = new SQLClauseTokenizer(i_JTextArea_SQL.getText());
+				
+				while (l_SQLClauseTokenizer.hasMoreTokens())
 				{
-					if (l_DataSetException.getSourceException() != null && l_DataSetException.getSourceException() instanceof SQLException)
-					{
-						SQLException l_SQLException = (SQLException) l_DataSetException.getSourceException();
-						i_JTextArea_ResultText.append("Error\r\n" + l_SQLException.getMessage() + "\r\n");
-						i_JTabbedPane.setSelectedIndex(1);
-					}
-
+					String lS_SQL = l_SQLClauseTokenizer.nextToken();
+					i_JTextArea_ResultText.append("\n" + ii_index + " : \n");
+					SQLResultJPanel l_SQLResultJPanel = SQLResultJPanel.createInstance(lS_SQL, i_Connection);
+					i_JTabbedPane.add(l_SQLResultJPanel, String.valueOf(ii_index));
+					l_SQLResultJPanel.setJTabbedPane(i_JTabbedPane);
+					l_SQLResultJPanel.setResultJTextArea(i_JTextArea_ResultText);
+					l_SQLResultJPanel.execute();
+					ii_index++;
 				}
+
+				i_JTabbedPane.setSelectedIndex(0);
+
 				setEnabledDisabled();
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Save)
 			{
-				try
-				{
-					i_SQLDataSet.save();
-					i_JTextArea_ResultText.append("Saved!\r\n");
-					i_JTabbedPane.setSelectedIndex(1);
-
-				}
-				catch (DataSetException l_DataSetException)
-				{
-					if (l_DataSetException.getSourceException() != null && l_DataSetException.getSourceException() instanceof SQLException)
-					{
-						SQLException l_SQLException = (SQLException) l_DataSetException.getSourceException();
-						i_JTextArea_ResultText.append("Error\r\n" + l_SQLException.getMessage() + "\r\n");
-						i_JTabbedPane.setSelectedIndex(1);
-
-					}
-				}
 				setEnabledDisabled();
 			}
 
 		}
 	};
 
-
 	/**
 	 * Method setEnabledDisabled.
 	 */
 	private void setEnabledDisabled()
 	{
-		if (i_SQLDataSet.getRowCount() > 0)
-		{
-			i_JButton_Delete.setEnabled(true);
-		}
-		else
-		{
-			i_JButton_Delete.setEnabled(false);
-		}
-
-		if (i_SQLDataSet.getColumnCount() > 0)
-		{
-			i_JButton_Add.setEnabled(true);
-		}
-		else
-		{
-			i_JButton_Add.setEnabled(false);
-		}
-
-		i_JButton_Save.setEnabled(i_SQLDataSet.hasWriteEngine());
-
 	}
 
 	/**
@@ -189,7 +129,7 @@ public class SQLTool
 	 */
 	protected static void printMessage()
 	{
-		System.out.println();		
+		System.out.println();
 		System.out.println("Usage : ");
 		System.out.println("java -jar SQLTool.jar <ini file (optional)>");
 		System.out.println();
@@ -266,17 +206,6 @@ public class SQLTool
 
 		l_JPanel_List.add(l_JPanel_Select, BorderLayout.NORTH);
 
-		JPanel l_JPanel_JTable = new JPanel();
-
-		l_JPanel_JTable.setLayout(new BorderLayout());
-		i_JTable.setBorder(BorderFactory.createBevelBorder(1));
-		i_JTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
-
-		JScrollPane l_JScrollPane_JTable = new JScrollPane(i_JTable);
-		l_JPanel_JTable.add(l_JScrollPane_JTable, BorderLayout.CENTER);
-
-		i_JTabbedPane.add("Result data", l_JPanel_JTable);
-
 		l_JPanel_List.add(i_JTabbedPane, BorderLayout.CENTER);
 
 		JScrollPane l_JScrollPane_ResultText = new JScrollPane(i_JTextArea_ResultText);
@@ -296,87 +225,47 @@ public class SQLTool
 		l_Container.add(l_JPanel, BorderLayout.CENTER);
 
 		i_JFrame.pack();
-		i_JFrame.setVisible(true);		
+		i_JFrame.setVisible(true);
 	}
-	
+
 	private void initializeComponents()
 	{
 		i_JButton_Reset.addActionListener(i_ActionListener);
-		
+
 		i_JButton_Execute.addActionListener(i_ActionListener);
-		
+
 		i_JButton_Save.addActionListener(i_ActionListener);
 		i_JButton_Save.setEnabled(false);
-		
+
 		i_JButton_Add.addActionListener(i_ActionListener);
 		i_JButton_Add.setEnabled(false);
-		
+
 		i_JButton_Delete.addActionListener(i_ActionListener);
 		i_JButton_Delete.setEnabled(false);
-		
+
 		i_JButton_Print.addActionListener(i_ActionListener);
-		
+
 		i_JFrame.addWindowListener(new WindowAdapter()
 		{
 			public void windowClosing(WindowEvent e)
 			{
 				System.exit(0);
 			}
-		});		
+		});
 	}
-	
+
 	private void createComponents()
 	{
-		i_JFrame = new JFrame("SQL DataSet demo");
-		i_JTable = new JTable();
+		i_JFrame = new JFrame("SQL Tool v 0.1");
 		i_JTabbedPane = new JTabbedPane();
 		i_JTextArea_ResultText = new JTextArea();
 		i_JTextArea_SQL = new JTextArea();
 		i_JButton_Reset = new JButton();
 		i_JButton_Execute = new JButton();
-		i_JButton_Save = new JButton();		
+		i_JButton_Save = new JButton();
 		i_JButton_Add = new JButton();
 		i_JButton_Delete = new JButton();
 		i_JButton_Print = new JButton();
-		
-	}
-	
-
-	private SQLDataSet getSQLDataSet()
-	{
-		SQLDataSet l_SQLDataSet = new SQLDataSet();
-
-		ConnectionContainer l_ConnectionContainer = new ConnectionContainer()
-		{
-			/**
-			 * @see com.sohlman.dataset.sql.ConnectionContainer#beginTransaction()
-			 */
-			public void beginTransaction() throws SQLException
-			{
-				setConnection(i_Connection);
-			}
-
-			/**
-			 * @see com.sohlman.dataset.sql.ConnectionContainer#endTransaction()
-			 */
-			public void endTransaction() throws SQLException
-			{
-				setConnection(null);
-			}
-		};
-
-		try
-		{
-			l_SQLDataSet.setConnectionContainer(l_ConnectionContainer);
-		}
-		catch (DataSetException l_DataSetException)
-		{
-			System.out.println(l_DataSetException.getMessage());
-		}
-
-		l_SQLDataSet.setAutoGenerateWriteSQL(true);
-		i_SQLDataSet = l_SQLDataSet;
-		return i_SQLDataSet;
 	}
 
 	public boolean connectToDb(Properties a_Properties)
@@ -443,7 +332,7 @@ public class SQLTool
 		}
 		catch (InstantiationException l_InstantiationException)
 		{
-			l_InstantiationException.printStackTrace();		
+			l_InstantiationException.printStackTrace();
 			return false;
 		}
 		catch (IllegalAccessException l_IllegalAccessException)
@@ -506,9 +395,9 @@ public class SQLTool
 			{
 				String lS_Value = a_Properties.getProperty(lS_Name);
 				File l_File = new File(lS_Value);
-				if(!l_File.exists())
+				if (!l_File.exists())
 				{
-					System.out.println("File \"" + l_File.getAbsolutePath() + "\" not exits");					
+					//System.out.println("File \"" + l_File.getAbsolutePath() + "\" not exits");					
 				}
 				else
 				{
@@ -521,4 +410,5 @@ public class SQLTool
 
 		return new URLClassLoader(l_URL_List);
 	}
+
 }

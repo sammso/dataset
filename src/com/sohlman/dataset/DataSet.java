@@ -233,8 +233,8 @@ public class DataSet
 				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.RESET));
 			}
 		}
-
 	}
+
 
 	/** Read data with using ReadEngine
 	 * @throws DataSetException Throws dataSet exception on error situation.

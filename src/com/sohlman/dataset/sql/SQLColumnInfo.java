@@ -1,5 +1,6 @@
 package com.sohlman.dataset.sql;
 
+import com.sap.dbtech.jdbc.trace.ResultSetMetaData;
 import com.sohlman.dataset.ColumnInfo;
 
 
@@ -15,13 +16,14 @@ public class SQLColumnInfo extends ColumnInfo
 	private String iS_TableName = "";
 	private String iS_CatalogName = "";
 	
-	private boolean ib_isNullable = true;
+	
 	private boolean ib_isAutoIncrement = false;
 	private boolean ib_isCurrency = false;
 	private boolean ib_isReadOnly = false;
 	private boolean ib_isSigned = false;
 	
 	
+	private int ii_isNullable = ResultSetMetaData.columnNullableUnknown;
 	private int ii_displaySize = 0;
 	private int ii_scale = 0;
 	private int ii_precision = 0;
@@ -74,20 +76,20 @@ public class SQLColumnInfo extends ColumnInfo
 	/**(Internal use) Set if it is possilbe hold null value
 	 * @param ab_boolean
 	 */
-	void setIsNullable(boolean ab_boolean)
+	void setIsNullable(int ai_status)
 	{
-		ib_isNullable = ab_boolean;
+		ii_isNullable = ai_status;
 	}
 	
 	/**
-	 * Tells if column is nullable in database
+	 * Tells if column is nullable in database<br>
+	 * More information about the return values in java documentation
 	 * 
-	 * @param ab_boolean
-	 * @return
+	 * @return ResultSetMetaData.columnNoNulls, ResultSetMetaData.columnNullable or ResultSetMetaData.columnNullableUnknown
 	 */
-	public boolean isNullable(boolean ab_boolean)
+	public int isNullable()
 	{
-		return ib_isNullable;
+		return ii_isNullable;
 	}
 	
 	/** (Internal use) Sets autoIncrement

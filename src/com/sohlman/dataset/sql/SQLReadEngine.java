@@ -169,6 +169,7 @@ public class SQLReadEngine implements ReadEngine
 			ResultSetMetaData l_ResultSetMetaData = i_ResultSet.getMetaData();
 
 			int li_columnCount = l_ResultSetMetaData.getColumnCount();
+			
 			if (li_columnCount > 0)
 			{
 				int[] li_columnTypes = new int[li_columnCount];
@@ -192,6 +193,16 @@ public class SQLReadEngine implements ReadEngine
 								l_ResultSetMetaData.getColumnName(li_c),
 								l_ResultSetMetaData.getColumnClassName(li_c),
 								l_ResultSetMetaData.getColumnType(li_c));
+						
+						// Set extra parameters		
+						
+						l_SQLColumnInfos[li_c - 1].setCatalogName(l_ResultSetMetaData.getCatalogName(li_c));
+						l_SQLColumnInfos[li_c - 1].setCurrency(l_ResultSetMetaData.isCurrency(li_c));
+						l_SQLColumnInfos[li_c - 1].setDisplaySize(l_ResultSetMetaData.getColumnDisplaySize(li_c));
+						l_SQLColumnInfos[li_c - 1].setIsAutoIncrement(l_ResultSetMetaData.isAutoIncrement(li_c));
+						l_SQLColumnInfos[li_c - 1].setIsNullable(l_ResultSetMetaData.isNullable(li_c));
+						l_SQLColumnInfos[li_c - 1].setSchemaName(l_ResultSetMetaData.getSchemaName(li_c));
+						l_SQLColumnInfos[li_c - 1].setTableName(l_ResultSetMetaData.getTableName(li_c));
 					}
 					l_SQLRowInfo = new SQLRowInfo(l_SQLColumnInfos);
 				}
