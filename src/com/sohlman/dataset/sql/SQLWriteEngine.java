@@ -17,32 +17,11 @@ import com.sohlman.dataset.DataSetException;
  * <ul>
  * 	<li>Set Connection object</li>
  * 	<li>Set SQL Statements (Connection object has be set before)</li>
- * 	<li>Set Set update key columns</li>
+ * 	<li>Set Set SQLColumnsInfo</li>
  *  <li>Set SQLRetrieveEngine related which is related to same DataSet</li>
- * </ul><br>
- * <b>Example</b><br>
- * <code>
- * // Define key columns<br>
- * int[]&nbsp;li_keyColumns&nbsp;=&nbsp;{0};<br>
- * l_DataSet.setRetrieveEngine(<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;SQLRetrieveEngine(<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_Connection,"select&nbsp;column_id,&nbsp;first_name,&nbsp;surname_name&nbsp;from&nbsp;person"<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;);<br>
- * l_DataSet.setUpdateEngine(<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;new&nbsp;SQLUpdateEngine(<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;l_Connection,<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"INSERT&nbsp;INTO&nbsp;person&nbsp;VALUES&nbsp;(&nbsp;?,&nbsp;?,&nbsp;?&nbsp;)",<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"UPDATE&nbsp;person&nbsp;SET&nbsp;column_id&nbsp;=&nbsp;?,&nbsp;first_name&nbsp;=&nbsp;?,"&nbsp;+&nbsp;<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"surname_name&nbsp;=&nbsp;?&nbsp;WHERE&nbsp;column_id&nbsp;=&nbsp;?",<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"DELETE&nbsp;person&nbsp;WHERE&nbsp;column_id&nbsp;=&nbsp;?",<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;li_keyColumns,&nbsp;<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(SQLRetrieveEngine)l_DataSet.getRetrieveEngine()<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;);<br>
- * </code>
+ * </ul>
  * @author Sampsa Sohlman
- * @version 2001-08-28
+ * @version 2002-10-10
  */
 public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 {
@@ -65,7 +44,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	private int[] ii_insertParameters;
 	private int[] ii_updateParameters;
 	private int[] ii_deleteParameters;
-	private int[] ii_columnTypes = null;
+	private SQLColumnsInfo i_SQLColumnsInfo;
 
 	/** Creates new SQLUpdateEngine */
 	public SQLWriteEngine()
@@ -81,12 +60,12 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	 * @param aS_Update Update SQL statement
 	 * @param aS_Delete Delete SQL statement
 	 */
-	public SQLWriteEngine(ConnectionContainer a_ConnectionContainer, String aS_InsertSQL, String aS_UpdateSQL, String aS_DeleteSQL, int[] ai_columnTypes)
+	public SQLWriteEngine(ConnectionContainer a_ConnectionContainer, String aS_InsertSQL, String aS_UpdateSQL, String aS_DeleteSQL, SQLColumnsInfo a_SQLColumnsInfo)
 		throws DataSetException
 	{
 		setConnection(a_ConnectionContainer);
 		//setSQLRetrieveEngine(a_SQLReadEngine); // Important Retrieve engine has to be fore setSQLStatemen
-		setColumnTypes(ai_columnTypes);
+		setSQLColumnsInfo(a_SQLColumnsInfo);
 		setSQL(aS_InsertSQL, aS_UpdateSQL, aS_DeleteSQL);
 
 	}
@@ -94,9 +73,9 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	/** Set Connection object to SQLUpdateEngine
 	 * @param a_Connecion Current connection object
 	 */
-	public void setColumnTypes(int[] ai_columnTypes)
-	{
-		ii_columnTypes = ai_columnTypes;
+	public void setSQLColumnsInfo(SQLColumnsInfo a_SQLColumnsInfo)
+	{		
+		i_SQLColumnsInfo = a_SQLColumnsInfo;
 	}
 
 	/** Set Connection object to SQLUpdateEngine
@@ -123,12 +102,15 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	 */
 	public void setSQL(String aS_Insert, String aS_Update, String aS_Delete) throws DataSetException
 	{
+		String lS_CurrentSQL = null;
 		try
 		{
 			if (aS_Insert != null)
 			{
+				lS_CurrentSQL = "INSERT";				
 				ii_insertParameters = SQLService.getKeys(aS_Insert, false);
 				iS_Insert = SQLService.createFinalSQL(aS_Insert, false);
+
 			}
 			else
 			{
@@ -138,6 +120,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 			if (aS_Update != null)
 			{
+				lS_CurrentSQL = "UPDATE";				
 				ii_updateParameters = SQLService.getKeys(aS_Update, true);
 				iS_Update = SQLService.createFinalSQL(aS_Update, true);
 			}
@@ -149,6 +132,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 			if (aS_Delete != null)
 			{
+				lS_CurrentSQL = "DELETE";				
 				ii_deleteParameters = SQLService.getKeys(aS_Delete, true);
 				iS_Delete = SQLService.createFinalSQL(aS_Delete, true);
 			}
@@ -160,7 +144,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		}
 		catch (SQLException a_SQLException)
 		{
-			throw new DataSetException("Erro while parsing SQL Statements", a_SQLException);
+			throw new DataSetException("Error while parsing " + lS_CurrentSQL + "  Statement", a_SQLException);
 		}
 	}
 
@@ -267,9 +251,9 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	public void writeStart() throws DataSetException
 	{
 		ii_updateCount = 0;
-		if (ii_columnTypes == null)
+		if (i_SQLColumnsInfo == null)
 		{
-			throw new DataSetException("writeStart - No column types defined");
+			throw new DataSetException("writeStart - No SQLColumnInfo defined");
 		}
 
 		try
@@ -333,10 +317,11 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 	private void doDelete(Row a_Row_Original, Row a_Row_Current) throws DataSetException
 	{
-		if (ii_columnTypes == null)
+		if (i_SQLColumnsInfo == null)
 		{
-			throw new DataSetException("deleteRow - No column types defined");
+			throw new DataSetException("delete - No SQLColumnInfo defined");
 		}
+
 		if (i_PreparedStatement_Delete != null && iS_Delete != null)
 		{
 			if (ii_deleteParameters.length > 0)
@@ -350,12 +335,12 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 					for (li_c = 0; li_c < ii_deleteParameters.length; li_c++)
 					{
-
+						
 						if (ii_deleteParameters[li_c] > 0)
 						{
 							if (a_Row_Original.getValueAt(ii_deleteParameters[li_c]) == null)
 							{
-								i_PreparedStatement_Delete.setNull(li_c + 1, ii_columnTypes[ii_deleteParameters[li_c] - 1]);
+								i_PreparedStatement_Delete.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType(ii_deleteParameters[li_c]));
 							}
 							else
 							{
@@ -366,7 +351,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 						{
 							if (a_Row_Current.getValueAt(-1 * ii_deleteParameters[li_c]) == null)
 							{
-								i_PreparedStatement_Delete.setNull(li_c + 1, ii_columnTypes[(-1 * ii_deleteParameters[li_c]) - 1]);
+								i_PreparedStatement_Delete.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType((-1 * ii_deleteParameters[li_c]) ));
 							}
 							else
 							{
@@ -432,9 +417,9 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 	private void doUpdate(Row a_Row_Original, Row a_Row_Current) throws DataSetException
 	{
-		if (ii_columnTypes == null)
+		if (i_SQLColumnsInfo == null)
 		{
-			throw new DataSetException("modifyRow -No column types defined");
+			throw new DataSetException("update - No SQLColumnInfo defined");
 		}
 		if (i_PreparedStatement_Update != null && iS_Update != null)
 		{
@@ -454,7 +439,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 						{
 							if (a_Row_Current.getValueAt(ii_updateParameters[li_c]) == null)
 							{
-								i_PreparedStatement_Update.setNull(li_c + 1, ii_columnTypes[ii_updateParameters[li_c] - 1]);
+								i_PreparedStatement_Update.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType(ii_updateParameters[li_c] ));
 							}
 							else
 							{
@@ -465,7 +450,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 						{
 							if (a_Row_Original.getValueAt((-1) * ii_updateParameters[li_c]) == null)
 							{
-								i_PreparedStatement_Update.setNull(li_c + 1, ii_columnTypes[((-1) * ii_updateParameters[li_c]) - 1]);
+								i_PreparedStatement_Update.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType(((-1) * ii_updateParameters[li_c])));
 							}
 							else
 							{
@@ -504,9 +489,9 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 	private void doInsert(Row a_Row) throws DataSetException
 	{
-		if (ii_columnTypes == null)
+		if (i_SQLColumnsInfo == null)
 		{
-			throw new DataSetException("insertRow - No column types defined");
+			throw new DataSetException("insert - No SQLColumnInfo defined");
 		}
 
 		if (i_PreparedStatement_Insert != null && iS_Insert != null)
@@ -526,7 +511,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 						if (a_Row.getValueAt(li_index) == null)
 						{
-							i_PreparedStatement_Insert.setNull(li_c + 1, ii_columnTypes[li_index - 1]);
+							i_PreparedStatement_Insert.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType(li_index));
 						}
 						else
 						{

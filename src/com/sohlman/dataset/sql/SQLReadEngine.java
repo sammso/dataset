@@ -20,20 +20,11 @@ import com.sohlman.dataset.Row;
 import com.sohlman.dataset.Row;
 import com.sohlman.dataset.DataSetException;
 
-/**
- * @author Sampsa Sohlman
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
 /** Common retrieve engine for retrieving data from JDBC sources.
  *
  * @author Sampsa Sohlman
  * 
- * @version 2002-09-26 Inteface has been changed
- * @version 2001-08-20
+ * @version 2002-10-10 Inteface has been changed
  * @see Update object
  */
 public class SQLReadEngine implements ReadEngine
@@ -228,7 +219,7 @@ public class SQLReadEngine implements ReadEngine
 								{
 									throw new DataSetException("Database and predefined column types are different");
 								}
-								if (!l_SQLColumnsInfo.getColumnName(li_c).equals(lS_ClassNames[li_c - 1]))
+								if (!l_SQLColumnsInfo.getColumnClassName(li_c).equals(lS_ClassNames[li_c - 1]))
 								{
 									throw new DataSetException("Database and predefined column classes are different");
 								}

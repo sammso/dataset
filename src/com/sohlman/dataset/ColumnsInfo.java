@@ -56,12 +56,19 @@ public class ColumnsInfo
 		iS_ColumnNames[ai_index - 1] = aS_Name;
 	}
 	
-	public int getIndexByColumnName(int ai_index)
+	public int getIndexByColumnName(String aS_Index)
 	{
 		// Future implementation
+		
 		return 0;
 	}
 	
+	/**
+	 * Get column name for specified index
+	 * @param ai_index
+	 * @return String which contains current column name
+	 * @throws ArrayIndexOutOfBoundsException if index is out of range
+	 */
 	public String getColumnName(int ai_index)
 	{
 		if(ai_index <= 0 || ai_index > ii_columnCount)
@@ -72,6 +79,12 @@ public class ColumnsInfo
 		return iS_ColumnNames[ai_index - 1];
 	}
 	
+	/**
+	 * Get column class name for specified index
+	 * @param ai_index
+	 * @return String which contains class name for column
+	 * @throws ArrayIndexOutOfBoundsException if index is out of range
+	 */
 	public String getColumnClassName(int ai_index)
 	{
 		if(ai_index <= 0 || ai_index > ii_columnCount)
@@ -82,14 +95,55 @@ public class ColumnsInfo
 		return iS_ColumnClassNames[ai_index - 1];		
 	}	
 	
+	
+	/**
+	 * Method getColumnClass.
+	 * 
+	 * @param ai_index Requested column index
+	 * @return Class for that column
+	 * @throws ClassNotFoundException if class is not in classpath
+	 * @throws ArrayIndexOutOfBoundsException if index is out of range
+	 */
 	public Class getColumnClass(int ai_index) throws ClassNotFoundException
 	{
+		if(ai_index <= 0 || ai_index > ii_columnCount)
+		{
+			throw new ArrayIndexOutOfBoundsException("getColumnClass index out of range");
+		}		
 		return Class.forName(getColumnClassName(ai_index));		
 	}
 	
 	
+	/**
+	 * Tells columnCount for DataSet and this object
+	 * @return int column count
+	 */
 	public int getColumnCount()
 	{
 		return ii_columnCount;
 	}
+	
+	/**
+	 * Checks if this eguals with another ColumnsInfo object.<p>
+	 * It will check that ClassNames and column count are match
+	 * 
+	 * @param a_ColumnsInfo
+	 * @return boolean
+	 */
+	public boolean equals(ColumnsInfo a_ColumnsInfo)
+	{
+		if(getColumnCount()!=a_ColumnsInfo.getColumnCount())
+		{
+			return false;
+		}
+		
+		for(int li_x = 0 ; li_x < ii_columnCount ; li_x ++)
+		{
+			if(!getColumnClassName(li_x).equals(a_ColumnsInfo.getColumnClassName(li_x)))
+			{
+				return false;	
+			}
+		}
+		return true;
+	}	
 }

@@ -17,7 +17,6 @@ import com.sohlman.dataset.DataSetException;
  */
 public class SQLDataSet extends DataSet
 {
-	private int[] ii_columnTypes = null;
 	private ConnectionContainer i_ConnectionContainer;
 	private String iS_SelectSQL;
 	private String iS_InsertSQL;
@@ -160,28 +159,20 @@ public class SQLDataSet extends DataSet
 				}
 			}
 
-			if (ii_columnTypes == null)
-			{
-				if (getReadEngine() != null)
-				{
-					ii_columnTypes = ((SQLReadEngine) getReadEngine()).getColumnTypes();
-				}
-			}
-
-			if (ii_columnTypes != null && (iS_InsertSQL != null || iS_DeleteSQL != null || iS_UpdateSQL != null))
+			if ( getColumnsInfo() != null && (iS_InsertSQL != null || iS_DeleteSQL != null || iS_UpdateSQL != null))
 			{
 				SQLWriteEngine l_SQLWriteEngine = (SQLWriteEngine) getWriteEngine();
 				if (l_SQLWriteEngine == null)
 				{
-					if (ii_columnTypes != null)
+					if (getColumnsInfo() != null)
 					{
-						l_SQLWriteEngine = new SQLWriteEngine(i_ConnectionContainer, iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL, ii_columnTypes);
+						l_SQLWriteEngine = new SQLWriteEngine(i_ConnectionContainer, iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL, (SQLColumnsInfo)getColumnsInfo());
 						setWriteEngine(l_SQLWriteEngine);
 					}
 				}
 				else
 				{
-					l_SQLWriteEngine.setColumnTypes(ii_columnTypes);
+					l_SQLWriteEngine.setSQLColumnsInfo((SQLColumnsInfo)getColumnsInfo());
 					l_SQLWriteEngine.setSQL(iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL);
 				}
 			}

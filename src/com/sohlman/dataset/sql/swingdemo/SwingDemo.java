@@ -26,6 +26,7 @@ public class SwingDemo
 	private JButton i_JButton_Save;
 	
 	private String iS_TableName;
+	private String iS_LastReadSQL = "";
 
 	
 	private JTextArea i_JTextArea_SQL;
@@ -52,8 +53,23 @@ public class SwingDemo
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Print)
 			{
-				System.out.println("Table name is \"" + getTableNameFromSelectSQL(i_JTextArea_SQL.getText()) + "\"");
 				i_SQLDataSet.printBuffers(System.out);
+				try
+				{
+					System.out.println("Table name");
+					String lS_Table = getTableNameFromSelectSQL(iS_LastReadSQL);
+					System.out.println(lS_Table);
+					System.out.println("Write SQL statements");
+					System.out.println(createInsertSQL(lS_Table));
+					System.out.println(createUpdateSQL(lS_Table));
+					System.out.println (createDeleteSQL(lS_Table));										
+					
+				}
+				catch(Exception l_Exception)
+				{
+					
+				}
+				
 			}
 			if (a_ActionEvent.getSource() == i_JButton_Read)
 			{
@@ -62,7 +78,7 @@ public class SwingDemo
 				{
 					i_SQLDataSet.setSQLStatements(i_JTextArea_SQL.getText(),null,null,null);
 					i_SQLDataSet.read();
-					i_JTable.updateUI();
+					iS_LastReadSQL = i_SQLDataSet.getSelectSQL();
 					System.out.println(i_SQLDataSet.getRowCount());
 				}
 				catch(DataSetException l_DataSetException)
@@ -74,21 +90,11 @@ public class SwingDemo
 			{
 				System.out.println("Save");
 				
-				SQLColumnsInfo l_SQLColumnsInfo = (SQLColumnsInfo)i_SQLDataSet.getColumnsInfo();
-				
-				for(int li_x = 1 ; li_x < l_SQLColumnsInfo.getColumnCount() ; li_x ++)
-				{
-					System.out.print(l_SQLColumnsInfo.getColumnName(li_x) + " | ");
-				}
-				System.out.println();
-				//String lS_Insert = getInsert(getT
-				
-				//l_SQLDataSet.setWriteSQLStametents()
-				
 				try
 				{
-					i_SQLDataSet.setSQLStatements(i_JTextArea_SQL.getText(),null,null,null);
-					System.out.println(i_SQLDataSet.getRowCount());
+					String lS_Table = getTableNameFromSelectSQL(i_JTextArea_SQL.getText());
+					i_SQLDataSet.setWriteSQLStametents(createInsertSQL(lS_Table), createUpdateSQL(lS_Table),createDeleteSQL(lS_Table));
+					i_SQLDataSet.save();
 				}
 				catch(DataSetException l_DataSetException)
 				{
@@ -194,16 +200,14 @@ public class SwingDemo
 			 * @see com.sohlman.dataset.sql.ConnectionContainer#endTransaction()
 			 */
 			public void endTransaction() throws SQLException
-			{
-				setConnection(null);
+			{	
+				setConnection(null);	
 			}
 		};
 
 		try
 		{
 			l_SQLDataSet.setConnectionContainer(l_ConnectionContainer);
-//			l_SQLDataSet.setSQLStatements("select * from test", null, null, null);
-//			l_SQLDataSet.read();
 		}
 		catch (DataSetException l_DataSetException)
 		{
@@ -229,13 +233,13 @@ public class SwingDemo
 
 	}
 
-	public String getTableNameFromSelectSQL(String aS_Sql)
+	public String getTableNameFromSelectSQL(String aS_Sql) throws DataSetException
 	{
 		String lS_SQL = aS_Sql.toUpperCase();
 
 		int li_tableNameStart = lS_SQL.indexOf("FROM");
 		
-		if(li_tableNameStart==-1) return null;
+		if(li_tableNameStart==-1) throw new DataSetException("FROM clause not found");
 		
 		li_tableNameStart += 4;
 		
@@ -260,11 +264,96 @@ public class SwingDemo
 		// this don't support alias tables with as or "" named tables		
 		if(lS_TableName.indexOf(" ") > 0)
 		{
-			return null;
+			throw new DataSetException("More than one table definitions exists");
 		}
-			
-
 		return lS_TableName;
 	}
+	
+	public String createInsertSQL(String aS_Table)
+	{
+		StringBuffer lSb_InsertSQL = new StringBuffer();
+		ColumnsInfo l_ColumnsInfo = i_SQLDataSet.getColumnsInfo();	
+		
+		lSb_InsertSQL.append("INSERT INTO ").append(aS_Table).append(" ( ");
 
+		for(int li_x = 1 ; li_x <= l_ColumnsInfo.getColumnCount() ; li_x++)
+		{
+			if(li_x>1)
+			{
+				lSb_InsertSQL.append(", ");
+			}	
+			lSb_InsertSQL.append(l_ColumnsInfo.getColumnName(li_x));		
+		}
+		
+		
+		lSb_InsertSQL.append(" ) VALUES ( ");
+		
+		
+		
+		for(int li_x = 1 ; li_x <= l_ColumnsInfo.getColumnCount() ; li_x++)
+		{
+			if(li_x>1)
+			{
+				lSb_InsertSQL.append(", ");
+			}	
+			lSb_InsertSQL.append(":");
+			lSb_InsertSQL.append(li_x);			
+		}
+		
+		lSb_InsertSQL.append(" )");
+		return lSb_InsertSQL.toString();
+	}
+	
+	public String createUpdateSQL(String aS_Table)
+	{
+		StringBuffer lSb_UpdateSQL = new StringBuffer();
+		lSb_UpdateSQL.append("UPDATE ").append(aS_Table).append(" SET ");
+		
+		ColumnsInfo l_ColumnsInfo = i_SQLDataSet.getColumnsInfo();	
+		
+		for(int li_x = 1 ; li_x <= l_ColumnsInfo.getColumnCount() ; li_x++)
+		{
+			if(li_x>1)
+			{
+				lSb_UpdateSQL.append(",");
+			}	
+			lSb_UpdateSQL.append(l_ColumnsInfo.getColumnName(li_x));
+			lSb_UpdateSQL.append(" = :n");
+			lSb_UpdateSQL.append(li_x);			
+		}
+		
+		lSb_UpdateSQL.append(" WHERE ");
+		for(int li_x = 1 ; li_x <= l_ColumnsInfo.getColumnCount() ; li_x++)
+		{
+			if(li_x>1)
+			{
+				lSb_UpdateSQL.append(" AND ");
+			}	
+			lSb_UpdateSQL.append(l_ColumnsInfo.getColumnName(li_x));
+			lSb_UpdateSQL.append(" = :o");
+			lSb_UpdateSQL.append(li_x);			
+		}		
+		return lSb_UpdateSQL.toString();
+	}
+	
+	public String createDeleteSQL(String aS_Table)
+	{
+		StringBuffer lSb_DeleteSQL = new StringBuffer();
+		lSb_DeleteSQL.append("DELETE FROM ").append(aS_Table);
+		
+		ColumnsInfo l_ColumnsInfo = i_SQLDataSet.getColumnsInfo();	
+		
+		lSb_DeleteSQL.append(" WHERE ");
+		for(int li_x = 1 ; li_x <= l_ColumnsInfo.getColumnCount() ; li_x++)
+		{
+			if(li_x>1)
+			{
+				lSb_DeleteSQL.append(" AND ");
+			}	
+			lSb_DeleteSQL.append(l_ColumnsInfo.getColumnName(li_x));
+			lSb_DeleteSQL.append(" = :o");
+			lSb_DeleteSQL.append(li_x);			
+		}		
+		return lSb_DeleteSQL.toString();
+	}		
 }
