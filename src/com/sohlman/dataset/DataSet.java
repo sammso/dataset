@@ -201,7 +201,7 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.ROW_REMOVED, ai_index,DataSetEvent.ALL));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.ROW_REMOVED, ai_index, DataSetEvent.ALL));
 			}
 		}
 		return li_return;
@@ -492,31 +492,31 @@ public class DataSet
 	{
 		i_KeyAction = a_KeyAction;
 	} /** Set setReadEngine for DataSet
-									 * @param a_ReadEngine Assigned read engine.
-									 */
+																						 * @param a_ReadEngine Assigned read engine.
+																						 */
 	public final void setReadEngine(ReadEngine a_ReadEngine)
 	{
 		// future when many types of
 		// write engines exists. Do check and set all other nulls.
 		i_ReadEngine = a_ReadEngine;
 	} /** Set WriteEngine for DataSet
-								 * @param a_WriteEngine Refrence to new WriteEngine.
-								 */
+																					 * @param a_WriteEngine Refrence to new WriteEngine.
+																					 */
 	public final void setWriteEngine(WriteEngine a_WriteEngine)
 	{
 		i_WriteEngine = a_WriteEngine;
 	} /** Removes ReadEngine from DataSet
-									 */
+																						 */
 	public final void removeReadEngine()
 	{
 		i_ReadEngine = null;
 	} /** Removes KeyAction object from DataSet
-									 */
+																						 */
 	public final void removeKeyAction()
 	{
 		i_KeyAction = null;
 	} /** Removes WriteEngine from DataSet
-									 */
+																						 */
 	public final void removeWriteEngine()
 	{
 		i_WriteEngine = null;
@@ -562,18 +562,24 @@ public class DataSet
 		}
 		return i_RowInfo.getColumnName(ai_index);
 	} /** Returns row count of DataSet
-									 * @return Row count of DataSet
-									 */
+																						 * @return Row count of DataSet
+																						 */
 	public int getRowCount()
 	{
 		return iVe_Data.size();
 	}
+
+	public void printBuffers(PrintStream a_PrintStream)
+	{
+		printBuffers(a_PrintStream, true, true, true, true);
+	}
+
 	/** <b>This is for Debugging.</b><br><br>
 	* Prints buffrers to PrintStream
 	* <b>Future will be removed</b>
 	* @param a_PrintStream PrintStream where to write debug information
 	*/
-	public void printBuffers(PrintStream a_PrintStream)
+	public void printBuffers(PrintStream a_PrintStream, boolean ab_data, boolean ab_new, boolean ab_modified, boolean ab_deleted)
 	{
 		StringBuffer lSb_Sep = new StringBuffer(18 * getColumnCount());
 		lSb_Sep.append("*");
@@ -585,52 +591,63 @@ public class DataSet
 		for (int li_x = 0; li_x < getColumnCount(); li_x++)
 			lSb_Sep.append("-----------------+");
 		String lS_Sep2 = lSb_Sep.toString();
-		a_PrintStream.println(lS_Sep1);
-		a_PrintStream.println("Databuffer");
-		printColumnNames(a_PrintStream);
-		a_PrintStream.println(lS_Sep2);
-		printBuffer(iVe_Data, a_PrintStream);
-		a_PrintStream.println(lS_Sep2);
-		a_PrintStream.println(lS_Sep1);
-		if (iVe_New.size() > 0)
+		if (ab_data)
 		{
-			a_PrintStream.println("NewBuffer");
+			a_PrintStream.println(lS_Sep1);
+			a_PrintStream.println("Databuffer");
 			printColumnNames(a_PrintStream);
 			a_PrintStream.println(lS_Sep2);
-			printBuffer(iVe_New, a_PrintStream);
+			printBuffer(iVe_Data, a_PrintStream);
 			a_PrintStream.println(lS_Sep2);
 		}
-		else
+		if (ab_new)
 		{
-			a_PrintStream.println("NewBuffer (empty)");
+			a_PrintStream.println(lS_Sep1);
+			if (iVe_New.size() > 0)
+			{
+				a_PrintStream.println("NewBuffer");
+				printColumnNames(a_PrintStream);
+				a_PrintStream.println(lS_Sep2);
+				printBuffer(iVe_New, a_PrintStream);
+				a_PrintStream.println(lS_Sep2);
+			}
+			else
+			{
+				a_PrintStream.println("NewBuffer (empty)");
+			}
 		}
-		a_PrintStream.println(lS_Sep1);
-		if (iVe_Modified.size() > 0)
+		if (ab_modified)
 		{
-			a_PrintStream.println("ModifiedBuffer");
-			printColumnNames(a_PrintStream);
-			a_PrintStream.println(lS_Sep2);
-			printBuffer(iVe_Modified, a_PrintStream);
-			a_PrintStream.println(lS_Sep2);
+			a_PrintStream.println(lS_Sep1);
+			if (iVe_Modified.size() > 0)
+			{
+				a_PrintStream.println("ModifiedBuffer");
+				printColumnNames(a_PrintStream);
+				a_PrintStream.println(lS_Sep2);
+				printBuffer(iVe_Modified, a_PrintStream);
+				a_PrintStream.println(lS_Sep2);
+			}
+			else
+			{
+				a_PrintStream.println("ModifiedBuffer (empty)");
+			}
 		}
-		else
+		if (ab_deleted)
 		{
-			a_PrintStream.println("ModifiedBuffer (empty)");
+			a_PrintStream.println(lS_Sep1);
+			if (iVe_Deleted.size() > 0)
+			{
+				a_PrintStream.println("DeleteeBuffer");
+				printColumnNames(a_PrintStream);
+				a_PrintStream.println(lS_Sep2);
+				printBuffer(iVe_Deleted, a_PrintStream);
+				a_PrintStream.println(lS_Sep2);
+			}
+			else
+			{
+				a_PrintStream.println("DeletedBuffer (empty)");
+			}
 		}
-		a_PrintStream.println(lS_Sep1);
-		if (iVe_Deleted.size() > 0)
-		{
-			a_PrintStream.println("DeleteeBuffer");
-			printColumnNames(a_PrintStream);
-			a_PrintStream.println(lS_Sep2);
-			printBuffer(iVe_Deleted, a_PrintStream);
-			a_PrintStream.println(lS_Sep2);
-		}
-		else
-		{
-			a_PrintStream.println("DeletedBuffer (empty)");
-		}
-
 		a_PrintStream.println(lS_Sep1);
 	}
 	/**
@@ -783,7 +800,7 @@ public class DataSet
 			{
 				iVe_Deleted.add(l_RowContainer);
 			}
-			
+
 			iVe_Data.remove(ai_index - 1);
 			return ai_index;
 		}
@@ -936,7 +953,7 @@ public class DataSet
 	* @param ai_index Index of row
 	* @return Copy of the row object in DataSet
 	*/
-	protected final Row getReferenceToRow(int ai_index)
+	final Row getReferenceToRow(int ai_index)
 	{
 		if (ai_index > 0 && ai_index <= getRowCount())
 		{
@@ -1098,11 +1115,26 @@ public class DataSet
 	private final static int COPY = 3;
 
 	/**
-	 * @see #synchronizeFrom(DataSet , RowComparator , boolean , boolean , boolean ) throws DataSetException
+	 * @see #synchronizeFrom(DataSet , RowComparator ,int[], boolean , boolean , boolean ) throws DataSetException
 	 */
-	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator) throws DataSetException
+	public int[] synchronizeFrom(DataSet a_DataSet_Source, int[] ai_sourceKeys, int[] ai_destinationKeys) throws DataSetException
 	{
-		return synchronizeFrom(a_DataSet_Source, a_RowComparator, true, true, true);
+		return synchronizeFrom(a_DataSet_Source, ai_sourceKeys, ai_destinationKeys, null, null, true, true, true);
+	}
+
+	/**
+	 * @see #synchronizeFrom(DataSet , RowComparator ,int[], boolean , boolean , boolean ) throws DataSetException
+	 */
+	public int[] synchronizeFrom(
+		DataSet a_DataSet_Source,
+		int[] ai_sourceKeys,
+		int[] ai_destinationKeys,
+		boolean ab_doAdd,
+		boolean ab_doUpdate,
+		boolean ab_doDelete)
+		throws DataSetException
+	{
+		return synchronizeFrom(a_DataSet_Source, ai_sourceKeys, ai_destinationKeys, null, null, ab_doAdd, ab_doUpdate, ab_doDelete);
 	}
 
 	/**
@@ -1115,111 +1147,231 @@ public class DataSet
 	 * 
 	 * @param a_DataSet_Source
 	 * @param a_RowComparator This tells if which rows are match. NOTE! Both DataSet are also ordered after this operation by using  selected RowComparator class
+	 * @param ai_columns Columns to be copied from source to destination.
 	 * @param ab_doAdd if add to operation should be is made to destination 
 	 * @param ab_doUpdate if update to operation should be is made to destination 
 	 * @param ab_doDelete if delete to operation should be is made to destination 
 	 * 
 	 * @return int[] Index 0 addcount 1 modify 2 remove count
 	 */
-	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator, boolean ab_doAdd, boolean ab_doUpdate, boolean ab_doDelete)
+	public int[] synchronizeFrom(
+		DataSet a_DataSet_Source,
+		int[] ai_sourceKeys,
+		int[] ai_destinationKeys,
+		int[] ai_sourceColumns,
+		int[] ai_destinationColumns,
+		boolean ab_doAdd,
+		boolean ab_doUpdate,
+		boolean ab_doDelete)
 		throws DataSetException
 	{
-		// At first ai_columns, ai_keys don't work
+		// If Source columns are not defined
+		// then create them	by choosing all
 
-		if (!(getRowInfo().equals(a_DataSet_Source.getRowInfo())))
+		if (ai_sourceColumns == null)
 		{
-			throw new DataSetException(EX_STRUCTURE_IS_NOT_MATCH);
+			int li_count = 0;
+			if (a_DataSet_Source.getColumnCount() > getColumnCount())
+			{
+				li_count = getColumnCount();
+			}
+			else
+			{
+				li_count = a_DataSet_Source.getColumnCount();
+			}
+			ai_sourceColumns = new int[li_count];
+
+			for (int li_index = 1; li_index <= li_count; li_index++)
+			{
+				ai_sourceColumns[li_index - 1] = li_index;
+			}
 		}
+
+		// If Destination columns are not defined
+		// then create them	by choosing all
+
+		if (ai_destinationColumns == null)
+		{
+			int li_count = 0;
+			if (a_DataSet_Source.getColumnCount() > getColumnCount())
+			{
+				li_count = getColumnCount();
+			}
+			else
+			{
+				li_count = a_DataSet_Source.getColumnCount();
+			}
+			ai_destinationColumns = new int[li_count];
+
+			for (int li_index = 1; li_index <= li_count; li_index++)
+			{
+				ai_destinationColumns[li_index - 1] = li_index;
+			}
+		}
+
+		//
+		// Start to check some programming mistakes
+		//
+
+		if (ai_sourceKeys.length != ai_destinationKeys.length)
+		{
+			throw new IllegalArgumentException("In synchronization source and destination key column count has to be match");
+		}
+		if (ai_sourceColumns.length != ai_destinationColumns.length)
+		{
+			throw new IllegalArgumentException("In synchronization source and destination column count has to be match");
+		}
+
+		// Check that columns are
+
+				RowInfo l_RowInfo_Source = a_DataSet_Source.getRowInfo();
+				RowInfo l_RowInfo_Destination = getRowInfo();
+		
+				for (int li_index = 0; li_index < ai_sourceColumns.length; li_index++)
+				{
+					ColumnInfo l_ColumnInfo_Source = l_RowInfo_Source.getColumnInfo(ai_sourceColumns[li_index]);
+					ColumnInfo l_ColumnInfo_Destination = l_RowInfo_Destination.getColumnInfo(ai_destinationColumns[li_index]);
+		
+					if (!l_ColumnInfo_Source.equals(l_ColumnInfo_Destination))
+					{
+						throw new DataSetException("Column classes that should be synchronized are not match.");
+					}
+				}
+				
+				for (int li_index = 0; li_index < ai_sourceKeys.length; li_index++)
+				{
+					ColumnInfo l_ColumnInfo_Source = l_RowInfo_Source.getColumnInfo(ai_sourceKeys[li_index]);
+					ColumnInfo l_ColumnInfo_Destination = l_RowInfo_Destination.getColumnInfo(ai_destinationKeys[li_index]);
+		
+					if (!l_ColumnInfo_Source.equals(l_ColumnInfo_Destination))
+					{
+						throw new DataSetException("Keys column classes of synchronization are not match");
+					}
+				}		
 
 		// DataSet's need to be correct order because of copying	
 
-		a_DataSet_Source.setComparator(a_RowComparator);
+		a_DataSet_Source.setComparator(new RowComparator(ai_sourceKeys));
 		a_DataSet_Source.sort();
 
-		setComparator(a_RowComparator);
+		setComparator(new RowComparator(ai_destinationKeys));
 		sort();
 
-		int li_sourceCounter = 1, li_destinationCounter = 1;
 		int li_sourceCount = a_DataSet_Source.getRowCount();
 		int li_destinationCount = getRowCount();
+
 		int li_addCount = 0;
 		int li_modifyCount = 0;
 		int li_removeCount = 0;
 
-		boolean lb_loop = true;
-		if (li_sourceCount > 0 || li_destinationCount > 0)
+		if (li_sourceCount > 0 && li_destinationCount > 0)
 		{
-			while (lb_loop)
+			int li_sIndex = 1;
+			int li_dIndex = 1;
+			do
 			{
-				lb_loop = false;
-				int li_result =
-					compareRows(a_DataSet_Source, this, a_RowComparator, li_sourceCounter, li_destinationCounter, li_sourceCount, li_destinationCount);
-				if (li_result == COPY)
+				Row l_Row_Destination = getReferenceToRow(li_dIndex);
+				Row l_Row_Source = a_DataSet_Source.getReferenceToRow(li_sIndex);
+				int li_result;
+
+				li_result = compareRows(l_Row_Destination, l_Row_Source, ai_sourceKeys, ai_destinationKeys);
+
+				if (li_result < 0) 
 				{
+					// Destination smaller so let's remove
+					if (ab_doDelete)
+					{
+						removeRow(li_dIndex);
+						li_destinationCount--;
+						li_removeCount++;
+					}
+				}
+				else if (li_result > 0) 
+				{
+					// Destination bigger so let's add
+					if (ab_doAdd)
+					{
+						int li_row = addRow();
+						copyRow(l_Row_Source, getReferenceToRow(li_row), ai_sourceColumns, ai_destinationColumns);
+						li_addCount++;
+						li_sIndex++;
+					}
+
+				}
+				else 
+				{
+					// Equal .. Copy
 					if (ab_doUpdate)
 					{
-						if (copyRow(a_DataSet_Source, this, li_sourceCounter, li_destinationCounter))
+						if (copyRow(l_Row_Source, l_Row_Destination, ai_sourceColumns, ai_destinationColumns))
 						{
 							li_modifyCount++;
 						}
-						li_destinationCounter++;
 					}
-					li_sourceCounter++;
-					lb_loop = true;
-				}
-				else if (li_result == DESTINATION_MISSING)
-				{
-					if (ab_doAdd)
+
+					if (li_dIndex < li_destinationCount)
 					{
-						if (addRow(a_DataSet_Source, this, li_sourceCounter))
+						if (compareRows(getReferenceToRow(li_dIndex + 1), l_Row_Source, ai_sourceKeys, ai_destinationKeys) != 0)
 						{
-							li_addCount++;
+							li_sIndex++;
 						}
 					}
-					li_sourceCounter++;
-					lb_loop = true;
+					li_dIndex++;
 				}
-				else if (li_result == SOURCE_MISSING)
+
+			}
+			while (li_dIndex <= li_destinationCount);
+
+			// Add rest from the source
+			if (ab_doAdd)
+			{
+				while (li_sIndex <= li_sourceCount)
 				{
-					if (ab_doDelete)
-					{
-						removeRow(li_destinationCounter);
-						li_removeCount++;
-						li_destinationCount--;
-					}
-					lb_loop = true;
-				}
-				if (li_sourceCounter > li_sourceCount && li_destinationCounter > li_destinationCount)
-				{
-					lb_loop = false;
+					int li_row = addRow();
+					copyRow(a_DataSet_Source.getReferenceToRow(li_sIndex), getReferenceToRow(li_row), ai_sourceColumns, ai_destinationColumns);
+					li_addCount++;
+					li_sIndex++;
 				}
 			}
 		}
+		else if (li_sourceCount == 0 && li_destinationCount > 0)
+		{
+			// Delete all from Destination
+			// from bottom to top for saving time
+			for (int li_index = getRowCount(); li_index >= 1; li_index--)
+			{
+				removeRow(li_index);
+			}
+		}
+		else if (li_sourceCount > 0 && li_destinationCount == 0)
+		{
+			// Delete all from Destination
+			// from bottom to top for saving time
+			for (int li_index = 1; li_index <= li_sourceCount; li_index++)
+			{
+				int li_row = addRow();
+				copyRow(a_DataSet_Source.getReferenceToRow(li_index), getReferenceToRow(li_row), ai_sourceColumns, ai_destinationColumns);
+			}
+		}
+
 		int[] li_returnValue = { li_addCount, li_modifyCount, li_removeCount };
 		return li_returnValue;
-
 	}
 
-	private boolean copyRow(DataSet a_DataSet_Source, DataSet a_DataSet_Destination, int ai_sourceCounter, int ai_destinationCounter)
+	private boolean copyRow(Row a_Row_Source, Row a_Row_Destination, int[] ai_colSource, int[] ai_colDestination)
 	{
 		int li_copyCount = 0;
-		for (int li_x = 1; li_x <= a_DataSet_Source.getColumnCount(); li_x++)
+
+		//for (int li_x = 1; li_x <= a_DataSet_Source.getColumnCount(); li_x++)
+		for (int li_x = 0; li_x < ai_colSource.length; li_x++)
 		{
 			int li_copy = 0;
-			Object lO_Source = a_DataSet_Source.getValueAt(ai_sourceCounter, li_x);
-			Object lO_Destination = a_DataSet_Destination.getValueAt(ai_destinationCounter, li_x);
-			// Source has to be null if it's string and empty with trim
-			//			if (lO_Source != null && lO_Source instanceof String)
-			//			{
-			//				String l_String = (String) lO_Source;
-			//				if (l_String.trim().equals(""))
-			//				{
-			//					lO_Source = null;
-			//				}
-			//			}
+			Object lO_Source = a_Row_Source.getValueAt(ai_colSource[li_x]);
+			Object lO_Destination = a_Row_Destination.getValueAt(ai_colDestination[li_x]);
+
 			if ((lO_Source != null && lO_Destination == null) || (lO_Source == null && lO_Destination != null))
 			{
-				a_DataSet_Destination.setValueAt(lO_Source, ai_destinationCounter, li_x);
+				a_Row_Destination.setValueAt(ai_colDestination[li_x], lO_Source);
 				li_copy = 1;
 			}
 			else if (lO_Source == null && lO_Destination == null)
@@ -1228,7 +1380,7 @@ public class DataSet
 			}
 			else if (!lO_Source.equals(lO_Destination))
 			{
-				a_DataSet_Destination.setValueAt(lO_Source, ai_destinationCounter, li_x);
+				a_Row_Destination.setValueAt(ai_colDestination[li_x], lO_Source);
 				li_copy = 1;
 			}
 			li_copyCount = li_copyCount + li_copy;
@@ -1242,22 +1394,6 @@ public class DataSet
 		{
 			return false;
 		}
-
-	}
-
-	private boolean addRow(DataSet a_DataSet_Source, DataSet a_DataSet_Destination, int li_ys)
-	{
-		int li_row = a_DataSet_Destination.addRow();
-		boolean lb_add = false;
-		for (int li_x = 1; li_x <= a_DataSet_Source.getColumnCount(); li_x++)
-		{
-			Object aO_Source = a_DataSet_Source.getValueAt(li_ys, li_x);
-			//System.out.print(aO_Source + "\t");
-			a_DataSet_Destination.setValueAt(aO_Source, li_row, li_x);
-			lb_add = true;
-		} //       ii_addCount = ii_addCount + li_add;
-		//System.out.println();
-		return lb_add;
 	}
 
 	public RowComparator getRowComparator()
@@ -1265,65 +1401,33 @@ public class DataSet
 		return i_DataSetComparator.getRowComparator();
 	}
 
-	private int compareRows(
-		DataSet a_DataSet_Source,
-		DataSet a_DataSet_Destination,
-		RowComparator a_RowComparator,
-		int ai_sourceCounter,
-		int ai_destinationCounter,
-		int ai_sourceCount,
-		int ai_destinationCount)
+	private int compareRows(Row a_Row_Source, Row a_Row_Destination, int[] ai_sourceKeys, int[] ai_destinationKeys)
 	{
-
-		if (ai_sourceCount < ai_sourceCounter)
+		/*		if(a_Row_Source == null && a_Row_Destination != null)
+				{
+					return 1;
+				}
+				else if(a_Row_Source != null && a_Row_Destination == null)
+				{
+					return -1;	
+				}
+		*/
+		for (int li_index = 0; li_index < ai_sourceKeys.length; li_index++)
 		{
-			return SOURCE_MISSING;
-		}
-		if (ai_destinationCount < ai_destinationCounter)
-		{
-			return DESTINATION_MISSING;
-		}
-
-		//		Comparable l_Comparable_Source = (Comparable) a_DataSet_Source.getValueAt(ai_sourceCounter, 1);
-		//		Comparable l_Comparable_Destination = (Comparable) a_DataSet_Destination.getValueAt(ai_destinationCounter, 1);
-
-		int li_result = a_RowComparator.compare(a_DataSet_Source.getRow(ai_sourceCounter), a_DataSet_Destination.getRow(ai_destinationCounter));
-		//		int li_result = l_Comparable_Source.compareTo(l_Comparable_Destination);
-		if (ai_sourceCount == ai_destinationCounter && ai_destinationCount > ai_destinationCounter && li_result != 0)
-		{
-			return SOURCE_MISSING;
-		}
-		if (ai_destinationCount == ai_destinationCounter && ai_sourceCount > ai_destinationCounter && li_result != 0)
-		{
-			return DESTINATION_MISSING;
-		}
-
-		if (li_result > 0)
-		{
-			if (ai_sourceCounter < ai_destinationCounter)
+			int li_value =
+				DataSetService.compareComparables(
+					(Comparable) a_Row_Source.getValueAt(ai_sourceKeys[li_index]),
+					(Comparable) a_Row_Destination.getValueAt(ai_destinationKeys[li_index]));
+			if (li_value > 0)
 			{
-				return DESTINATION_MISSING;
+				return li_value;
 			}
-			else
+			else if (li_value < 0)
 			{
-				return SOURCE_MISSING;
+				return li_value;
 			}
 		}
-		else if (li_result < 0)
-		{
-			if (ai_sourceCounter >= ai_destinationCounter)
-			{
-				return DESTINATION_MISSING;
-			}
-			else
-			{
-				return SOURCE_MISSING;
-			}
-		}
-		else
-		{
-			return COPY;
-		}
+		return 0;
 	}
 
 	/**
@@ -1483,5 +1587,4 @@ public class DataSet
 			}
 		}
 	}
-
 }
