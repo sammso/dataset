@@ -5,12 +5,17 @@ import java.util.EventObject;
 /**
  * @author Sampsa Sohlman
  * 
- * @version 2002-10-21
+ * @version 2003-03-25
  */
 public class DataSetEvent extends EventObject
 {
+	/* Column explanations */
+	
 	public static final int NOTVALID = -1;
 	public static final int ALL = -2;
+	
+	/* Event explanations */
+	 
 	public static final int ROW_INSERTED = 1;
 	public static final int ROW_REMOVED = 2;
 	public static final int READ_START = 3;	

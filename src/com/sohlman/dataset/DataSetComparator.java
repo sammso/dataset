@@ -14,7 +14,7 @@ final class DataSetComparator implements Comparator
 	/** Creates new DataSetComparator */
 	public DataSetComparator(Comparator a_Comparator)
 	{
-		if(i_Comparator==null)
+		if(a_Comparator==null)
 		{
 			throw new NullPointerException("Null value not accepted");
 		}
