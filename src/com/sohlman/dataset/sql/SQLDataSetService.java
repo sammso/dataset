@@ -120,21 +120,21 @@ public class SQLDataSetService
 		li_tableNameStart += 4;
 
 		int li_tableNameEnd = keyWordSearchIndexOf(lS_SQL, "WHERE", li_tableNameStart);
-		if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd + 6)))
+		if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd + 5)))
 		{
 			li_tableNameEnd = -1;
 		}		
 		if (li_tableNameEnd == -1)
 		{
 			li_tableNameEnd = keyWordSearchIndexOf(lS_SQL, "ORDER", li_tableNameStart);
-			if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd + 6)))
+			if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd + 5)))
 			{
 				li_tableNameEnd = -1;
 			}		
 			if (li_tableNameEnd == -1)
 			{
 				li_tableNameEnd = keyWordSearchIndexOf(lS_SQL, "GROUP", li_tableNameStart);
-				if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd + 6)))
+				if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameEnd + 5)))
 				{
 					li_tableNameEnd = -1;
 				}		

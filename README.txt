@@ -9,6 +9,11 @@
 
 Changes 
 ------------------------------------------------------------- 
+ Changes in Final
+ - AutoWrite now works also with autoincrement
+   auto increment fiels are not generated to SQL statement
+ - SQLColumnInfo
+
  Changes in RC 4
  - SQLColumn info has more information, see javadoc
  - Fixes on swing section

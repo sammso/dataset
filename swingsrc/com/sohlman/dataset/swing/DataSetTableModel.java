@@ -187,4 +187,14 @@ public class DataSetTableModel extends AbstractTableModel implements DataSetList
 			fireTableStructureChanged();
 		}
 	}
+	
+
+	/**
+	 * @see javax.swing.table.TableModel#getColumnClass(int)
+	 */
+	public Class getColumnClass(int ai_index)
+	{
+		return i_DataSet.getRowInfo().getColumnClass(ai_index + 1);
+	}
+
 }

@@ -19,7 +19,7 @@ public class SQLColumnInfo extends ColumnInfo
 	
 	private boolean ib_isAutoIncrement = false;
 	private boolean ib_isCurrency = false;
-	private boolean ib_isReadOnly = false;
+	//private boolean ib_isReadOnly = false;
 	private boolean ib_isSigned = false;
 	
 	
@@ -185,15 +185,14 @@ public class SQLColumnInfo extends ColumnInfo
 	}
 	
 	/**
-	 * This is mostly ment give values of
-	 * databases exaple size of char(20) or varchar(20)
-	 * 
+	 * Is currency or not
 	 * @return usually max String size of column
 	 */
-	public boolean getCurrency()
+	public boolean isCurrency()
 	{
 		return ib_isCurrency;
 	}
+	
 	
 	/** (Internal use) Set's DisplaySize
 	 * @param ai_size
