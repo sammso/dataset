@@ -41,15 +41,9 @@ public class SQLReadEngine implements ReadEngine
 	int ii_columnCount = 0;
 	private int ii_rowCount = 0;
 
-	private String[] iS_ColumnNames = null;
-	private String[] iS_ColumnTableNames = null;
-
-	private Object[] iO_Parameters;
-	private int[] ii_parameterOrder;
-
 	public final static int DONE = -1;
 
-	private int[] ii_columnTypes = null;
+	SQLStatement i_SQLStament;
 
 	/** Constructor
 	 */
@@ -69,13 +63,6 @@ public class SQLReadEngine implements ReadEngine
 		setSQL(aS_RetrieveSQL);
 	}
 
-	public SQLReadEngine(ConnectionContainer a_ConnectionContainer, String aS_RetrieveSQL, Object[] aO_Parameters) throws DataSetException, SQLException
-	{
-		setConnection(a_ConnectionContainer);
-		setSQL(aS_RetrieveSQL);
-		iO_Parameters = aO_Parameters;
-	}
-
 	public void setSQLSelectFilter(SQLSelectFilter a_SQLSelectFilter)
 	{
 		i_SQLSelectFilter = a_SQLSelectFilter;
@@ -89,29 +76,19 @@ public class SQLReadEngine implements ReadEngine
 		i_ConnectionContainer = a_ConnectionContainer;
 	}
 
-	public void setParameter(int ai_index, Object a_Object)
+	public void setParameter(int ai_index, Object a_Object, int ai_sqlType)
 	{
-		if (iO_Parameters != null && iO_Parameters.length >= ai_index)
-		{
-			iO_Parameters[ai_index - 1] = a_Object;
-		}
+		i_SQLStament.setParameter(ai_index, a_Object, a_Object, ai_sqlType);
 	}
 
 	public Object getParameter(int ai_index)
 	{
-		if (iO_Parameters != null && iO_Parameters.length > ai_index)
+		if (i_SQLStament == null)
 		{
-			return iO_Parameters[ai_index];
+			throw new IllegalStateException("You have to set SQL First");
 		}
-		else
-		{
-			return null;
-		}
-	}
 
-	public int[] getColumnTypes()
-	{
-		return ii_columnTypes;
+		return i_SQLStament.getParameterOrig(ai_index);
 	}
 
 	/** Set SQL statement for retrieve. Performs also PrepareStatement creation.
@@ -120,34 +97,15 @@ public class SQLReadEngine implements ReadEngine
 	 */
 	public void setSQL(String aS_ReadSQL) throws DataSetException
 	{
-		try
+		if (aS_ReadSQL != null)
 		{
-			if (aS_ReadSQL != null)
-			{
-				ii_parameterOrder = SQLService.getKeys(aS_ReadSQL, false);
-				iO_Parameters = new Object[ii_parameterOrder.length];
-				iS_ReadSQL = SQLService.createFinalSQL(aS_ReadSQL, false);
-			}
-			else
-			{
-				ii_parameterOrder = null;
-				iO_Parameters = null;
-				iS_ReadSQL = null;
-			}
+			i_SQLStament = new SQLStatement(aS_ReadSQL);
 		}
-		catch (SQLException a_SQLException)
+		else
 		{
-			throw new DataSetException("Error while parsing Select statment", a_SQLException);
+			i_SQLStament = null;
 		}
-	}
 
-	public String getColumnTableName(int ai_index)
-	{
-		if (iS_ColumnTableNames == null)
-		{
-			return null;
-		}
-		return iS_ColumnTableNames[ai_index - 1];
 	}
 
 	/** This is first method to call retrieve operation.
@@ -158,93 +116,87 @@ public class SQLReadEngine implements ReadEngine
 		ii_rowCount = 0;
 		try
 		{
-			if (iS_ReadSQL != null)
+			i_Connection = i_ConnectionContainer.getConnection();
+
+			if (i_Connection == null)
 			{
-				i_Connection = i_ConnectionContainer.getConnection();
+				throw new DataSetException("Couldn't retrieve conneciton from ConnectionContainer");
+			}
 
-				if (i_Connection == null)
+			PreparedStatement l_PreparedStatement = i_SQLStament.getPreparedStatement(i_Connection);
+			//				i_Connection.prepareStatement(iS_ReadSQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+			//				for (int li_c = 0; li_c < ii_parameterOrder.length; li_c++)
+			//				{
+			//					l_PreparedStatement.setObject(li_c + 1, iO_Parameters[ii_parameterOrder[li_c] - 1]);
+			//				}
+
+			i_ResultSet = l_PreparedStatement.executeQuery();
+			ResultSetMetaData l_ResultSetMetaData = i_ResultSet.getMetaData();
+
+			int li_columnCount = l_ResultSetMetaData.getColumnCount();
+			if (li_columnCount > 0)
+			{
+				int[] li_columnTypes = new int[li_columnCount];
+
+				String[] lS_ColumnTableNames = new String[li_columnCount];
+				String[] lS_ClassNames = new String[li_columnCount];
+				String[] lS_ColumnNames = new String[li_columnCount];
+
+				SQLColumnsInfo l_SQLColumnsInfo;
+				if (i_SQLSelectFilter != null)
 				{
-					throw new DataSetException("Couldn't retrieve conneciton from ConnectionContainer");
+					l_SQLColumnsInfo = i_SQLSelectFilter.getColumnsInfo(l_ResultSetMetaData);
 				}
-
-				PreparedStatement l_PreparedStatement = i_Connection.prepareStatement(iS_ReadSQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-				for (int li_c = 0; li_c < ii_parameterOrder.length; li_c++)
+				else
 				{
-					l_PreparedStatement.setObject(li_c + 1, iO_Parameters[ii_parameterOrder[li_c] - 1]);
-				}
-
-				i_ResultSet = l_PreparedStatement.executeQuery();
-				ResultSetMetaData l_ResultSetMetaData = i_ResultSet.getMetaData();
-
-				int li_columnCount = l_ResultSetMetaData.getColumnCount();
-				if (li_columnCount > 0)
-				{
-					int[] li_columnTypes = new int[li_columnCount];
-
-					String[] lS_ColumnTableNames = new String[li_columnCount];
-					String[] lS_ClassNames = new String[li_columnCount];
-					String[] lS_ColumnNames = new String[li_columnCount];
-
-					SQLColumnsInfo l_SQLColumnsInfo;
-					if (i_SQLSelectFilter != null)
+					for (int li_c = 1; li_c <= li_columnCount; li_c++)
 					{
-						l_SQLColumnsInfo = i_SQLSelectFilter.getColumnsInfo(l_ResultSetMetaData);
+						li_columnTypes[li_c - 1] = l_ResultSetMetaData.getColumnType(li_c);
+						lS_ColumnNames[li_c - 1] = l_ResultSetMetaData.getColumnName(li_c);
+						lS_ColumnTableNames[li_c - 1] = l_ResultSetMetaData.getTableName(li_c);
+						lS_ClassNames[li_c - 1] = l_ResultSetMetaData.getColumnClassName(li_c);
 					}
-					else
+					l_SQLColumnsInfo = new SQLColumnsInfo(lS_ClassNames, lS_ColumnNames, li_columnTypes);
+				}
+				if (a_ColumnsInfo == null)
+				{
+					return (ColumnsInfo) l_SQLColumnsInfo;
+				}
+				else
+				{
+					// Check that columns info type is SQLColumnsInfo
+					if (a_ColumnsInfo instanceof SQLColumnsInfo)
 					{
-						for (int li_c = 1; li_c <= li_columnCount; li_c++)
+						// Check Column types and class names are same
+						l_SQLColumnsInfo = (SQLColumnsInfo) a_ColumnsInfo;
+						for (int li_c = 1; li_c <= l_SQLColumnsInfo.getColumnCount(); li_c++)
 						{
-							li_columnTypes[li_c - 1] = l_ResultSetMetaData.getColumnType(li_c);
-							lS_ColumnNames[li_c - 1] = l_ResultSetMetaData.getColumnName(li_c);
-							lS_ColumnTableNames[li_c - 1] = l_ResultSetMetaData.getTableName(li_c);
-							lS_ClassNames[li_c - 1] = l_ResultSetMetaData.getColumnClassName(li_c);
+							if (l_SQLColumnsInfo.getColumnType(li_c) != li_columnTypes[li_c - 1])
+							{
+								throw new DataSetException("Database and predefined column types are different");
+							}
+							if (!l_SQLColumnsInfo.getColumnClassName(li_c).equals(lS_ClassNames[li_c - 1]))
+							{
+								throw new DataSetException("Database and predefined column classes are different");
+							}
 						}
-						l_SQLColumnsInfo = new SQLColumnsInfo(lS_ClassNames, lS_ColumnNames, li_columnTypes);
-					}
-					if (a_ColumnsInfo == null)
-					{
+						for (int li_c = 1; li_c <= l_SQLColumnsInfo.getColumnCount(); li_c++)
+						{
+							l_SQLColumnsInfo.setColumnName(li_c, lS_ColumnNames[li_c - 1]);
+						}
 						return (ColumnsInfo) l_SQLColumnsInfo;
 					}
 					else
 					{
-						// Check that columns info type is SQLColumnsInfo
-						if (a_ColumnsInfo instanceof SQLColumnsInfo)
-						{
-							// Check Column types and class names are same
-							l_SQLColumnsInfo = (SQLColumnsInfo) a_ColumnsInfo;
-							for (int li_c = 1; li_c <= l_SQLColumnsInfo.getColumnCount(); li_c++)
-							{
-								if (l_SQLColumnsInfo.getColumnType(li_c) != li_columnTypes[li_c - 1])
-								{
-									throw new DataSetException("Database and predefined column types are different");
-								}
-								if (!l_SQLColumnsInfo.getColumnClassName(li_c).equals(lS_ClassNames[li_c - 1]))
-								{
-									throw new DataSetException("Database and predefined column classes are different");
-								}
-							}
-							for (int li_c = 1; li_c <= l_SQLColumnsInfo.getColumnCount(); li_c++)
-							{
-								l_SQLColumnsInfo.setColumnName(li_c, lS_ColumnNames[li_c - 1]);
-							}
-							return (ColumnsInfo) l_SQLColumnsInfo;
-						}
-						else
-						{
-							// Throw Illegal argumentException because we don't want that it will be cached by DataSetException
-							// catchers
-							throw new IllegalArgumentException("DataSet ColumnInfo object is not SQLColumnInfo or it's child class");
-						}
+						// Throw Illegal argumentException because we don't want that it will be cached by DataSetException
+						// catchers
+						throw new IllegalArgumentException("DataSet ColumnInfo object is not SQLColumnInfo or it's child class");
 					}
-				}
-				else
-				{
-					throw new DataSetException("readStart - ResultSet column count is 0");
 				}
 			}
 			else
 			{
-				throw new DataSetException("readStart - No SQL statement defined.");
+				throw new DataSetException("readStart - ResultSet column count is 0");
 			}
 
 		}
@@ -252,18 +204,18 @@ public class SQLReadEngine implements ReadEngine
 		{
 			throw new DataSetException("readStart - SQL Error", a_SQLException);
 		} /*
-				catch (ClassNotFoundException a_ClassNotFoundException)
-				{
-					throw new DataSetException("readStart - ClassNotFoundException", a_ClassNotFoundException);
-				}
-				catch (InstantiationException a_InstantiationException)
-				{
-					throw new DataSetException("readStart - InstantiationException\n" + a_InstantiationException.getMessage(), a_InstantiationException);
-				}
-				catch (IllegalAccessException a_IllegalAccessException)
-				{
-					throw new DataSetException("readStart - IllegalAccessException", a_IllegalAccessException);
-				}*/
+								catch (ClassNotFoundException a_ClassNotFoundException)
+								{
+									throw new DataSetException("readStart - ClassNotFoundException", a_ClassNotFoundException);
+								}
+								catch (InstantiationException a_InstantiationException)
+								{
+									throw new DataSetException("readStart - InstantiationException\n" + a_InstantiationException.getMessage(), a_InstantiationException);
+								}
+								catch (IllegalAccessException a_IllegalAccessException)
+								{
+									throw new DataSetException("readStart - IllegalAccessException", a_IllegalAccessException);
+								}*/
 	}
 
 	/** Gets row from ResultSet to DataSet.
@@ -353,39 +305,5 @@ public class SQLReadEngine implements ReadEngine
 			}
 		}
 		return ii_rowCount;
-	}
-
-	/**
-	 * Database stored column name
-	 * @param ai_index of column name 1 - columncount
-	 * @return String null if index out of boundary othervice name.
-	 */
-	public String getColumnName(int ai_index)
-	{
-		if (ai_index <= 0 && ai_index > iS_ColumnNames.length)
-		{
-			return iS_ColumnNames[ai_index - 1];
-		}
-		else
-		{
-			return null;
-		}
-	}
-
-	/**
-	 * Returns java.sql.Types column type
-	 * @param ai_index 
-	 * @return int Column type if out of index then 0
-	 */
-	public int getColumnType(int ai_index)
-	{
-		if (ai_index <= 0 && ai_index > iS_ColumnNames.length)
-		{
-			return ii_columnTypes[ai_index - 1];
-		}
-		else
-		{
-			return 0; // 0 is not defined in JavaSQL types
-		}
 	}
 }

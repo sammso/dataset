@@ -128,12 +128,12 @@ public class SQLDataSet extends DataSet
 	 * @see com.sohlman.dataset.sql.SQLReadEngine#setParameter
 	 */
 
-	public void setParameter(int ai_index, Object a_Object)
+	public void setParameter(int ai_index, Object a_Object, int ai_sqlTypes)
 	{
 		SQLReadEngine l_SQLReadEngine = (SQLReadEngine) getReadEngine();
 		if (l_SQLReadEngine != null)
 		{
-			l_SQLReadEngine.setParameter(ai_index, a_Object);
+			l_SQLReadEngine.setParameter(ai_index, a_Object, ai_sqlTypes);
 		}
 	}
 

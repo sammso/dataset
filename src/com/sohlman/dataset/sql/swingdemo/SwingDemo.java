@@ -146,24 +146,39 @@ public class SwingDemo
 
 		i_JButton_Print = new JButton("Print");
 		i_JButton_Print.addActionListener(i_ActionListener);
+		
 		l_JPanel_Buttons.add(i_JButton_Print);		
 
 		JPanel l_JPanel_List = new JPanel();
 		l_JPanel_List.setLayout(new BorderLayout());
-
+	
+		JPanel l_JPanel_SQL = new JPanel();
+		l_JPanel_SQL.setLayout(new BorderLayout());	
+		l_JPanel_SQL.setBorder(BorderFactory.createBevelBorder(1));
+		
 		i_JTextArea_SQL = new JTextArea();
 		i_JTextArea_SQL.setRows(10);
 		i_JTextArea_SQL.setAutoscrolls(true);
 		i_JTextArea_SQL.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-
-		l_JPanel_List.add(i_JTextArea_SQL, BorderLayout.NORTH);
+		l_JPanel_SQL.add(i_JTextArea_SQL);
+		
+		l_JPanel_List.add(l_JPanel_SQL, BorderLayout.NORTH);
 
 		connectToDb();
-		i_JTable = new JTable(new JDataSet(getSQLDataSet()));
-		i_JTable.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		l_JPanel_List.add(i_JTable);
+		
+		JPanel l_JPanel_JTable = new JPanel();
+
+		l_JPanel_JTable.setLayout(new BorderLayout());	
+		i_JTable = new JTable(new DataSetTableModel(getSQLDataSet()));
+		i_JTable.setBorder(BorderFactory.createBevelBorder(1));
+		i_JTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
+			
+		JScrollPane l_JScrollPane_JTable = new JScrollPane(i_JTable);
+		l_JPanel_JTable.add(l_JScrollPane_JTable, BorderLayout.CENTER);
+		l_JPanel_List.add(l_JPanel_JTable, BorderLayout.CENTER);
 
 		JPanel l_JPanel = new JPanel();
+
 		l_JPanel.setLayout(new BorderLayout());
 		l_JPanel.add(l_JPanel_List, BorderLayout.CENTER);
 		l_JPanel.add(l_JPanel_Buttons, BorderLayout.EAST);
@@ -315,7 +330,7 @@ public class SwingDemo
 		{
 			if(li_x>1)
 			{
-				lSb_UpdateSQL.append(",");
+				lSb_UpdateSQL.append(", ");
 			}	
 			lSb_UpdateSQL.append(l_ColumnsInfo.getColumnName(li_x));
 			lSb_UpdateSQL.append(" = :n");
@@ -330,8 +345,11 @@ public class SwingDemo
 				lSb_UpdateSQL.append(" AND ");
 			}	
 			lSb_UpdateSQL.append(l_ColumnsInfo.getColumnName(li_x));
-			lSb_UpdateSQL.append(" = :o");
+			lSb_UpdateSQL.append(":isnull(:o");
+			lSb_UpdateSQL.append(li_x);
+			lSb_UpdateSQL.append(" ; IS NULL  ; = :o");			
 			lSb_UpdateSQL.append(li_x);			
+			lSb_UpdateSQL.append(")");		
 		}		
 		return lSb_UpdateSQL.toString();
 	}
@@ -351,8 +369,11 @@ public class SwingDemo
 				lSb_DeleteSQL.append(" AND ");
 			}	
 			lSb_DeleteSQL.append(l_ColumnsInfo.getColumnName(li_x));
-			lSb_DeleteSQL.append(" = :o");
+			lSb_DeleteSQL.append(":isnull(:o");
+			lSb_DeleteSQL.append(li_x);
+			lSb_DeleteSQL.append(" ; IS NULL  ; = :o");			
 			lSb_DeleteSQL.append(li_x);			
+			lSb_DeleteSQL.append(")");
 		}		
 		return lSb_DeleteSQL.toString();
 	}		

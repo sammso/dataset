@@ -1,17 +1,10 @@
-/*
- * RowContainer.java
- *
- * Created on 8. joulukuuta 2001, 16:03
- */
-
 package com.sohlman.dataset;
 
 import com.sohlman.dataset.*;
 
 /**
- *
  * @author  Sampsa Sohlman
- * @version 2001-09-10
+ * @version 2002-09-10
  */
 public class RowContainer
 {

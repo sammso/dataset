@@ -25,25 +25,31 @@ import com.sohlman.dataset.DataSetException;
  */
 public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 {
-	private PreparedStatement i_PreparedStatement_Insert = null;
-	private PreparedStatement i_PreparedStatement_Update = null;
-	private PreparedStatement i_PreparedStatement_Delete = null;
-	private Connection i_Connection = null;
-	private ConnectionContainer i_ConnectionContainer = null;
-	private String iS_ErrorMsg = "";
+	public final static String EX_UPDATE_NO_ROWS_UPDATED = "No rows updated to database";
+	public final static String EX_INSERT_NO_ROWS_INSERTED = "No rows inserted to database";
+	public final static String EX_DELETE_NO_ROWS_DELETED = "No rows deleted to database";
+	public final static String EX_NO_COLUMNINFO_DEFINED = "No SQLColumnInfo defined";
+	public final static String EX_SQLEXCEPTION = "SQLException";
+	public final static String EX_UPDATE_SQL_MISSING = "SQL update statements missing";
+	public final static String EX_GETCONNECTION_FAILED = "Get connection failed";
+	public final static String EX_RELEASECONNECTION_FAILED = "Release connection failed";	
+	
+
+	private SQLStatement i_SQLStatement_Insert;
+	private SQLStatement i_SQLStatement_Update;
+	private SQLStatement i_SQLStatement_Delete;		
+	
+	
+	private Connection i_Connection;
+	private ConnectionContainer i_ConnectionContainer;
 	private int ii_updateCount = 0;
-	private String iS_Insert = null;
-	private String iS_Update = null;
-	private String iS_Delete = null;
-	private SQLWriteFilter i_SQLWriteFilter = null;
+;
+	private SQLWriteFilter i_SQLWriteFilter;
 
 	private boolean ib_noRowsInsertedError = true;
 	private boolean ib_noRowsUpdatedError = true;
 	private boolean ib_noRowsDeletedError = true;
 
-	private int[] ii_insertParameters;
-	private int[] ii_updateParameters;
-	private int[] ii_deleteParameters;
 	private SQLColumnsInfo i_SQLColumnsInfo;
 
 	/** Creates new SQLUpdateEngine */
@@ -60,7 +66,12 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	 * @param aS_Update Update SQL statement
 	 * @param aS_Delete Delete SQL statement
 	 */
-	public SQLWriteEngine(ConnectionContainer a_ConnectionContainer, String aS_InsertSQL, String aS_UpdateSQL, String aS_DeleteSQL, SQLColumnsInfo a_SQLColumnsInfo)
+	public SQLWriteEngine(
+		ConnectionContainer a_ConnectionContainer,
+		String aS_InsertSQL,
+		String aS_UpdateSQL,
+		String aS_DeleteSQL,
+		SQLColumnsInfo a_SQLColumnsInfo)
 		throws DataSetException
 	{
 		setConnection(a_ConnectionContainer);
@@ -74,7 +85,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	 * @param a_Connecion Current connection object
 	 */
 	public void setSQLColumnsInfo(SQLColumnsInfo a_SQLColumnsInfo)
-	{		
+	{
 		i_SQLColumnsInfo = a_SQLColumnsInfo;
 	}
 
@@ -101,51 +112,31 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	 * false if error (See error code and text)
 	 */
 	public void setSQL(String aS_Insert, String aS_Update, String aS_Delete) throws DataSetException
-	{
-		String lS_CurrentSQL = null;
-		try
+	{	
+		if(aS_Insert!=null)
 		{
-			if (aS_Insert != null)
-			{
-				lS_CurrentSQL = "INSERT";				
-				ii_insertParameters = SQLService.getKeys(aS_Insert, false);
-				iS_Insert = SQLService.createFinalSQL(aS_Insert, false);
-
-			}
-			else
-			{
-				ii_insertParameters = null;
-				iS_Insert = null;
-			}
-
-			if (aS_Update != null)
-			{
-				lS_CurrentSQL = "UPDATE";				
-				ii_updateParameters = SQLService.getKeys(aS_Update, true);
-				iS_Update = SQLService.createFinalSQL(aS_Update, true);
-			}
-			else
-			{
-				ii_updateParameters = null;
-				iS_Update = null;
-			}
-
-			if (aS_Delete != null)
-			{
-				lS_CurrentSQL = "DELETE";				
-				ii_deleteParameters = SQLService.getKeys(aS_Delete, true);
-				iS_Delete = SQLService.createFinalSQL(aS_Delete, true);
-			}
-			else
-			{
-				ii_deleteParameters = null;
-				iS_Delete = null;
-			}
+			i_SQLStatement_Insert = new SQLStatement(aS_Insert);
 		}
-		catch (SQLException a_SQLException)
+		else
 		{
-			throw new DataSetException("Error while parsing " + lS_CurrentSQL + "  Statement", a_SQLException);
+			i_SQLStatement_Insert = null;
 		}
+		if(aS_Update!=null)
+		{
+			i_SQLStatement_Update = new SQLStatement(aS_Update);
+		}
+		else
+		{
+			i_SQLStatement_Update = null;
+		}		
+		if(aS_Delete!=null)
+		{
+			i_SQLStatement_Delete = new SQLStatement(aS_Delete);
+		}
+		else
+		{
+			i_SQLStatement_Delete = null;
+		}		
 	}
 
 	/**
@@ -162,14 +153,16 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 				case SQLWriteFilter.SKIP :
 					return;
 				case SQLWriteFilter.UPDATE :
-					doUpdate(a_Row, a_Row);
+					execSQLStatement(i_SQLStatement_Update, a_Row, a_Row);
+//					doUpdate(a_Row, a_Row);
 					return;
 				case SQLWriteFilter.DELETE :
-					doDelete(a_Row, a_Row);
+//					doDelete(a_Row, a_Row);
+					execSQLStatement(i_SQLStatement_Delete, a_Row, a_Row);
 					return;
 			}
 		}
-		doInsert(a_Row);
+		execSQLStatement(i_SQLStatement_Insert, a_Row, a_Row);
 	}
 
 	/**
@@ -186,15 +179,17 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 				case SQLWriteFilter.SKIP :
 					return;
 				case SQLWriteFilter.INSERT :
-					doInsert(a_Row_Current);
+//					doInsert(a_Row_Current);
+					execSQLStatement(i_SQLStatement_Insert, a_Row_Current, a_Row_Current);					
 					return;
 				case SQLWriteFilter.DELETE :
-					doDelete(a_Row_Original, a_Row_Current);
+//					doDelete(a_Row_Original, a_Row_Current);
+					execSQLStatement(i_SQLStatement_Delete, a_Row_Original, a_Row_Current);
 					return;
 			}
 		}
-
-		doUpdate(a_Row_Original, a_Row_Current);
+		execSQLStatement(i_SQLStatement_Update, a_Row_Original, a_Row_Current);
+//		doUpdate(a_Row_Original, a_Row_Current);
 	}
 
 	/**
@@ -211,14 +206,17 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 				case SQLWriteFilter.SKIP :
 					return;
 				case SQLWriteFilter.INSERT :
-					doInsert(a_Row_Current);
+//					doInsert(a_Row_Current);
+					execSQLStatement(i_SQLStatement_Insert, a_Row_Current, a_Row_Current);												
 					return;
 				case SQLWriteFilter.UPDATE :
-					doUpdate(a_Row_Original, a_Row_Current);
+//					doUpdate(a_Row_Original, a_Row_Current);
+					execSQLStatement(i_SQLStatement_Update, a_Row_Original, a_Row_Current);							
 					return;
 			}
 		}
-		doDelete(a_Row_Original, a_Row_Current);
+		execSQLStatement(i_SQLStatement_Delete, a_Row_Original, a_Row_Current);		
+//		doDelete(a_Row_Original, a_Row_Current);
 
 	}
 
@@ -234,9 +232,9 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 			{
 				i_ConnectionContainer.releaseConnection();
 			}
-			catch (SQLException a_SQLException)
+			catch (SQLException l_SQLException)
 			{
-				throw new DataSetException("writeEnd - Unable to release connection.", a_SQLException);
+				throw new DataSetException(EX_RELEASECONNECTION_FAILED, l_SQLException);
 			}
 			i_Connection = null;
 		}
@@ -253,139 +251,29 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		ii_updateCount = 0;
 		if (i_SQLColumnsInfo == null)
 		{
-			throw new DataSetException("writeStart - No SQLColumnInfo defined");
+			throw new DataSetException(EX_NO_COLUMNINFO_DEFINED);
 		}
-
+		
+		if(i_SQLStatement_Insert!=null)
+		{
+			i_SQLStatement_Delete.setSQLTypes(i_SQLColumnsInfo);
+		}
+		if(i_SQLStatement_Update!=null)
+		{
+			i_SQLStatement_Update.setSQLTypes(i_SQLColumnsInfo);
+		}
+		if(i_SQLStatement_Insert!=null)
+		{
+			i_SQLStatement_Insert.setSQLTypes(i_SQLColumnsInfo);
+		}
 		try
 		{
 			i_Connection = i_ConnectionContainer.getConnection();
-			if (iS_Insert != null)
-			{
-				i_PreparedStatement_Insert = i_Connection.prepareStatement(iS_Insert);
-			}
-			else
-			{
-				i_PreparedStatement_Insert = null;
-			}
-			if (iS_Update != null)
-			{
-				i_PreparedStatement_Update = i_Connection.prepareStatement(iS_Update);
-			}
-			else
-			{
-				i_PreparedStatement_Update = null;
-			}
-			if (iS_Delete != null)
-			{
-				i_PreparedStatement_Delete = i_Connection.prepareStatement(iS_Delete);
-			}
-			else
-			{
-				i_PreparedStatement_Delete = null;
-			}
 		}
-		catch (SQLException a_SQLException)
+		catch( SQLException l_SQLException )
 		{
-			throw new DataSetException("writeStart - SQLException occurred.", a_SQLException);
-		}
-
-	}
-
-	private void doUpdateAction(Row a_Row, PreparedStatement a_PreparedStatement, int[] ai_updateKeys) throws SQLException
-	{
-		int li_c;
-		int li_count;
-
-		li_count = a_Row.getColumnCount();
-
-		for (li_c = 0; li_c < li_count; li_c++)
-		{
-			a_PreparedStatement.setObject(li_c + 1, a_Row.getValueAt(li_c));
-		}
-
-		if (ai_updateKeys != null)
-		{
-			for (li_c = 0; li_c < ai_updateKeys.length; li_c++)
-			{
-				a_PreparedStatement.setObject(li_c + li_count, a_Row.getValueAt(ai_updateKeys[li_c]));
-			}
-		}
-
-		a_PreparedStatement.executeUpdate();
-		ii_updateCount++;
-	}
-
-	private void doDelete(Row a_Row_Original, Row a_Row_Current) throws DataSetException
-	{
-		if (i_SQLColumnsInfo == null)
-		{
-			throw new DataSetException("delete - No SQLColumnInfo defined");
-		}
-
-		if (i_PreparedStatement_Delete != null && iS_Delete != null)
-		{
-			if (ii_deleteParameters.length > 0)
-			{
-				try
-				{
-					int li_c;
-					int li_count;
-
-					li_count = a_Row_Original.getColumnCount();
-
-					for (li_c = 0; li_c < ii_deleteParameters.length; li_c++)
-					{
-						
-						if (ii_deleteParameters[li_c] > 0)
-						{
-							if (a_Row_Original.getValueAt(ii_deleteParameters[li_c]) == null)
-							{
-								i_PreparedStatement_Delete.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType(ii_deleteParameters[li_c]));
-							}
-							else
-							{
-								i_PreparedStatement_Delete.setObject(li_c + 1, a_Row_Original.getValueAt(ii_deleteParameters[li_c]));
-							}
-						}
-						else
-						{
-							if (a_Row_Current.getValueAt(-1 * ii_deleteParameters[li_c]) == null)
-							{
-								i_PreparedStatement_Delete.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType((-1 * ii_deleteParameters[li_c]) ));
-							}
-							else
-							{
-								i_PreparedStatement_Delete.setObject(li_c + 1, a_Row_Current.getValueAt(-1 * ii_deleteParameters[li_c]));
-							}
-						}
-					}
-
-					if (i_PreparedStatement_Delete.executeUpdate() == 0 && ib_noRowsDeletedError)
-					{
-						i_ConnectionContainer.setErrorFlag(true);
-						throw new DataSetException("deleteRow - No rows deleted");
-					}
-					ii_updateCount++;
-				}
-				catch (SQLException a_SQLException)
-				{
-					i_ConnectionContainer.setErrorFlag(true);
-					throw new DataSetException("deleteRow - SQL Error", a_SQLException);
-				}
-			}
-			else
-			{
-				i_ConnectionContainer.setErrorFlag(true);
-				throw new DataSetException("deleteRow - no delete parameters defined");
-			}
-		}
-
-		// This is allowed
-		/*        else
-		        {
-		            i_ConnectionContainer.setErrorFlag(true);
-		            throw new DataSetException("deleteRow - No delete statement defined");
-		        }*/
+			throw new DataSetException(EX_GETCONNECTION_FAILED, l_SQLException);			
+		}		
 	}
 
 	public void write(DataSet a_DataSet) throws DataSetException
@@ -393,157 +281,79 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		RowContainer l_RowContainer;
 
 		Iterator l_Iterator = a_DataSet.getDeleted().iterator();
-		
-		while (l_Iterator.hasNext())
-		{
-			l_RowContainer = (RowContainer) l_Iterator.next();
-			deleteRow(l_RowContainer.getOrigRow(), l_RowContainer.getRow());
-		}
 
-		l_Iterator = a_DataSet.getModified().iterator();
-		while (l_Iterator.hasNext())
-		{
-			l_RowContainer = (RowContainer) l_Iterator.next();
-			modifyRow(l_RowContainer.getOrigRow(), l_RowContainer.getRow());
-		}
-
-		l_Iterator = a_DataSet.getInserted().iterator();
-		while (l_Iterator.hasNext())
-		{
-			l_RowContainer = (RowContainer) l_Iterator.next();
-			insertRow(l_RowContainer.getRow());
-		}
+			while (l_Iterator.hasNext())
+			{
+				l_RowContainer = (RowContainer) l_Iterator.next();
+				deleteRow(l_RowContainer.getOrigRow(), l_RowContainer.getRow());
+			}
+	
+			l_Iterator = a_DataSet.getModified().iterator();
+			while (l_Iterator.hasNext())
+			{
+				l_RowContainer = (RowContainer) l_Iterator.next();
+				modifyRow(l_RowContainer.getOrigRow(), l_RowContainer.getRow());
+			}
+	
+			l_Iterator = a_DataSet.getInserted().iterator();
+			while (l_Iterator.hasNext())
+			{
+				l_RowContainer = (RowContainer) l_Iterator.next();
+				insertRow(l_RowContainer.getRow());
+			}
+			
 	}
 
-	private void doUpdate(Row a_Row_Original, Row a_Row_Current) throws DataSetException
+	private void execSQLStatement(SQLStatement a_SQLStatement, Row a_Row_Original, Row a_Row_Current) throws DataSetException
 	{
 		if (i_SQLColumnsInfo == null)
 		{
-			throw new DataSetException("update - No SQLColumnInfo defined");
+			throw new DataSetException(EX_NO_COLUMNINFO_DEFINED);
 		}
-		if (i_PreparedStatement_Update != null && iS_Update != null)
+
+		if (a_SQLStatement != null)
 		{
-			if (ii_updateParameters.length > 0)
+			try
 			{
-				try
+
+				// SetParameters
+				for (int li_c = 1; li_c <= i_SQLColumnsInfo.getColumnCount(); li_c++)
 				{
-					int li_c;
-					int li_count;
-
-					li_count = a_Row_Original.getColumnCount();
-
-					for (li_c = 0; li_c < ii_updateParameters.length; li_c++)
-					{
-
-						if (ii_updateParameters[li_c] > 0)
-						{
-							if (a_Row_Current.getValueAt(ii_updateParameters[li_c]) == null)
-							{
-								i_PreparedStatement_Update.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType(ii_updateParameters[li_c] ));
-							}
-							else
-							{
-								i_PreparedStatement_Update.setObject(li_c + 1, a_Row_Current.getValueAt(ii_updateParameters[li_c]));
-							}
-						}
-						else
-						{
-							if (a_Row_Original.getValueAt((-1) * ii_updateParameters[li_c]) == null)
-							{
-								i_PreparedStatement_Update.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType(((-1) * ii_updateParameters[li_c])));
-							}
-							else
-							{
-								i_PreparedStatement_Update.setObject(li_c + 1, a_Row_Original.getValueAt((-1) * ii_updateParameters[li_c]));
-							}
-						}
-					}
-					int li_return = i_PreparedStatement_Update.executeUpdate();
-					if (li_return == 0 && ib_noRowsUpdatedError)
-					{
-						i_ConnectionContainer.setErrorFlag(true);
-						DataSetException l_DataSetException = new DataSetException("modifyRow - No rows updated");
-						throw l_DataSetException;
-					}
-					ii_updateCount++;
+					a_SQLStatement.setParameter(li_c, a_Row_Original.getValueAt(li_c), a_Row_Current.getValueAt(li_c));
 				}
-				catch (SQLException a_SQLException)
+				PreparedStatement l_PreparedStatement = a_SQLStatement.getPreparedStatement(i_Connection);
+				
+				int li_return = l_PreparedStatement.executeUpdate();
+				
+				
+				if (li_return == 0 && ib_noRowsUpdatedError && a_SQLStatement == i_SQLStatement_Update)
 				{
 					i_ConnectionContainer.setErrorFlag(true);
-					throw new DataSetException("modifyRow - SQL error", a_SQLException);
+					DataSetException l_DataSetException = new DataSetException(EX_UPDATE_NO_ROWS_UPDATED);
+					throw l_DataSetException;
 				}
-			}
-			else
-			{
-				i_ConnectionContainer.setErrorFlag(true);
-				throw new DataSetException("modifyRow - no update parameters defined");
-			}
-		}
-		// Not needed
-		/*        else
-		        {
-		            i_ConnectionContainer.setErrorFlag(true);
-		            throw new DataSetException("modifyRow - No update statement defined");
-		        }*/
-	}
-
-	private void doInsert(Row a_Row) throws DataSetException
-	{
-		if (i_SQLColumnsInfo == null)
-		{
-			throw new DataSetException("insert - No SQLColumnInfo defined");
-		}
-
-		if (i_PreparedStatement_Insert != null && iS_Insert != null)
-		{
-			if (ii_insertParameters.length > 0)
-			{
-				try
-				{
-					int li_c;
-					int li_count;
-					int li_index;
-					li_count = a_Row.getColumnCount();
-
-					for (li_c = 0; li_c < ii_insertParameters.length; li_c++)
-					{
-						li_index = ii_insertParameters[li_c];
-
-						if (a_Row.getValueAt(li_index) == null)
-						{
-							i_PreparedStatement_Insert.setNull(li_c + 1, i_SQLColumnsInfo.getColumnType(li_index));
-						}
-						else
-						{
-							i_PreparedStatement_Insert.setObject(li_c + 1, a_Row.getValueAt(li_index));
-						}
-					}
-
-					if (i_PreparedStatement_Insert.executeUpdate() == 0 && ib_noRowsInsertedError)
-					{
-						i_ConnectionContainer.setErrorFlag(true);
-						throw new DataSetException("insertRow - No rows inserted");
-					}
-					ii_updateCount++;
-				}
-				catch (SQLException a_SQLException)
+				if (li_return == 0 && ib_noRowsInsertedError && a_SQLStatement == i_SQLStatement_Insert)
 				{
 					i_ConnectionContainer.setErrorFlag(true);
-					throw new DataSetException("insertRow - SQL error", a_SQLException);
+					DataSetException l_DataSetException = new DataSetException(EX_INSERT_NO_ROWS_INSERTED);
+					throw l_DataSetException;
 				}
+				if (li_return == 0 && ib_noRowsDeletedError && a_SQLStatement == i_SQLStatement_Delete)
+				{
+					i_ConnectionContainer.setErrorFlag(true);
+					DataSetException l_DataSetException = new DataSetException(EX_DELETE_NO_ROWS_DELETED);
+					throw l_DataSetException;
+				}
+
+				
+				ii_updateCount++;
 			}
-			else
+			catch (SQLException a_SQLException)
 			{
 				i_ConnectionContainer.setErrorFlag(true);
-				throw new DataSetException("insertRow - no insert parameters defined");
+				throw new DataSetException(EX_SQLEXCEPTION, a_SQLException);
 			}
 		}
-		/*        else
-		        {
-		            i_ConnectionContainer.setErrorFlag(true);
-		            throw new DataSetException("insertRow - No insert SQL statement defined");
-		        }
-		 */
 	}
 
 	/**

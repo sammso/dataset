@@ -149,7 +149,6 @@ public class DataSet
 	}
 
 	/** Creates new empty row, to wanted position.<br>
-	 * <b>This method is thread safe</b>
 	 * @return Position where row was created.<br>-1 if now row created.
 	 * @param ai_index Number of row where new row is to be inserted. All the other rows are moved down.<br>
 	 * If -1 then act as addRow()
@@ -172,9 +171,8 @@ public class DataSet
 		return li_return;
 	}
 
-	/** Creates new empty row end of DataSet.<br>
-	 * <b>This method is thread safe</b>
-	 * @return Position where row was created.<br>-1 if now row created.
+	/** Creates new empty row end of DataSet.
+	 * @return Index where row was created.<br>-1 if now row created.
 	 */
 	public final int addRow()
 	{
@@ -194,11 +192,10 @@ public class DataSet
 		return li_return;
 	}
 
-	/** Removes row from DataSet.<br>
-	 * <b>This method is thread safe</b>
+	/** Removes row from DataSet.
+	 * @param ai_index Row index for row to be removed.
 	 * @return Old index of removed row<br>
 	 * -1 if remove failed.
-	 * @param ai_index Row index for row to be removed.
 	 */
 	public final int removeRow(int ai_index)
 	{
@@ -218,8 +215,7 @@ public class DataSet
 		return li_return;
 	}
 
-	/** Resets all buffers.<br>
-	 * <b>This method is thread safe</b>
+	/** Resets all buffers.
 	 */
 	public final void reset()
 	{
@@ -932,6 +928,12 @@ public class DataSet
 		i_DataSetComparator = new DataSetComparator(a_Comparator);
 	}
 
+	/**
+	 * This with this method it is possible to change row status.
+	 * <i>Currently this is only skelenton and under design.</i>
+	 * @param ai_rowIndex
+	 * @param ai_buffer
+	 */
 	public void setBuffer(int ai_rowIndex, int ai_buffer)
 	{
 
@@ -957,8 +959,8 @@ public class DataSet
 				l_RowContainer.i_Row_Orig = null;
 				iVe_New.add(l_RowContainer);
 			}
-		}
-		if (ai_targetBuffer == this.MODIFIED)
+		} 
+		else if (ai_targetBuffer == this.MODIFIED)
 		{
 			iVe_Modified.removeAllElements();
 			iVe_Deleted.removeAllElements();
@@ -973,8 +975,8 @@ public class DataSet
 				}
 
 			}
-		}
-		if (ai_targetBuffer == this.NOTMODIFIED)
+		} 
+		else if (ai_targetBuffer == this.NOTMODIFIED)
 		{
 			iVe_Modified.removeAllElements();
 			iVe_Deleted.removeAllElements();
@@ -984,6 +986,10 @@ public class DataSet
 				RowContainer l_RowContainer = (RowContainer) iVe_Data.get(li_y);
 				l_RowContainer.i_Row_Orig = l_RowContainer.i_Row_Current;
 			}
+		}
+		else
+		{
+			throw new IllegalArgumentException("Argument has to be DataSet.NEW, DataSet.MODIFIED, DataSet.NOTMODIFIED ");
 		}
 	}
 
