@@ -36,6 +36,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	public final static String EX_GETCONNECTION_FAILED = "Get connection failed";
 	public final static String EX_RELEASECONNECTION_FAILED = "Release connection failed";
 	public final static String EX_MORE_THAN_ONE_TABLE_DEF = "More than one table definitions exists";
+	public final static String EX_CLOSE_PREPARED_STATEMENT = "Error while closing prepared statement";	
 
 	private SQLStatement i_SQLStatement_Insert;
 	private SQLStatement i_SQLStatement_Update;
@@ -207,10 +208,9 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		if (i_SQLColumnsInfo == null)
 		{
 			throw new IllegalStateException("SQLRowInfo is not set");
-		}		
+		}
 		StringBuffer lSb_UpdateSQL = new StringBuffer();
 		lSb_UpdateSQL.append("UPDATE ").append(aS_Table).append(" SET ");
-
 
 		for (int li_x = 1; li_x <= i_SQLColumnsInfo.getColumnCount(); li_x++)
 		{
@@ -245,7 +245,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		if (i_SQLColumnsInfo == null)
 		{
 			throw new IllegalStateException("SQLRowInfo is not set");
-		}		
+		}
 		StringBuffer lSb_DeleteSQL = new StringBuffer();
 		lSb_DeleteSQL.append("DELETE FROM ").append(aS_Table);
 
@@ -477,6 +477,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 		if (a_SQLStatement != null)
 		{
+			PreparedStatement l_PreparedStatement = null;
 			try
 			{
 
@@ -485,7 +486,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 				{
 					a_SQLStatement.setParameter(li_c, a_Row_Original.getValueAt(li_c), a_Row_Current.getValueAt(li_c));
 				}
-				PreparedStatement l_PreparedStatement = a_SQLStatement.getPreparedStatement(i_Connection);
+				l_PreparedStatement = a_SQLStatement.getPreparedStatement(i_Connection);
 
 				int li_return = l_PreparedStatement.executeUpdate();
 
@@ -510,11 +511,26 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 				ii_updateCount++;
 			}
-			catch (SQLException a_SQLException)
+			catch (SQLException l_SQLException)
 			{
 				i_ConnectionContainer.setErrorFlag(true);
-				throw new DataSetException(EX_SQLEXCEPTION, a_SQLException);
+				throw new DataSetException(EX_SQLEXCEPTION, l_SQLException);
 			}
+			finally
+			{
+				if (l_PreparedStatement != null)
+				{
+					try
+					{
+						l_PreparedStatement.close();
+					}
+					catch (SQLException l_SQLException)
+					{
+						throw new DataSetException(EX_CLOSE_PREPARED_STATEMENT, l_SQLException);	
+					}
+				}
+			}
+
 		}
 	}
 

@@ -6,19 +6,18 @@
 
 package com.sohlman.dataset.sql;
 
-import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Types;
 
-import com.sohlman.dataset.RowInfo;
-import com.sohlman.dataset.DataSet;
+import com.sohlman.dataset.DataSetException;
 import com.sohlman.dataset.ReadEngine;
 import com.sohlman.dataset.Row;
-import com.sohlman.dataset.Row;
-import com.sohlman.dataset.DataSetException;
+import com.sohlman.dataset.RowInfo;
 
 /** Common retrieve engine for retrieving data from JDBC sources.
  *
@@ -313,10 +312,11 @@ public class SQLReadEngine implements ReadEngine
 	{
 		try
 		{
-			i_ResultSet.getStatement();
 			if (i_ResultSet != null)
 			{
+				Statement l_Statement = i_ResultSet.getStatement();				
 				i_ResultSet.close();
+				l_Statement.close();
 			}
 			i_ResultSet = null;
 		}

@@ -22,7 +22,7 @@ public class SingleConnectionContainer extends ConnectionContainer
 	 */
 	public void beginTransaction() throws SQLException
 	{
-		
+		// Override
 	}
 
 	/**
@@ -30,6 +30,6 @@ public class SingleConnectionContainer extends ConnectionContainer
 	 */
 	public void endTransaction() throws SQLException
 	{
-				
+		// Override
 	}
 }
