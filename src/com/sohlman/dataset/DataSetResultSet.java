@@ -83,7 +83,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getString(int)
 	 */
-	public String getString(int arg0) throws SQLException
+	public String getString(int ai_columnIndex) throws SQLException
 	{
 		return null;
 	}
@@ -91,7 +91,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getBoolean(int)
 	 */
-	public boolean getBoolean(int arg0) throws SQLException
+	public boolean getBoolean(int ai_columnIndex) throws SQLException
 	{
 		return false;
 	}
@@ -99,7 +99,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getByte(int)
 	 */
-	public byte getByte(int arg0) throws SQLException
+	public byte getByte(int ai_columnIndex) throws SQLException
 	{
 		return 0;
 	}
@@ -107,7 +107,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getShort(int)
 	 */
-	public short getShort(int arg0) throws SQLException
+	public short getShort(int ai_columnIndex) throws SQLException
 	{
 		return 0;
 	}
@@ -115,7 +115,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getInt(int)
 	 */
-	public int getInt(int arg0) throws SQLException
+	public int getInt(int ai_columnIndex) throws SQLException
 	{
 		return 0;
 	}
@@ -123,7 +123,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getLong(int)
 	 */
-	public long getLong(int arg0) throws SQLException
+	public long getLong(int ai_columnIndex) throws SQLException
 	{
 		return 0;
 	}
@@ -131,7 +131,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getFloat(int)
 	 */
-	public float getFloat(int arg0) throws SQLException
+	public float getFloat(int ai_columnIndex) throws SQLException
 	{
 		return 0;
 	}
@@ -139,13 +139,14 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getDouble(int)
 	 */
-	public double getDouble(int arg0) throws SQLException
+	public double getDouble(int ai_columnIndex) throws SQLException
 	{
 		return 0;
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getBigDecimal(int, int)
+	 * Not implemented
 	 * @deprecated
 	 */
 	public BigDecimal getBigDecimal(int arg0, int arg1) throws SQLException
@@ -156,7 +157,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getBytes(int)
 	 */
-	public byte[] getBytes(int arg0) throws SQLException
+	public byte[] getBytes(int ai_columnIndex) throws SQLException
 	{
 		return null;
 	}
@@ -164,7 +165,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getDate(int)
 	 */
-	public Date getDate(int arg0) throws SQLException
+	public Date getDate(int ai_columnIndex) throws SQLException
 	{
 		return null;
 	}
@@ -172,7 +173,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getTime(int)
 	 */
-	public Time getTime(int arg0) throws SQLException
+	public Time getTime(int ai_columnIndex) throws SQLException
 	{
 		return null;
 	}
@@ -180,15 +181,16 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getTimestamp(int)
 	 */
-	public Timestamp getTimestamp(int arg0) throws SQLException
+	public Timestamp getTimestamp(int ai_columnIndex) throws SQLException
 	{
 		return null;
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getAsciiStream(int)
+	 * (Not implemented)
 	 */
-	public InputStream getAsciiStream(int arg0) throws SQLException
+	public InputStream getAsciiStream(int ai_columnIndex) throws SQLException
 	{
 		return null;
 	}
@@ -197,7 +199,7 @@ class DataSetResultSet implements ResultSet
 	 * @see java.sql.ResultSet#getUnicodeStream(int)
 	 * @deprecated
 	 */
-	public InputStream getUnicodeStream(int arg0) throws SQLException
+	public InputStream getUnicodeStream(int ai_columnIndex) throws SQLException
 	{
 		return null;
 	}
@@ -205,7 +207,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getBinaryStream(int)
 	 */
-	public InputStream getBinaryStream(int arg0) throws SQLException
+	public InputStream getBinaryStream(int ai_columnIndex) throws SQLException
 	{
 		return null;
 	}
@@ -213,7 +215,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getString(String)
 	 */
-	public String getString(String arg0) throws SQLException
+	public String getString(String aS_ColumnName) throws SQLException
 	{
 		return null;
 	}
@@ -221,7 +223,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getBoolean(String)
 	 */
-	public boolean getBoolean(String arg0) throws SQLException
+	public boolean getBoolean(String aS_ColumnName) throws SQLException
 	{
 		return false;
 	}
@@ -229,7 +231,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getByte(String)
 	 */
-	public byte getByte(String arg0) throws SQLException
+	public byte getByte(String aS_ColumnName) throws SQLException
 	{
 		return 0;
 	}
@@ -237,7 +239,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getShort(String)
 	 */
-	public short getShort(String arg0) throws SQLException
+	public short getShort(String aS_ColumnName) throws SQLException
 	{
 		return 0;
 	}
@@ -245,7 +247,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getInt(String)
 	 */
-	public int getInt(String arg0) throws SQLException
+	public int getInt(String aS_ColumnName) throws SQLException
 	{
 		return 0;
 	}
@@ -253,7 +255,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getLong(String)
 	 */
-	public long getLong(String arg0) throws SQLException
+	public long getLong(String aS_ColumnName) throws SQLException
 	{
 		return 0;
 	}
@@ -261,7 +263,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getFloat(String)
 	 */
-	public float getFloat(String arg0) throws SQLException
+	public float getFloat(String aS_ColumnName) throws SQLException
 	{
 		return 0;
 	}
@@ -269,7 +271,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getDouble(String)
 	 */
-	public double getDouble(String arg0) throws SQLException
+	public double getDouble(String aS_ColumnName) throws SQLException
 	{
 		return 0;
 	}
@@ -286,7 +288,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getBytes(String)
 	 */
-	public byte[] getBytes(String arg0) throws SQLException
+	public byte[] getBytes(String aS_ColumnName) throws SQLException
 	{
 		return null;
 	}
@@ -294,7 +296,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getDate(String)
 	 */
-	public Date getDate(String arg0) throws SQLException
+	public Date getDate(String aS_ColumnName) throws SQLException
 	{
 		return null;
 	}
@@ -302,7 +304,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getTime(String)
 	 */
-	public Time getTime(String arg0) throws SQLException
+	public Time getTime(String aS_ColumnName) throws SQLException
 	{
 		return null;
 	}
@@ -310,7 +312,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getTimestamp(String)
 	 */
-	public Timestamp getTimestamp(String arg0) throws SQLException
+	public Timestamp getTimestamp(String aS_ColumnName) throws SQLException
 	{
 		return null;
 	}
@@ -318,7 +320,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getAsciiStream(String)
 	 */
-	public InputStream getAsciiStream(String arg0) throws SQLException
+	public InputStream getAsciiStream(String aS_ColumnName) throws SQLException
 	{
 		return null;
 	}
@@ -327,7 +329,7 @@ class DataSetResultSet implements ResultSet
 	 * @see java.sql.ResultSet#getUnicodeStream(String)
 	 * @deprecated
 	 */
-	public InputStream getUnicodeStream(String arg0) throws SQLException
+	public InputStream getUnicodeStream(String aS_ColumnName) throws SQLException
 	{
 		return null;
 	}
@@ -335,7 +337,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getBinaryStream(String)
 	 */
-	public InputStream getBinaryStream(String arg0) throws SQLException
+	public InputStream getBinaryStream(String aS_ColumnName) throws SQLException
 	{
 		return null;
 	}
@@ -374,7 +376,7 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#getObject(int)
 	 */
-	public Object getObject(int arg0) throws SQLException
+	public Object getObject(int ai_) throws SQLException
 	{
 		return null;
 	}
@@ -569,11 +571,6 @@ class DataSetResultSet implements ResultSet
 	 */
 	public int getType() throws SQLException
 	{
-		if(i_DataSet==null)
-		{
-			throw new SQLException("ResultSet has been closed");
-		}		
-		
 		return TYPE_SCROLL_INSENSITIVE;
 	}
 
@@ -582,7 +579,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public int getConcurrency() throws SQLException
 	{
-		return 0;
+		return ResultSet.CONCUR_UPDATABLE;
 	}
 
 	/**
@@ -1100,22 +1097,24 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#updateBlob(String, Blob)
 	 */
-	public void updateBlob(String arg0, Blob arg1) throws SQLException
+	public void updateBlob(String aS_ColumnName, Blob a_Blob) throws SQLException
 	{
 	}
 
 	/**
 	 * @see java.sql.ResultSet#updateClob(int, Clob)
 	 */
-	public void updateClob(int arg0, Clob arg1) throws SQLException
+	public void updateClob(int arg0, Clob a_Clob) throws SQLException
 	{
+		throw new NoSuchMethodError("DataSetResultSet does not support : updateClob(int , Clob ");				
 	}
 
 	/**
 	 * @see java.sql.ResultSet#updateClob(String, Clob)
 	 */
-	public void updateClob(String arg0, Clob arg1) throws SQLException
+	public void updateClob(String aS_ColumnName, Clob a_Clob) throws SQLException
 	{
+		throw new NoSuchMethodError("DataSetResultSet does not support : updateClob(String , Clob ");		
 	}
 
 	/**
@@ -1123,13 +1122,15 @@ class DataSetResultSet implements ResultSet
 	 */
 	public void updateArray(int arg0, Array arg1) throws SQLException
 	{
+		throw new NoSuchMethodError("DataSetResultSet does not support : updateArray(int , Array ");
 	}
 
 	/**
 	 * @see java.sql.ResultSet#updateArray(String, Array)
 	 */
-	public void updateArray(String arg0, Array arg1) throws SQLException
+	public void updateArray(String aS_ColumnName, Array arg1) throws SQLException
 	{
+		throw new NoSuchMethodError("DataSetResultSet does not support : updateArray(String , Array ");
 	}
 
 }
