@@ -1,7 +1,7 @@
 /*
 DataSet Library
 ---------------
-Copyright (C) 2001-2004 - Sampsa Sohlman, Teemu Sohlman
+Copyright (C) 2001-2005 - Sampsa Sohlman, Teemu Sohlman
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
