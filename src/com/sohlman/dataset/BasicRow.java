@@ -20,24 +20,40 @@ import com.sohlman.dataset.Row;
  * </CODE><br>
  *
  * @author Sampsa Sohlman
- * @version 1.0
+ * @version 0.1
  */
 
 public class BasicRow implements Row
 {
 
 	Object[] iO_Columns = null;
+	String[] iS_ColumnClassNames;
+	
 	int ii_columnCount = 0;
 
 	/** Constructor
 	 * @param aO_Columns List object columns.
+	 * @param aS_ColumnClassNames Class names like "java.lang.String"
 	 * Only basic datacolums are allowed.
 	 */
-	public BasicRow(Object[] aO_Columns)
+	BasicRow(Object[] aO_Columns, String[] aS_ColumnClassNames)
 	{
 		iO_Columns = aO_Columns;
-		ii_columnCount = aO_Columns.length;
+		ii_columnCount = aS_ColumnClassNames.length;
+		iS_ColumnClassNames = aS_ColumnClassNames;
 	}
+	
+	/** Constructor
+	 * @param aS_ColumnClassNames Class names like "java.lang.String"
+	 * Only basic datacolums are allowed.
+	 */	
+	public BasicRow(String[] aS_ColumnClassNames)
+	{
+		iS_ColumnClassNames = aS_ColumnClassNames;
+		ii_columnCount = aS_ColumnClassNames.length;
+		iO_Columns = new Object[ii_columnCount];
+	}
+	
 
 	/** Returns class name or row.<br>
 	 * <b>Example</b></br>
@@ -47,13 +63,14 @@ public class BasicRow implements Row
 	 */
 	public final String getClassName(int ai_index)
 	{
-		if (ai_index < iO_Columns.length)
+		ai_index--;
+		if (ai_index < iS_ColumnClassNames.length && ai_index >= 0)
 		{
-			return null;
+			return iS_ColumnClassNames[ai_index];
 		}
 		else
 		{
-			return iO_Columns[ai_index].getClass().getName();
+			return null;
 		}
 	}
 
@@ -64,9 +81,22 @@ public class BasicRow implements Row
 	 */
 	public final int setValueAt(int ai_index, Object a_Object)
 	{
+		
+		//if(a_Object!=null) System.out.println(ai_index + " : " + a_Object.getClass().getName() + " :  " + a_Object.toString());
 		if (ai_index > 0 && ai_index <= iO_Columns.length)
 		{
-			iO_Columns[ai_index - 1] = a_Object;
+			if(a_Object==null)
+			{
+				iO_Columns[ai_index - 1] = null;	
+			}
+			else if(a_Object.getClass().getName().equals(iS_ColumnClassNames[ai_index - 1]))
+			{
+				iO_Columns[ai_index - 1] = a_Object;
+			}
+			else
+			{
+				ai_index = -1;
+			}
 			return ai_index;
 		}
 		else
@@ -163,7 +193,7 @@ public class BasicRow implements Row
 
 		System.arraycopy(iO_Columns, 0, l_Objects, 0, iO_Columns.length);
 
-		return (Object) new BasicRow(l_Objects);
+		return (Object) new BasicRow(l_Objects, iS_ColumnClassNames);
 	}
 
 	/** Set all column Values to null.

@@ -13,295 +13,368 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 
-import com.sohlman.dataset.RowReadEngine;
+import com.sohlman.dataset.DataSet;
+import com.sohlman.dataset.ReadEngine;
 import com.sohlman.dataset.Row;
 import com.sohlman.dataset.BasicRow;
 import com.sohlman.dataset.DataSetException;
-import com.sohlman.dataset.DataSetError;
 
+/**
+ * @author Sampsa Sohlman
+ *
+ * To change this generated comment edit the template variable "typecomment":
+ * Window>Preferences>Java>Templates.
+ * To enable and disable the creation of type comments go to
+ * Window>Preferences>Java>Code Generation.
+ */
 /** Common retrieve engine for retrieving data from JDBC sources.
  *
  * @author Sampsa Sohlman
+ * 
+ * @version 2002-09-26 Inteface has been changed
  * @version 2001-08-20
  * @see Update object
  */
-public class SQLReadEngine implements RowReadEngine
+public class SQLReadEngine implements ReadEngine
 {
-    
-    /** Creates new SQLRetrieveEngine */
-    private ConnectionContainer i_ConnectionContainer = null;
-    private Connection i_Connection = null;
-    private ResultSet i_ResultSet = null;
-    //private PreparedStatement i_PreparedStatement = null;
-    private String iS_ReadSQL = null;
-    
-    private SQLSelectFilter i_SQLSelectFilter = null;
-    
-    int ii_columnCount = 0;
-    private int ii_rowCount = 0;
-    private String[] iS_ColumnNames = null;
-    private Object[] iO_Parameters;
-    private int[] ii_parameterOrder;
-    
-    public final static int DONE = -1;
-    
-    private int[] ii_columnTypes = null;
-    
-    /** Constructor
-     */
-    public SQLReadEngine()
-    {
-    }
-    
-    /** Constructor with parameters.<br>
-     * With this constructor is possible to
-     * set Connection, and SQL String
-     * @param a_Connection Connection object
-     * @param aS_RetrieveSQL select or stored procedure statement, where ? marks places for parameters.
-     */
-    public SQLReadEngine(ConnectionContainer a_ConnectionContainer, String aS_RetrieveSQL) throws DataSetException
-    {
-	setConnection(a_ConnectionContainer);
-	setSQL(aS_RetrieveSQL);
-    }
-    
-    public SQLReadEngine(ConnectionContainer a_ConnectionContainer, String aS_RetrieveSQL, Object[] aO_Parameters) throws DataSetException, SQLException
-    {
-	setConnection(a_ConnectionContainer);
-	setSQL(aS_RetrieveSQL);
-	iO_Parameters = aO_Parameters;
-    }
-    
-    public void setSQLSelectFilter(SQLSelectFilter a_SQLSelectFilter)
-    {
-	i_SQLSelectFilter = a_SQLSelectFilter;
-    }
-    
-    /** Connects to Connection object to this object.
-     * @param a_Connecion Connection object
-     */
-    public void setConnection(ConnectionContainer a_ConnectionContainer)
-    {
-	i_ConnectionContainer = a_ConnectionContainer;
-    }
-    
-    
-    public void setParameter(int ai_index, Object a_Object)
-    {
-	if(iO_Parameters!=null && iO_Parameters.length >= ai_index)
+
+	/** Creates new SQLRetrieveEngine */
+	private ConnectionContainer i_ConnectionContainer = null;
+	private Connection i_Connection = null;
+	private ResultSet i_ResultSet = null;
+	//private PreparedStatement i_PreparedStatement = null;
+	private String iS_ReadSQL = null;
+
+	private SQLSelectFilter i_SQLSelectFilter = null;
+
+	int ii_columnCount = 0;
+	private int ii_rowCount = 0;
+	
+	private String[] iS_ColumnNames = null;
+	private String[] iS_ColumnTableNames = null;
+	
+	private Object[] iO_Parameters;
+	private int[] ii_parameterOrder;
+
+	public final static int DONE = -1;
+
+	private int[] ii_columnTypes = null;
+
+	/** Constructor
+	 */
+	public SQLReadEngine()
 	{
-	    iO_Parameters[ai_index - 1] = a_Object;
 	}
-    }
-    
-    public Object getParameter(int ai_index)
-    {
-	if(iO_Parameters!=null && iO_Parameters.length > ai_index)
+
+	/** Constructor with parameters.<br>
+	 * With this constructor is possible to
+	 * set Connection, and SQL String
+	 * @param a_Connection Connection object
+	 * @param aS_RetrieveSQL select or stored procedure statement, where ? marks places for parameters.
+	 */
+	public SQLReadEngine(ConnectionContainer a_ConnectionContainer, String aS_RetrieveSQL) throws DataSetException
 	{
-	    return iO_Parameters[ai_index];
+		setConnection(a_ConnectionContainer);
+		setSQL(aS_RetrieveSQL);
 	}
-	else
+
+	public SQLReadEngine(ConnectionContainer a_ConnectionContainer, String aS_RetrieveSQL, Object[] aO_Parameters) throws DataSetException, SQLException
 	{
-	    return null;
+		setConnection(a_ConnectionContainer);
+		setSQL(aS_RetrieveSQL);
+		iO_Parameters = aO_Parameters;
 	}
-    }
-    
-    public int[] getColumnTypes()
-    {
-	return ii_columnTypes;
-    }
-    
-    /** Set SQL statement for retrieve. Performs also PrepareStatement creation.
-     * @param aS_RetrieveSQL select or stored procedure statement, where ? marks places for parameters.
-     * @return true if success false if not.
-     */
-    public void setSQL(String aS_ReadSQL) throws DataSetException
-    {
-	try
+
+	public void setSQLSelectFilter(SQLSelectFilter a_SQLSelectFilter)
 	{
-	    if(aS_ReadSQL != null)
-	    {
-		ii_parameterOrder = SQLService.getKeys(aS_ReadSQL,false);
-		iO_Parameters = new Object[ii_parameterOrder.length];
-		iS_ReadSQL = SQLService.createFinalSQL(aS_ReadSQL,false);
-	    }
-	    else
-	    {
-		ii_parameterOrder = null;
-		iO_Parameters = null;
-		iS_ReadSQL = null;
-	    }
+		i_SQLSelectFilter = a_SQLSelectFilter;
 	}
-	catch(SQLException a_SQLException)
+
+	/** Connects to Connection object to this object.
+	 * @param a_Connecion Connection object
+	 */
+	public void setConnection(ConnectionContainer a_ConnectionContainer)
 	{
-	    throw new DataSetException("Error while parsing Select statment", a_SQLException);
+		i_ConnectionContainer = a_ConnectionContainer;
 	}
-    }
-    
-    /** This is first method to call retrieve operation.
-     *
-     */
-    public void readStart(Row a_Row_Model) throws DataSetException
-    {
-	ii_rowCount = 0;
-	try
+
+	public void setParameter(int ai_index, Object a_Object)
 	{
-	    if(iS_ReadSQL != null)
-	    {
-		i_Connection = i_ConnectionContainer.getConnection();
-		
-		PreparedStatement l_PreparedStatement = i_Connection.prepareStatement(iS_ReadSQL, ResultSet.TYPE_FORWARD_ONLY ,ResultSet.CONCUR_READ_ONLY);
-		for(int li_c = 0 ; li_c < ii_parameterOrder.length ; li_c++)
+		if (iO_Parameters != null && iO_Parameters.length >= ai_index)
 		{
-		    l_PreparedStatement.setObject(li_c + 1, iO_Parameters[ii_parameterOrder[li_c] - 1]);
+			iO_Parameters[ai_index - 1] = a_Object;
 		}
-		
-		i_ResultSet = l_PreparedStatement.executeQuery();
-		ResultSetMetaData l_ResultSetMetaData = i_ResultSet.getMetaData();
-		
-		ii_columnCount = l_ResultSetMetaData.getColumnCount();
-		if(ii_columnCount > 0)
+	}
+
+	public Object getParameter(int ai_index)
+	{
+		if (iO_Parameters != null && iO_Parameters.length > ai_index)
 		{
-		    iS_ColumnNames = new String[ii_columnCount];
-		    ii_columnTypes = new int[ii_columnCount];
-		    
-		    Object[] l_Objects = new Object[ii_columnCount];
-		    
-		    for(int li_c = 1 ; li_c <= ii_columnCount ; li_c++)
-		    {
-			if(i_SQLSelectFilter!=null)
+			return iO_Parameters[ai_index];
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	public int[] getColumnTypes()
+	{
+		return ii_columnTypes;
+	}
+
+	/** Set SQL statement for retrieve. Performs also PrepareStatement creation.
+	 * @param aS_RetrieveSQL select or stored procedure statement, where ? marks places for parameters.
+	 * @return true if success false if not.
+	 */
+	public void setSQL(String aS_ReadSQL) throws DataSetException
+	{
+		try
+		{
+			if (aS_ReadSQL != null)
 			{
-			    ii_columnTypes = i_SQLSelectFilter.getColumnTypes(l_ResultSetMetaData);
+				ii_parameterOrder = SQLService.getKeys(aS_ReadSQL, false);
+				iO_Parameters = new Object[ii_parameterOrder.length];
+				iS_ReadSQL = SQLService.createFinalSQL(aS_ReadSQL, false);
 			}
 			else
 			{
-			    ii_columnTypes[li_c - 1] = l_ResultSetMetaData.getColumnType(li_c);
-			    iS_ColumnNames[li_c - 1] = l_ResultSetMetaData.getColumnName(li_c);
-			    if(a_Row_Model == null)
-			    {
-				l_Objects[li_c - 1] = Class.forName(l_ResultSetMetaData.getColumnClassName(li_c)).newInstance();
-			    }
+				ii_parameterOrder = null;
+				iO_Parameters = null;
+				iS_ReadSQL = null;
 			}
-		    }
-		    
-		    if(a_Row_Model == null)
-		    {
-			a_Row_Model = (Row)new BasicRow(l_Objects);
-		    }
+		}
+		catch (SQLException a_SQLException)
+		{
+			throw new DataSetException("Error while parsing Select statment", a_SQLException);
+		}
+	}
+
+	public String getColumnTableName(int ai_index)
+	{
+		if(iS_ColumnTableNames==null)
+		{
+			return null;
+		}
+		if(ai_index > 0 && ai_index <= ii_columnCount)
+		{
+			return iS_ColumnTableNames[ai_index - 1];
 		}
 		else
 		{
-		    throw new DataSetException("readStart - ResultSet column count is 0");
+			return null;
 		}
-	    }
-	    else
-	    {
-		throw new DataSetException("readStart - No SQL statement defined.");
-	    }
-	    
 	}
-	catch(SQLException a_SQLException)
+	
+
+	/** This is first method to call retrieve operation.
+	 *
+	 */
+	public Row readStart(Row a_Row_Model) throws DataSetException
 	{
-	    throw new DataSetException("readStart - SQL Error", a_SQLException);
-	}
-	catch(ClassNotFoundException a_ClassNotFoundException)
-	{
-	    throw new DataSetException("readStart - ClassNotFoundException", a_ClassNotFoundException);
-	}
-	catch(InstantiationException a_InstantiationException)
-	{
-	    throw new DataSetException("readStart - InstantiationException", a_InstantiationException);
-	}
-	catch(IllegalAccessException a_IllegalAccessException)
-	{
-	    throw new DataSetException("readStart - IllegalAccessException", a_IllegalAccessException);
-	}
-    }
-    
-    /** Gets row from ResultSet to DataSet.
-     *
-     * <B>Only for dataset use.</B>
-     *
-     * @return Row object which contains retrieved data.
-     * null if no more data is found.
-     */
-    public int readRow(Row a_Row) throws DataSetException
-    {
-	if(i_ResultSet == null)
-	{
-	    throw new DataSetError("retrieveRow - ResultSet don't exist");
-	}
-	try
-	{
-	    if(a_Row != null)
-	    {
-		if(i_ResultSet.next())
-		{
-		    if(i_SQLSelectFilter!=null)
-		    {
-			Object[] l_Objects = i_SQLSelectFilter.getColumnObjects(i_ResultSet);
-			for(int li_c = 1; li_c <= i_SQLSelectFilter.getColumnCount() ; li_c++ )
-			{
-			    a_Row.setValueAt(li_c, l_Objects[li_c - 1]);
-			}			
-		    }
-		    else
-		    {
-			for(int li_c = 1; li_c <= ii_columnCount ; li_c++)
-			{
-			    a_Row.setValueAt(li_c, i_ResultSet.getObject(li_c));
-			}
-		    }
-		    ii_rowCount++;
-		    return ii_rowCount;
-		}
-		else
-		{
-		    return DONE;
-		}
-	    }
-	    else
-	    {
-		throw new DataSetException("retrieveRow - Parameter row object is null");
-	    }
-	}
-	catch(SQLException a_SQLException)
-	{
-	    throw new DataSetException("retrieveRow - SQL Error", a_SQLException);
-	}
-    }
-    /** Last action when all the rows are retrieved
-     * @return How may rows are retrieved
-     */
-    public int readEnd() throws DataSetException
-    {
-	try
-	{
-	    if(i_ResultSet!=null)
-	    {
-		i_ResultSet.close();
-	    }
-	    i_ResultSet = null;
-	}
-	catch(SQLException a_SQLException)
-	{
-	    throw new DataSetException("retrieveEnd - SQL Error", a_SQLException);
-	}
-	finally
-	{
-	    if(i_Connection!=null)
-	    {
+		ii_rowCount = 0;
 		try
 		{
-		    i_ConnectionContainer.releaseConnection();
-		    i_Connection = null;
+			if (iS_ReadSQL != null)
+			{
+				i_Connection = i_ConnectionContainer.getConnection();
+				
+				if(i_Connection==null)
+				{
+					throw new DataSetException("Couldn't retrieve conneciton from ConnectionContainer");
+				}
+				
+
+				PreparedStatement l_PreparedStatement = i_Connection.prepareStatement(iS_ReadSQL, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+				for (int li_c = 0; li_c < ii_parameterOrder.length; li_c++)
+				{
+					l_PreparedStatement.setObject(li_c + 1, iO_Parameters[ii_parameterOrder[li_c] - 1]);
+				}
+
+				i_ResultSet = l_PreparedStatement.executeQuery();
+				ResultSetMetaData l_ResultSetMetaData = i_ResultSet.getMetaData();
+
+				ii_columnCount = l_ResultSetMetaData.getColumnCount();
+				if (ii_columnCount > 0)
+				{
+					iS_ColumnNames = new String[ii_columnCount];
+					ii_columnTypes = new int[ii_columnCount];
+					iS_ColumnTableNames = new String[ii_columnCount];
+
+					String[] lS_ClassNames = new String[ii_columnCount];
+
+					for (int li_c = 1; li_c <= ii_columnCount; li_c++)
+					{
+						if (i_SQLSelectFilter != null)
+						{
+							ii_columnTypes = i_SQLSelectFilter.getColumnTypes(l_ResultSetMetaData);
+						}
+						else
+						{
+							ii_columnTypes[li_c - 1] = l_ResultSetMetaData.getColumnType(li_c);
+							iS_ColumnNames[li_c - 1] = l_ResultSetMetaData.getColumnName(li_c);
+							iS_ColumnTableNames[li_c - 1] = l_ResultSetMetaData.getTableName(li_c);
+							if (a_Row_Model == null)
+							{
+//								System.out.println(l_ResultSetMetaData.getColumnClassName(li_c));
+								lS_ClassNames[li_c - 1] = l_ResultSetMetaData.getColumnClassName(li_c);
+							}
+						}
+					}
+
+					if (a_Row_Model == null)
+					{
+						a_Row_Model = (Row) new BasicRow(lS_ClassNames);
+					}
+				}
+				else
+				{
+					throw new DataSetException("readStart - ResultSet column count is 0");
+				}
+			}
+			else
+			{
+				throw new DataSetException("readStart - No SQL statement defined.");
+			}
+
 		}
-		catch(SQLException a_SQLException_2)
+		catch (SQLException a_SQLException)
 		{
-		    throw new DataSetException("retrieveEnd - Unable, to release connection.", a_SQLException_2);
+			throw new DataSetException("readStart - SQL Error", a_SQLException);
+		}/*
+		catch (ClassNotFoundException a_ClassNotFoundException)
+		{
+			throw new DataSetException("readStart - ClassNotFoundException", a_ClassNotFoundException);
 		}
-	    }
+		catch (InstantiationException a_InstantiationException)
+		{
+			throw new DataSetException("readStart - InstantiationException\n" + a_InstantiationException.getMessage(), a_InstantiationException);
+		}
+		catch (IllegalAccessException a_IllegalAccessException)
+		{
+			throw new DataSetException("readStart - IllegalAccessException", a_IllegalAccessException);
+		}*/
+		return a_Row_Model;
 	}
-	return ii_rowCount;
-    }
+
+	/** Gets row from ResultSet to DataSet.
+	 *
+	 * <B>Only for dataset use.</B>
+	 *
+	 * @return Row object which contains retrieved data.
+	 * null if no more data is found.
+	 */
+	public int readRow(Row a_Row) throws DataSetException
+	{
+		if (i_ResultSet == null)
+		{
+			throw new DataSetException("readRow - ResultSet don't exist");
+		}
+		try
+		{
+			if (a_Row != null)
+			{
+				if (i_ResultSet.next())
+				{
+					if (i_SQLSelectFilter != null)
+					{
+						Object[] l_Objects = i_SQLSelectFilter.getColumnObjects(i_ResultSet);
+						for (int li_c = 1; li_c <= i_SQLSelectFilter.getColumnCount(); li_c++)
+						{
+							a_Row.setValueAt(li_c, l_Objects[li_c - 1]);
+						}
+					}
+					else
+					{
+						for (int li_c = 1; li_c <= ii_columnCount; li_c++)
+						{
+							a_Row.setValueAt(li_c, i_ResultSet.getObject(li_c));
+						}
+					}
+					ii_rowCount++;
+					return ii_rowCount;
+				}
+				else
+				{
+					return DataSet.NO_MORE_ROWS;
+				}
+			}
+			else
+			{
+				throw new DataSetException("readRow - Parameter row object is null");
+			}
+		}
+		catch (SQLException a_SQLException)
+		{
+			throw new DataSetException("readRow - SQLException", a_SQLException);
+		}
+	}
+	/** Last action when all the rows are retrieved
+	 * @return How may rows are retrieved
+	 */
+	public int readEnd() throws DataSetException
+	{
+		try
+		{
+			if (i_ResultSet != null)
+			{
+				i_ResultSet.close();
+			}
+			i_ResultSet = null;
+		}
+		catch (SQLException a_SQLException)
+		{
+			throw new DataSetException("readEnd - SQL Error", a_SQLException);
+		}
+		finally
+		{
+			if (i_Connection != null)
+			{
+				try
+				{
+					i_ConnectionContainer.releaseConnection();
+					i_Connection = null;
+				}
+				catch (SQLException a_SQLException_2)
+				{
+					throw new DataSetException("readEnd - Unable, to release connection.", a_SQLException_2);
+				}
+			}
+		}
+		return ii_rowCount;
+	}
+	
+	/**
+	 * Database stored column name
+	 * @param ai_index of column name 1 - columncount
+	 * @return String null if index out of boundary othervice name.
+	 */
+	public String getColumnName(int ai_index)
+	{
+		if(ai_index <= 0 && ai_index > iS_ColumnNames.length)
+		{
+			return iS_ColumnNames[ai_index - 1];			
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	/**
+	 * Returns java.sql.Types column type
+	 * @param ai_index 
+	 * @return int Column type if out of index then 0
+	 */
+	public int getColumnType(int ai_index)
+	{
+		if(ai_index <= 0 && ai_index > iS_ColumnNames.length)
+		{
+			return ii_columnTypes[ai_index - 1];			
+		}
+		else
+		{
+			return 0; // 0 is not defined in JavaSQL types
+		}
+	}		
 }

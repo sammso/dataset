@@ -32,19 +32,40 @@ public class SQLDataSet extends DataSet
 	{
 
 	}
-
+/*
 	public SQLDataSet(int[] ai_columnTypes) throws DataSetException
 	{
 		setColumnTypes(ai_columnTypes);
-	}
+	}*/
 	/**
 	 * Set's column types for DataSet<br>
 	 * @see
 	 */
-	public void setColumnTypes(int[] ai_columnTypes) throws DataSetException
+/*	public void setColumnTypes(int[] ai_columnTypes) throws DataSetException
 	{
 		ii_columnTypes = ai_columnTypes;
 		setModelRowObject(SQLDataSetService.createRowModelObject(ai_columnTypes));
+	}
+*/
+
+	/**
+	 * 
+	 * @see SQLReadEngine#getColumnName
+	 * 
+	 */
+
+	public String getColumnName(int ai_index)
+	{
+		SQLReadEngine l_SQLReadEngine = (SQLReadEngine) getReadEngine();
+		if(l_SQLReadEngine!=null)
+		{
+			return l_SQLReadEngine.getColumnName(ai_index);
+		}
+		else
+		{
+			return null;
+		}
+		
 	}
 
 	public int[] getColumnTypes()
