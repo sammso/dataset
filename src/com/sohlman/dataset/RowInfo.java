@@ -8,46 +8,11 @@ package com.sohlman.dataset;
 public class RowInfo
 {	
 	private ColumnInfo[] i_ColumnInfos;
-	
-	/*
-	public RowInfo(String[] aS_ColumnClassNames,  String[] aS_ColumnNames)
-	{
-		if(aS_ColumnClassNames==null || aS_ColumnNames==null)
-		{
-			throw new IllegalArgumentException("Parameters cannot be null");
-		}
-		
-		if(aS_ColumnClassNames.length != aS_ColumnNames.length)
-		{
-			throw new IllegalArgumentException("ColumnClassNames count has to be equal to ColumnNames count");
-		}
-						
-		iS_ColumnNames = aS_ColumnNames;
-		iS_ColumnClassNames = aS_ColumnClassNames;
-		ii_columnCount = iS_ColumnNames.length;
-	}
-	
-	public RowInfo(String[] aS_ColumnClassNames)
-	{
-		if(aS_ColumnClassNames==null)
-		{
-			throw new IllegalArgumentException("Parameters cannot be null");
-		}
-		
-		iS_ColumnNames = new String[aS_ColumnClassNames.length];
-		String lS_Empty = "";
-		
-		for(int li_x = 0 ; li_x < iS_ColumnNames.length ; li_x++)
-		{
-			iS_ColumnNames[li_x] = lS_Empty;
-		}
-		iS_ColumnClassNames = aS_ColumnClassNames;		
-		
-	}
-	*/
+
+
 	public RowInfo(ColumnInfo[] a_ColumnInfos)
 	{
-		i_ColumnInfos = a_ColumnInfos;
+		i_ColumnInfos = a_ColumnInfos;			
 	}
 	
 	public void setColumnName(int ai_index, String aS_Name)
@@ -55,11 +20,17 @@ public class RowInfo
 		getColumnInfo(ai_index).setName(aS_Name);
 	}
 	
-	public int getIndexByColumnName(String aS_Index)
+	public int getIndexByColumnName(String aS_ColumnName) throws DataSetException
 	{
 		// Future implementation
-		
-		return 0;
+		for(int li_index = 0 ; li_index < i_ColumnInfos.length ; li_index++)
+		{
+			if(i_ColumnInfos[li_index].getName().equals(aS_ColumnName))
+			{
+				return li_index + 1;
+			}
+		}
+		throw new DataSetException("ColumnNameNotFound");
 	}
 	
 	/**

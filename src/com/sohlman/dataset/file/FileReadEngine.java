@@ -149,7 +149,6 @@ public class FileReadEngine implements ReadEngine
 
 		aS_Data = aS_Data.trim();
 		FileColumnInfo l_FileColumnInfo = (FileColumnInfo) a_ColumnInfo;
-		l_FileColumnInfo.getStartPosition();
 		String lS_ClassName = l_FileColumnInfo.getClassName();
 
 		try
