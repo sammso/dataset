@@ -1338,8 +1338,8 @@ public class DataSet
 					}
 					while (li_dIndex <= li_destinationCount
 						&& compareRows(l_Row_Source, getReferenceToRow(li_dIndex), ai_sourceKeys, ai_destinationKeys) == 0
-						&& (li_sIndex < li_sourceCount
-							&& compareRows(l_Row_Source, a_DataSet_Source.getReferenceToRow(li_sIndex + 1), ai_sourceKeys, ai_sourceKeys) != 0));
+						&& (li_sIndex == li_sourceCount
+							|| compareRows(l_Row_Source, a_DataSet_Source.getReferenceToRow(li_sIndex + 1), ai_sourceKeys, ai_sourceKeys) != 0));
 				}
 				li_sIndex++;
 			}
