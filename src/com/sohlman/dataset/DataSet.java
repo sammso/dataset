@@ -849,7 +849,19 @@ public class DataSet
 		if (ai_rowIndex > 0 && ai_rowIndex <= iVe_Data.size())
 		{
 			RowContainer l_RowContainer = ((RowContainer) iVe_Data.get(ai_rowIndex - 1));
-			Row l_Row = (Row) l_RowContainer.i_Row_Current.clone();
+			
+			// Has to be re-thinked
+			
+			Row l_Row;
+			if(l_RowContainer.i_Row_Current == l_RowContainer.i_Row_Orig)
+			{
+				l_Row = (Row) l_RowContainer.i_Row_Current.clone();	
+			}
+			else
+			{
+				l_Row = (Row) l_RowContainer.i_Row_Current;
+			}
+			
 			if (l_Row.setValueAt(ai_columnIndex, a_Object) > 0)
 			{
 				return doModifyRow(ai_rowIndex, l_Row);
@@ -1123,7 +1135,7 @@ public class DataSet
 	 * @return int[] Index 0 addcount 1 modify 2 remove count
 	 * @throws DataSetException
 	 */	
-	public int[] syncronizeFromsynchronizeFrom(DataSet a_DataSet_Source, int ai_key)  throws DataSetException
+	public int[] synchronizeFrom(DataSet a_DataSet_Source, int ai_key)  throws DataSetException
 	{
 		int[] li_keys = { ai_key };
 		return synchronizeFrom(a_DataSet_Source, li_keys, li_keys, null, null, true, true, true);		
@@ -1278,14 +1290,6 @@ public class DataSet
 			}
 		}
 
-		// DataSet's need to be correct order because of copying	
-
-		a_DataSet_Source.setComparator(new RowComparator(ai_sourceKeys));
-		a_DataSet_Source.sort();
-
-		setComparator(new RowComparator(ai_destinationKeys));
-		sort();
-
 		int li_sourceCount = a_DataSet_Source.getRowCount();
 		int li_destinationCount = getRowCount();
 
@@ -1295,6 +1299,14 @@ public class DataSet
 
 		if (li_sourceCount > 0 && li_destinationCount > 0)
 		{
+			// DataSet's need to be correct order because of copying	
+
+			a_DataSet_Source.setComparator(new RowComparator(ai_sourceKeys));
+			a_DataSet_Source.sort();
+
+			setComparator(new RowComparator(ai_destinationKeys));
+			sort();			
+			
 			int li_sIndex = 1;
 			int li_dIndex = 1;
 			do
@@ -1408,6 +1420,8 @@ public class DataSet
 		else if (li_sourceCount > 0 && li_destinationCount == 0)
 		{
 			// Add all to Destination
+			iVe_Data.ensureCapacity(li_sourceCount);
+			iVe_New.ensureCapacity(li_sourceCount);
 			for (int li_index = 1; li_index <= li_sourceCount; li_index++)
 			{
 				int li_row = addRow();

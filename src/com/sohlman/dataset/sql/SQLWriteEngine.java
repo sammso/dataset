@@ -173,11 +173,16 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 					int li_i = lc_what.length - 1;
 					for (; li_i > 0; li_i--)
 					{
+						char lc_tmpWhat = lc_what[li_i];
+						char lc_tmpFrom = lc_from[li_i + li_index];
+						
+						
 						if (lc_what[li_i] != lc_from[li_i + li_index])
 						{
-							continue;
+							break;
 						}
 					}
+
 					if (li_i == 0)
 					{
 						return li_index;
@@ -658,5 +663,18 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		ib_noRowsInsertedError = ab_noRowsInsertedError;
 		ib_noRowsUpdatedError = ab_noRowsUpdatedError;
 		ib_noRowsDeletedError = ab_noRowsDeletedError;
+	}
+	
+	public static void main(String[] aS_Arguments)
+	{
+		try
+		{
+			System.out.println(getTableNameFromSelectSQL("SELECT * FROM helloworldisthis "));
+		}
+		catch(Exception l_Exception)
+		{
+			
+		}
+		
 	}
 }
