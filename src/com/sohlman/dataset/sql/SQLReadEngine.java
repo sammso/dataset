@@ -22,6 +22,7 @@ import com.sohlman.dataset.DataSetException;
 
 /** Common retrieve engine for retrieving data from JDBC sources.
  *
+* <p>To create SQL statements see documentation of {@link SQLStatement SQLStatement} class.</p>
  * @author Sampsa Sohlman
  * 
  * @version 2002-10-10 Inteface has been changed
@@ -99,6 +100,7 @@ public class SQLReadEngine implements ReadEngine
 	{
 		if (aS_ReadSQL != null)
 		{
+			iS_ReadSQL = aS_ReadSQL;
 			i_SQLStament = new SQLStatement(aS_ReadSQL);
 		}
 		else
@@ -108,6 +110,11 @@ public class SQLReadEngine implements ReadEngine
 
 	}
 
+	public String getSQL()
+	{
+		return iS_ReadSQL;
+	}
+	
 	/** This is first method to call retrieve operation.
 	 *
 	 */

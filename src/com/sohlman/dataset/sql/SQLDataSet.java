@@ -18,7 +18,8 @@ import com.sohlman.dataset.DataSetException;
  *     or {@link #setSQLSelect setSQLSelect} 
  *     or {@link #setWriteSQLStametents setWriteSQLStametents }
  *     depending of need of use of SQLDataSet.
- * </li>      
+ * </li>
+ * <li>If you have read engine and you data from one table with SELECT statment, ask SQLDataSet to generate automaticly write statements by setting {@link setAutoGenerateWriteSQL setAutoGenerateWriteSQL} true.</li>      
  * <li>Read data, using {@link com.sohlman.dataset.DataSet#read() read} method <i>(optional)</i></li>
  * <li>Modify data using {@link com.sohlman.dataset.DataSet#addRow addRow}, {@link com.sohlman.dataset.DataSet#insertRow insertRow}, 
  * {@link com.sohlman.dataset.DataSet#removeRow removeRow}, {@link com.sohlman.dataset.DataSet#setValueAt setValueAt} and 
@@ -28,10 +29,11 @@ import com.sohlman.dataset.DataSetException;
  * <li>You can ask Databata base information from {@link SQLColumnsInfo SQLColumnsInfo} object, which you can
  * object, which you can get with {@link com.sohlman.dataset.DataSet#getColumnsInfo() getColumnsInfo} object.
  * </li>
- * </ol>  
+ * </ol>
+ * <p>To create SQL statements see documentation of {@link SQLStatement SQLStatement} class.</p>
  * 
  * @author  Sampsa Sohlman
- * @version 2002-10-10
+ * @version 2002-10-31
  */
 public class SQLDataSet extends DataSet
 {
@@ -40,6 +42,8 @@ public class SQLDataSet extends DataSet
 	private String iS_InsertSQL;
 	private String iS_UpdateSQL;
 	private String iS_DeleteSQL;
+	
+	private boolean ib_autoGenerateWriteSQL = false;
 
 	private SQLSelectFilter i_SQLSelectFilter = null;
 	private SQLWriteFilter i_SQLWriteFilter = null;
@@ -69,6 +73,16 @@ public class SQLDataSet extends DataSet
 	public ConnectionContainer getConnectionContainer()
 	{
 		return i_ConnectionContainer;
+	}
+
+	/**
+	 * If it is possible then SQLDataSet will automaticly create
+	 *
+	 * @param ab_value
+	 */
+	public void setAutoGenerateWriteSQL(boolean ab_value)
+	{
+		ib_autoGenerateWriteSQL = ab_value;
 	}
 
 	/**
@@ -240,6 +254,28 @@ public class SQLDataSet extends DataSet
 	{
 		setUpIfPossible();
 		return super.save();
+	}
+	/**
+	 * @see com.sohlman.dataset.DataSet#read
+	 */	
+	public int read() throws DataSetException
+	{
+		int li_count = super.read();
+		if(ib_autoGenerateWriteSQL)
+		{
+			try
+			{
+				SQLWriteEngine l_SQLWriteEngine = new SQLWriteEngine(i_ConnectionContainer,getSelectSQL(),(SQLColumnsInfo)getColumnsInfo());
+				setWriteEngine(l_SQLWriteEngine);
+			}
+			catch(Exception l_Exception)
+			{
+				// Ignore all exceptions 
+				setWriteEngine(null);
+			}
+			
+		}
+		return li_count;
 	}
 
 	/**

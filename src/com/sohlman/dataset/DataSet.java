@@ -42,6 +42,7 @@ public class DataSet
 	 */
 	private DataSetVector iVe_Data;
 	/** This buffer contains data which is deleted.
+	 * (has to be check if more efficient solution is available)
 	 */
 	private Vector iVe_Deleted;
 	/** This buffer contains links to new inserted data.
@@ -49,11 +50,10 @@ public class DataSet
 	private Vector iVe_New;
 	/** This buffer contains links to modified data
 	 */
+	private Vector iVe_Modified;
 	/** ColumnsInfo Object containing ColumnInformation
 	 */
 	private ColumnsInfo i_ColumnsInfo;
-
-	private Vector iVe_Modified;
 
 	// Write engines
 	/** Write engine which will only write changes back to source.
@@ -67,7 +67,7 @@ public class DataSet
 
 	private DataSetComparator i_DataSetComparator = null;
 
-	/** With key action is possible deside if we hare doing just modify or insert / delete
+	/** With key action is possible deside if we are doing just modify or insert / delete
 	 */
 	private KeyAction i_KeyAction = null;
 	// Array which describes column class names
@@ -78,15 +78,6 @@ public class DataSet
 
 	public final static int NO_MORE_ROWS = -1;
 
-	/**
-	 */
-	private final static int READ = 1;
-	private final static int SAVE = 2;
-	private final static int INSERT = 3;
-	private final static int REMOVE = 4;
-	private final static int RESET = 5;
-	private final static int SET = 6;
-	private final static int SETROW = 7;
 	/** Describes error situation.
 	 */
 	public final static int ERROR = 0;
@@ -165,7 +156,8 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.ROW_INSERTED,li_return,DataSetEvent.NOTVALID));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(
+					new DataSetEvent(this, DataSetEvent.ROW_INSERTED, li_return, DataSetEvent.NOTVALID));
 			}
 		}
 		return li_return;
@@ -185,7 +177,8 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.ROW_INSERTED,li_row,DataSetEvent.NOTVALID));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(
+					new DataSetEvent(this, DataSetEvent.ROW_INSERTED, li_row, DataSetEvent.NOTVALID));
 			}
 		}
 
@@ -209,7 +202,7 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.ROW_REMOVED,ai_index));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.ROW_REMOVED, ai_index));
 			}
 		}
 		return li_return;
@@ -236,17 +229,17 @@ public class DataSet
 		{
 			iVe_Deleted.removeAllElements();
 		};
-		
+
 		if (iVe_Listeners != null)
 		{
 			Enumeration l_Enumeration;
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.RESET));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.RESET));
 			}
-		}		
-		
+		}
+
 	}
 
 	/** Read data with using ReadEngine
@@ -263,7 +256,7 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.READ_START));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.READ_START));
 			}
 		}
 
@@ -275,7 +268,7 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.READ_END, li_count));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.READ_END, li_count));
 			}
 		}
 		return li_count;
@@ -295,7 +288,7 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.SAVE_START));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.SAVE_START));
 			}
 		}
 		li_count = doSave();
@@ -305,7 +298,7 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.READ_END, li_count));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.READ_END, li_count));
 			}
 		}
 		return li_count;
@@ -366,7 +359,8 @@ public class DataSet
 				l_Enumeration = iVe_Listeners.elements();
 				while (l_Enumeration.hasMoreElements())
 				{
-					((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.COLUMN_CHANGED, ai_rowIndex, ai_columnIndex));
+					((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(
+						new DataSetEvent(this, DataSetEvent.COLUMN_CHANGED, ai_rowIndex, ai_columnIndex));
 				}
 			}
 			return true;
@@ -377,17 +371,64 @@ public class DataSet
 		}
 	}
 
-	/** Get certain value from row or column.
-	 * @param ai_rowIndex Row to read value
-	 * @param ai_columnIndex Column to read value
-	 * @return Column. This must be casted right object type.
+	/**
+	 * Tells if DataSet can save changes
+	 * @return boolean is dataset can be saved
 	 */
+	public boolean canSave()
+	{
+		if (i_WriteEngine != null
+			&& ((iVe_Deleted != null && iVe_Deleted.size() > 0) || (iVe_Modified != null && iVe_Modified.size() > 0) || (iVe_New != null && iVe_New.size() > 0)))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Do we have write engine
+	 * @return boolean is dataset can be saved
+	 */
+	public final boolean hasWriteEngine()
+	{
+		if (i_WriteEngine != null)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	/**
+	 * Do we have read engine
+	 * @return boolean is dataset can be saved
+	 */
+	public final boolean hasReadEngine()
+	{
+		if (i_ReadEngine != null)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	/** Get certain value from row or column.
+		 * @param ai_rowIndex Row to read value
+		 * @param ai_columnIndex Column to read value
+		 * @return Column. This must be casted right object type.
+		 */
 	public final Object getValueAt(int ai_rowIndex, int ai_columnIndex)
 	{
 		Object l_Object = null;
 		if (ai_rowIndex > 0 && ai_rowIndex <= iVe_Data.size())
-		{
-			// Because of multithreading it is not sure that we will get handle
+		{ // Because of multithreading it is not sure that we will get handle
 			// for the row.
 			try
 			{
@@ -402,62 +443,47 @@ public class DataSet
 			}
 		}
 		return l_Object;
-	}
-
-	/** Set set KeyAction object for DataSet<br>
-	 * With key action is possible deside if we hare doing just 'modify' or 'insert / delete' when setting item.<br>
-	 * If this method is not all the objects are always considered as modified.
-	 * @param a_KeyAction Refrence to KeyAction Object
-	 */
+	} /** Set set KeyAction object for DataSet<br>
+				 * With key action is possible deside if we hare doing just 'modify' or 'insert / delete' when setting item.<br>
+				 * If this method is not all the objects are always considered as modified.
+				 * @param a_KeyAction Refrence to KeyAction Object
+				 */
 	public final void setKeyAction(KeyAction a_KeyAction)
 	{
 		i_KeyAction = a_KeyAction;
-	}
-
-	/** Set setReadEngine for DataSet
-	 * @param a_ReadEngine Assigned read engine.
-	 */
+	} /** Set setReadEngine for DataSet
+				 * @param a_ReadEngine Assigned read engine.
+				 */
 	public final void setReadEngine(ReadEngine a_ReadEngine)
 	{
 		// future when many types of
 		// write engines exists. Do check and set all other nulls.
-
 		i_ReadEngine = a_ReadEngine;
-	}
-
-	/** Set WriteEngine for DataSet
-	 * @param a_WriteEngine Refrence to new WriteEngine.
-	 */
+	} /** Set WriteEngine for DataSet
+			 * @param a_WriteEngine Refrence to new WriteEngine.
+			 */
 	public final void setWriteEngine(WriteEngine a_WriteEngine)
 	{
 		i_WriteEngine = a_WriteEngine;
-	}
-
-	/** Removes ReadEngine from DataSet
-	 */
+	} /** Removes ReadEngine from DataSet
+				 */
 	public final void removeReadEngine()
 	{
 		i_ReadEngine = null;
-	}
-
-	/** Removes KeyAction object from DataSet
-	 */
+	} /** Removes KeyAction object from DataSet
+				 */
 	public final void removeKeyAction()
 	{
 		i_KeyAction = null;
-	}
-
-	/** Removes WriteEngine from DataSet
-	 */
+	} /** Removes WriteEngine from DataSet
+				 */
 	public final void removeWriteEngine()
 	{
 		i_WriteEngine = null;
-	}
-
-	/** Return allowed column class.
-	 * @param ai_columnIndex Index of column that you want to study
-	 * @return String class name of object that is stored to column.
-	 */
+	} /** Return allowed column class.
+				 * @param ai_columnIndex Index of column that you want to study
+				 * @return String class name of object that is stored to column.
+				 */
 	public String getColumnClassName(int ai_columnIndex)
 	{
 		return i_ColumnsInfo.getColumnClassName(ai_columnIndex);
@@ -466,11 +492,9 @@ public class DataSet
 	public ColumnsInfo getColumnsInfo()
 	{
 		return i_ColumnsInfo;
-	}
-
-	/** Return column count for DataSet
-	 * @return Number of columns
-	 */
+	} /** Return column count for DataSet
+				 * @return Number of columns
+				 */
 	public int getColumnCount()
 	{
 		if (i_ColumnsInfo == null)
@@ -481,14 +505,12 @@ public class DataSet
 		{
 			return i_ColumnsInfo.getColumnCount();
 		}
-	}
-
-	/** Returns current column name for index.<br>
-	 * Requires tha column names are set.
-	 * @param ai_index Column index
-	 * @return Column name
-	 * @throws ArrayIndexOutOfBoundsException if index is out of range or no columns exists
-	 */
+	} /** Returns current column name for index.<br>
+			 * Requires tha column names are set.
+			 * @param ai_index Column index
+			 * @return Column name
+			 * @throws ArrayIndexOutOfBoundsException if index is out of range or no columns exists
+			 */
 	public String getColumnName(int ai_index)
 	{
 		if (i_ColumnsInfo == null)
@@ -496,33 +518,27 @@ public class DataSet
 			throw new ArrayIndexOutOfBoundsException("There is no column information");
 		}
 		return i_ColumnsInfo.getColumnName(ai_index);
-	}
-
-	/** Returns row count of DataSet
-	 * @return Row count of DataSet
-	 */
+	} /** Returns row count of DataSet
+				 * @return Row count of DataSet
+				 */
 	public int getRowCount()
 	{
 		return iVe_Data.size();
-	}
-
-	/** <b>This is for Debugging.</b><br><br>
-	 * Prints buffrers to PrintStream
-	 * <b>Future will be removed</b>
-	 * @param a_PrintStream PrintStream where to write debug information
-	 */
+	} /** <b>This is for Debugging.</b><br><br>
+				 * Prints buffrers to PrintStream
+				 * <b>Future will be removed</b>
+				 * @param a_PrintStream PrintStream where to write debug information
+				 */
 	public void printBuffers(PrintStream a_PrintStream)
 	{
 		StringBuffer lSb_Sep = new StringBuffer(18 * getColumnCount());
 		for (int li_x = 0; li_x < getColumnCount(); li_x++)
 			lSb_Sep.append("******************");
 		String lS_Sep1 = lSb_Sep.toString();
-
 		lSb_Sep = new StringBuffer(18 * getColumnCount());
 		for (int li_x = 0; li_x < getColumnCount(); li_x++)
 			lSb_Sep.append("------------------");
 		String lS_Sep2 = lSb_Sep.toString();
-
 		a_PrintStream.println(lS_Sep1);
 		a_PrintStream.println("Databuffer");
 		printColumnNames(a_PrintStream);
@@ -566,25 +582,19 @@ public class DataSet
 		}
 
 		a_PrintStream.println(lS_Sep1);
-	}
-
-	/**
-	 * @param aVe_Buffer
-	 * @param a_PrintStream
-	 */
+	} /**
+				 * @param aVe_Buffer
+				 * @param a_PrintStream
+				 */
 	private void printBuffer(Vector aVe_Buffer, PrintStream a_PrintStream)
 	{
 		int li_countRows, li_countColumns;
 		Row l_Row;
-
 		li_countRows = aVe_Buffer.size();
-
 		li_countColumns = getColumnCount();
-
 		for (int li_c1 = 0; li_c1 < li_countRows; li_c1++)
 		{
 			StringBuffer l_StringBuffer = createSpaceFilledStringBuffer(li_countColumns * 18);
-
 			l_Row = ((RowContainer) aVe_Buffer.get(li_c1)).i_Row_Current;
 			for (int li_c2 = 0; li_c2 < li_countColumns; li_c2++)
 			{
@@ -594,15 +604,12 @@ public class DataSet
 			a_PrintStream.print(l_StringBuffer.toString());
 			a_PrintStream.println();
 		}
-	}
-
-	/**
-	 * @param a_PrintStream
-	 */
+	} /**
+			 * @param a_PrintStream
+			 */
 	private void printColumnNames(PrintStream a_PrintStream)
 	{
 		int li_countRows, li_countColumns;
-
 		li_countColumns = getColumnCount();
 		StringBuffer l_StringBuffer = createSpaceFilledStringBuffer(li_countColumns * 18);
 		for (int li_c2 = 0; li_c2 < li_countColumns; li_c2++)
@@ -611,31 +618,26 @@ public class DataSet
 		}
 		a_PrintStream.print(l_StringBuffer.toString());
 		a_PrintStream.println();
-	}
-
-	/**
-	 * Create String buffer which is filled with space " "
-	 * @param ai_size Size of new StringBuffer
-	 * @return StringBuffer Space filled Stringbuffer
-	 */
+	} /**
+				 * Create String buffer which is filled with space " "
+				 * @param ai_size Size of new StringBuffer
+				 * @return StringBuffer Space filled Stringbuffer
+				 */
 	private StringBuffer createSpaceFilledStringBuffer(int ai_size)
 	{
 		StringBuffer l_StringBuffer = new StringBuffer(ai_size);
-
 		for (int li_c = 0; li_c < ai_size; li_c++)
 		{
 			l_StringBuffer.append(" ");
 		}
 		return l_StringBuffer;
-	}
-
-	/**
-	 * Puts String to StringBuffer to wanted position by replacing data that are there.
-	 * @param a_StringBuffer StringBuffer object to modified
-	 * @param a_String Modifiying String. 
-	 * @param ai_pos Position where to start modification. 
-	 * @return boolean false if position is larger that size of StringBuffer othervice true or String is null
-	 */
+	} /**
+				 * Puts String to StringBuffer to wanted position by replacing data that are there.
+				 * @param a_StringBuffer StringBuffer object to modified
+				 * @param a_String Modifiying String. 
+				 * @param ai_pos Position where to start modification. 
+				 * @return boolean false if position is larger that size of StringBuffer othervice true or String is null
+				 */
 	private boolean setStringToStringBuffer(StringBuffer a_StringBuffer, String a_String, int ai_pos)
 	{
 		int li_size = a_StringBuffer.length();
@@ -654,21 +656,17 @@ public class DataSet
 			a_StringBuffer.setCharAt(li_x, a_String.charAt(li_x - ai_pos));
 		}
 		return true;
-	}
-
-	/** Returns handle for ReadEngine.
-	 * @return Reference to current RetrieveEngine.<br>
-	 * null if it is not defined.
-	 */
+	} /** Returns handle for ReadEngine.
+				 * @return Reference to current RetrieveEngine.<br>
+				 * null if it is not defined.
+				 */
 	public final ReadEngine getReadEngine()
 	{
 		return i_ReadEngine;
-	}
-
-	/** Returns handle for current WriteEngine.
-	 * @return Reference to current UpdateEngine.<br>
-	 * null if it is not defined.
-	 */
+	} /** Returns handle for current WriteEngine.
+				 * @return Reference to current UpdateEngine.<br>
+				 * null if it is not defined.
+				 */
 	public final WriteEngine getWriteEngine()
 	{
 		return i_WriteEngine;
@@ -682,15 +680,13 @@ public class DataSet
 			int li_return = 0;
 			try
 			{
-				i_WriteEngine.writeStart();
-				/*
-				
-				*/
+				i_WriteEngine.writeStart(); /*
+												
+												*/
 				i_WriteEngine.write(this);
 				iVe_New.removeAllElements();
 				iVe_Modified.removeAllElements();
 				iVe_Deleted.removeAllElements();
-
 			}
 			finally
 			{
@@ -714,7 +710,6 @@ public class DataSet
 			try
 			{
 				i_ColumnsInfo = i_ReadEngine.readStart(i_ColumnsInfo);
-
 				Row l_Row;
 				while ((l_Row = i_ReadEngine.readRow(i_ColumnsInfo)) != Row.NO_MORE_ROWS)
 				{
@@ -750,7 +745,6 @@ public class DataSet
 				iVe_Deleted.add(l_RowContainer);
 			}
 			iVe_Data.remove(ai_index - 1);
-
 			return ai_index;
 		}
 		else
@@ -762,7 +756,6 @@ public class DataSet
 	private final int doInsertRow(int ai_index)
 	{
 		Object[] l_Objects = new Object[getColumnCount()];
-
 		Row l_Row = new Row(l_Objects, i_ColumnsInfo);
 		l_Row.setAllNulls();
 		return doInsertRow(ai_index, new RowContainer(null, l_Row));
@@ -794,7 +787,6 @@ public class DataSet
 		if (ai_rowIndex > 0 && ai_rowIndex <= iVe_Data.size())
 		{
 			RowContainer l_RowContainer = ((RowContainer) iVe_Data.get(ai_rowIndex - 1));
-
 			Row l_Row = (Row) l_RowContainer.i_Row_Current.clone();
 			if (l_Row.setValueAt(ai_columnIndex, a_Object) > 0)
 			{
@@ -809,12 +801,10 @@ public class DataSet
 		{
 			return -1;
 		}
-	}
-
-	/** Seach matching row from dataset.
-	 * @param a_Row Row which contains data that wanted to be found.
-	 * @return row number where row has been found 0 if not
-	 */
+	} /** Seach matching row from dataset.
+			 * @param a_Row Row which contains data that wanted to be found.
+			 * @return row number where row has been found 0 if not
+			 */
 	public final int search(Row a_Row)
 	{
 		for (int li_index = 1; li_index <= getRowCount(); li_index++)
@@ -825,13 +815,11 @@ public class DataSet
 			}
 		}
 		return 0;
-	}
-
-	/** Seach matching row from dataset.
-	 * @param a_Row Row which contains data that wanted to be found.
-	 * @param ai_columns array of column numbers that are used to find row.
-	 * @return row number where row has been found 0 if not
-	 */
+	} /** Seach matching row from dataset.
+				 * @param a_Row Row which contains data that wanted to be found.
+				 * @param ai_columns array of column numbers that are used to find row.
+				 * @return row number where row has been found 0 if not
+				 */
 	public final int search(Row a_Row, int[] ai_columns)
 	{
 		for (int li_index = 1; li_index <= getRowCount(); li_index++)
@@ -842,12 +830,11 @@ public class DataSet
 			}
 		}
 		return 0;
-	}
-	/** Seach matching row from dataset.
-	 * @param a_Object Object which contains data that wanted to be found.
-	 * @param ai_column column that are searched.
-	 * @return row number where row has been found 0 if not
-	 */
+	} /** Seach matching row from dataset.
+				 * @param a_Object Object which contains data that wanted to be found.
+				 * @param ai_column column that are searched.
+				 * @return row number where row has been found 0 if not
+				 */
 	public final int search(Object a_Object, int ai_column)
 	{
 		for (int li_index = 1; li_index <= getRowCount(); li_index++)
@@ -863,12 +850,10 @@ public class DataSet
 			}
 		}
 		return 0;
-	}
-
-	/** Returns Row from ai_index location. Don't return reference to row.
-	 * @param ai_index Index of row
-	 * @return Copy of the row object in DataSet
-	 */
+	} /** Returns Row from ai_index location. Don't return reference to row.
+				 * @param ai_index Index of row
+				 * @return Copy of the row object in DataSet
+				 */
 	public final Row getRow(int ai_index)
 	{
 		if (ai_index > 0 && ai_index <= getRowCount())
@@ -880,16 +865,14 @@ public class DataSet
 		{
 			return null;
 		}
-	}
-
-	/** Set Row object to DataSet.
-	 * @param ai_index Row where to modify row.
-	 * @param a_Row Row object which is modifying
-	 * @return Row number where change has been done.
-	 */
+	} /** Set Row object to DataSet.
+			 * @param ai_index Row where to modify row.
+			 * @param a_Row Row object which is modifying
+			 * @return Row number where change has been done.
+			 */
 	public final int setRowAt(int ai_index, Row a_Row)
 	{
-		
+
 		int li_row = doModifyRow(ai_index, a_Row);
 		if (iVe_Listeners != null)
 		{
@@ -897,24 +880,22 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this,DataSetEvent.COLUMN_CHANGED, li_row, DataSetEvent.ALL));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.COLUMN_CHANGED, li_row, DataSetEvent.ALL));
 			}
 		}
 		return li_row;
-	}
-	/** Current status of row<br>
-	 * With key action is possible deside if we hare doing just 'modify' or 'insert / delete' when setting item.<br>
-	 * If this method is not all the objects are always considered as modified.
-	 * @return current status ERROR, NEW, MODIFIED, NOTMODIFIED
-	 * @param ai_index Index of row which status is returned.
-	 */
+	} /** Current status of row<br>
+				 * With key action is possible deside if we hare doing just 'modify' or 'insert / delete' when setting item.<br>
+				 * If this method is not all the objects are always considered as modified.
+				 * @return current status ERROR, NEW, MODIFIED, NOTMODIFIED
+				 * @param ai_index Index of row which status is returned.
+				 */
 	public int getRowStatus(int ai_index)
 	{
 		if (ai_index > 0 && iVe_Data.size() <= ai_index)
 		{
 			ai_index--;
 			RowContainer l_RowContainer = (RowContainer) iVe_Data.get(ai_index);
-
 			if (l_RowContainer.i_Row_Orig == null)
 			{
 				return NEW;
@@ -929,45 +910,37 @@ public class DataSet
 			}
 		}
 		return ERROR;
-	}
-
-	/**
-	 * Sorts data using current comparator.
-	 * 
-	 */
+	} /**
+				 * Sorts data using current comparator.
+				 * 
+				 */
 	public void sort()
 	{
 		Arrays.sort(iVe_Data.getObjects(), 0, iVe_Data.size(), i_DataSetComparator);
-	}
-
-	/**
-	 * Set comparator for sorting. 
-	 * @param a_Comparator Comparator object
-	 *
-	 */
+	} /**
+				 * Set comparator for sorting. 
+				 * @param a_Comparator Comparator object
+				 *
+				 */
 	public void setComparator(Comparator a_Comparator)
 	{
 		i_DataSetComparator = new DataSetComparator(a_Comparator);
-	}
-
-	/**
-	 * This with this method it is possible to change row status.
-	 * <i>Currently this is only skelenton and under design.</i>
-	 * @param ai_rowIndex
-	 * @param ai_buffer
-	 */
+	} /**
+				 * This with this method it is possible to change row status.
+				 * <i>Currently this is only skelenton and under design.</i>
+				 * @param ai_rowIndex
+				 * @param ai_buffer
+				 */
 	public void setBuffer(int ai_rowIndex, int ai_buffer)
 	{
 
-	}
-
-	/**
-	 * This method is made for if example data need to be handled like new.
-	 * <br>In case of MODIFIED new rows are not counted, because there are
-	 * no original value for them.
-	 *
-	 * @param ai_targetBuffer NEW, MODIFIED, OR NOTMODIFIED
-	 */
+	} /**
+			 * This method is made for if example data need to be handled like new.
+			 * <br>In case of MODIFIED new rows are not counted, because there are
+			 * no original value for them.
+			 *
+			 * @param ai_targetBuffer NEW, MODIFIED, OR NOTMODIFIED
+			 */
 	public void setBufferAll(int ai_targetBuffer)
 	{
 		if (ai_targetBuffer == this.NEW)
@@ -981,7 +954,7 @@ public class DataSet
 				l_RowContainer.i_Row_Orig = null;
 				iVe_New.add(l_RowContainer);
 			}
-		} 
+		}
 		else if (ai_targetBuffer == this.MODIFIED)
 		{
 			iVe_Modified.removeAllElements();
@@ -990,14 +963,13 @@ public class DataSet
 			for (int li_y = 0; li_y < iVe_Data.size(); li_y++)
 			{
 				RowContainer l_RowContainer = (RowContainer) iVe_Data.get(li_y);
-
 				if (l_RowContainer.i_Row_Orig != null)
 				{
 					iVe_Modified.add(l_RowContainer);
 				}
 
 			}
-		} 
+		}
 		else if (ai_targetBuffer == this.NOTMODIFIED)
 		{
 			iVe_Modified.removeAllElements();
@@ -1017,9 +989,7 @@ public class DataSet
 
 	private final static int DESTINATION_MISSING = 1;
 	private final static int SOURCE_MISSING = 2;
-
 	private final static int COPY = 3;
-
 	/**
 	 * Method copyFrom.
 	 * @param a_DataSet_Source
@@ -1030,7 +1000,6 @@ public class DataSet
 		int li_sourceCounter = 1, li_destinationCounter = 1;
 		int li_sourceCount = a_DataSet_Source.getRowCount();
 		int li_destinationCount = getRowCount();
-
 		boolean lb_loop = true;
 		if (li_sourceCount > 0 || li_destinationCount > 0)
 		{
@@ -1054,7 +1023,7 @@ public class DataSet
 					addRow(a_DataSet_Source, this, li_sourceCounter);
 					if (li_sourceCounter < li_sourceCount)
 						li_sourceCounter++;
-						lb_loop = true;
+					lb_loop = true;
 				}
 				else if (li_result == SOURCE_MISSING)
 				{
@@ -1097,8 +1066,7 @@ public class DataSet
 				a_DataSet_Destination.setValueAt(aO_Source, ai_destinationCounter, li_x);
 				li_copy = 1;
 			}
-		}
-		//       ii_copyCount = ii_copyCount + li_copy;
+		} //       ii_copyCount = ii_copyCount + li_copy;
 	}
 
 	private void addRow(DataSet a_DataSet_Source, DataSet a_DataSet_Destination, int li_ys)
@@ -1111,12 +1079,17 @@ public class DataSet
 			//System.out.print(aO_Source + "\t");
 			a_DataSet_Destination.setValueAt(aO_Source, li_row, li_x);
 			li_add = 1;
-		}
-		//       ii_addCount = ii_addCount + li_add;
+		} //       ii_addCount = ii_addCount + li_add;
 		//System.out.println();
 	}
 
-	private int compareRows(DataSet a_DataSet_Source, DataSet a_DataSet_Destination, int ai_sourceCounter, int ai_destinationCounter, int ai_sourceCount, int ai_destinationCount)
+	private int compareRows(
+		DataSet a_DataSet_Source,
+		DataSet a_DataSet_Destination,
+		int ai_sourceCounter,
+		int ai_destinationCounter,
+		int ai_sourceCount,
+		int ai_destinationCount)
 	{
 
 		if (ai_sourceCount < ai_sourceCounter)
@@ -1129,9 +1102,7 @@ public class DataSet
 		}
 		Comparable l_Comparable_Source = (Comparable) a_DataSet_Source.getValueAt(ai_sourceCounter, 1);
 		Comparable l_Comparable_Destination = (Comparable) a_DataSet_Destination.getValueAt(ai_destinationCounter, 1);
-
 		int li_result = l_Comparable_Source.compareTo(l_Comparable_Destination);
-
 		if (ai_sourceCount == ai_destinationCounter && ai_destinationCount > ai_destinationCounter && li_result != 0)
 		{
 			return SOURCE_MISSING;
@@ -1167,43 +1138,35 @@ public class DataSet
 		{
 			return COPY;
 		}
-	}
-
-	/**
-	 * Method getDeleted.
-	 * This point only for WriteEngine
-	 * @return List
-	 */
+	} /**
+			 * Method getDeleted.
+			 * This point only for WriteEngine
+			 * @return List
+			 */
 	public List getDeleted()
 	{
 		return iVe_Deleted;
-	}
-
-	/**
-	 * Method getModified.
-	 * This point only for WriteEngine
-	 * @return List
-	 */
+	} /**
+				 * Method getModified.
+				 * This point only for WriteEngine
+				 * @return List
+				 */
 	public List getModified()
 	{
 		return iVe_Modified;
-	}
-
-	/**
-	 * Method getInserted.
-	 * This point only for WriteEngine
-	 * @return List
-	 */
+	} /**
+				 * Method getInserted.
+				 * This point only for WriteEngine
+				 * @return List
+				 */
 	public List getInserted()
 	{
 		return iVe_New;
-	}
-
-	/**
-	 * Method getAllRows.
-	 * This point only for WriteEngine
-	 * @return List
-	 */
+	} /**
+				 * Method getAllRows.
+				 * This point only for WriteEngine
+				 * @return List
+				 */
 	public List getAllRows()
 	{
 		return iVe_Data;
