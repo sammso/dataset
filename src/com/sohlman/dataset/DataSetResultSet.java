@@ -49,6 +49,7 @@ import java.util.Map;
 class DataSetResultSet implements ResultSet
 {
 	private int ii_cursor = 0;
+	private boolean ib_wasNull = false;
 	private DataSet i_DataSet;
 	
 	/**
@@ -56,7 +57,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public DataSetResultSet(DataSet a_DataSet)
 	{
-		i_DataSet = a_DataSet;			
+		i_DataSet = a_DataSet;
 	}
 
 	/**
@@ -103,7 +104,11 @@ class DataSetResultSet implements ResultSet
 			throw new SQLException("Cursor is out of range");
 		}	
 		
-		return i_DataSet.getValueAt(ii_cursor,ai_columnIndex);
+		Object l_Object = i_DataSet.getValueAt(ii_cursor,ai_columnIndex);
+		ib_wasNull = l_Object==null;
+		return l_Object;
+		
+		
 	}
 	
 	private Object getObjectAtCursor(String aS_Index) throws SQLException
@@ -126,7 +131,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public boolean wasNull() throws SQLException
 	{
-		return false;
+		throw new SQLException("wasNull() not supported");
 	}
 
 	/**
@@ -182,7 +187,7 @@ class DataSetResultSet implements ResultSet
 			}
 			else
 			{
-				return l_Byte.byteValue();	
+				return l_Byte.byteValue();
 			}
 			
 		}
@@ -319,7 +324,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public BigDecimal getBigDecimal(int arg0, int arg1) throws SQLException
 	{
-		throw new SQLException("getBigDecimal Not implemented");
+		throw new SQLException("getBigDecimal(int , int ) Not implemented");
 	}
 
 	/**
@@ -421,7 +426,23 @@ class DataSetResultSet implements ResultSet
 	 */
 	public boolean getBoolean(String aS_ColumnName) throws SQLException
 	{
-		return false;
+		try
+		{
+			Boolean l_Boolean = (Boolean)getObjectAtCursor(aS_ColumnName);
+			if(l_Boolean==null)
+			{
+				return false;
+			}
+			else
+			{
+				return l_Boolean.booleanValue();	
+			}
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -429,7 +450,23 @@ class DataSetResultSet implements ResultSet
 	 */
 	public byte getByte(String aS_ColumnName) throws SQLException
 	{
-		return 0;
+		try
+		{
+			Byte l_Byte = (Byte)getObjectAtCursor(aS_ColumnName);
+			if(l_Byte==null)
+			{
+				return 0;
+			}
+			else
+			{
+				return l_Byte.byteValue();
+			}
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -437,7 +474,23 @@ class DataSetResultSet implements ResultSet
 	 */
 	public short getShort(String aS_ColumnName) throws SQLException
 	{
-		return 0;
+		try
+		{
+			Short l_Short = (Short)getObjectAtCursor(aS_ColumnName);
+			if(l_Short==null)
+			{
+				return 0;
+			}
+			else
+			{
+				return l_Short.shortValue();
+			}
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -445,7 +498,23 @@ class DataSetResultSet implements ResultSet
 	 */
 	public int getInt(String aS_ColumnName) throws SQLException
 	{
-		return 0;
+		try
+		{
+			Integer l_Integer = (Integer)getObjectAtCursor(aS_ColumnName);
+			if(l_Integer==null)
+			{
+				return 0;
+			}
+			else
+			{
+				return l_Integer.intValue();
+			}
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -453,7 +522,23 @@ class DataSetResultSet implements ResultSet
 	 */
 	public long getLong(String aS_ColumnName) throws SQLException
 	{
-		return 0;
+		try
+		{
+			Long l_Long = (Long)getObjectAtCursor(aS_ColumnName);
+			if(l_Long==null)
+			{
+				return 0;
+			}
+			else
+			{
+				return l_Long.longValue();
+			}
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -461,7 +546,23 @@ class DataSetResultSet implements ResultSet
 	 */
 	public float getFloat(String aS_ColumnName) throws SQLException
 	{
-		return 0;
+		try
+		{
+			Float l_Float = (Float)getObjectAtCursor(aS_ColumnName);
+			if(l_Float==null)
+			{
+				return 0;
+			}
+			else
+			{
+				return l_Float.floatValue();
+			}
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -469,16 +570,40 @@ class DataSetResultSet implements ResultSet
 	 */
 	public double getDouble(String aS_ColumnName) throws SQLException
 	{
-		return 0;
+		try
+		{
+			Double l_Double = (Double)getObjectAtCursor(aS_ColumnName);
+			if(l_Double==null)
+			{
+				return 0;
+			}
+			else
+			{
+				return l_Double.doubleValue();
+			}
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getBigDecimal(String, int)
 	 * @deprecated
 	 */
-	public BigDecimal getBigDecimal(String arg0, int arg1) throws SQLException
+	public BigDecimal getBigDecimal(String aS_ColumnName, int ai_scale) throws SQLException
 	{
-		return null;
+		try
+		{
+			return (BigDecimal)getObjectAtCursor(aS_ColumnName);
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -486,7 +611,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public byte[] getBytes(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		throw new SQLException("getBytes Not implemented");
 	}
 
 	/**
@@ -494,7 +619,15 @@ class DataSetResultSet implements ResultSet
 	 */
 	public Date getDate(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		try
+		{
+			return (Date)getObjectAtCursor(aS_ColumnName);
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -502,7 +635,15 @@ class DataSetResultSet implements ResultSet
 	 */
 	public Time getTime(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		try
+		{
+			return (Time)getObjectAtCursor(aS_ColumnName);
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -510,15 +651,24 @@ class DataSetResultSet implements ResultSet
 	 */
 	public Timestamp getTimestamp(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		try
+		{
+			return (Timestamp)getObjectAtCursor(aS_ColumnName);
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
+	 * <i>Not Implemented</i>
 	 * @see java.sql.ResultSet#getAsciiStream(String)
 	 */
 	public InputStream getAsciiStream(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		throw new SQLException("getAsciiStream Not implemented");
 	}
 
 	/**
@@ -527,19 +677,21 @@ class DataSetResultSet implements ResultSet
 	 */
 	public InputStream getUnicodeStream(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		throw new SQLException("getUnicodeStream Not implemented");
 	}
 
 	/**
+	 * <i>Not Implemented</i>
 	 * @see java.sql.ResultSet#getBinaryStream(String)
 	 */
 	public InputStream getBinaryStream(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		throw new SQLException("getBinaryStream Not implemented");
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getWarnings()
+	 * @return always null;
 	 */
 	public SQLWarning getWarnings() throws SQLException
 	{
@@ -551,6 +703,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public void clearWarnings() throws SQLException
 	{
+		// Do nothing
 	}
 
 	/**
@@ -558,7 +711,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public String getCursorName() throws SQLException
 	{
-		return null;
+		return "DataSet cursor";
 	}
 
 	/**
@@ -566,63 +719,79 @@ class DataSetResultSet implements ResultSet
 	 */
 	public ResultSetMetaData getMetaData() throws SQLException
 	{
-		return null;
+		throw new SQLException("getMetaData not supported");
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getObject(int)
 	 */
-	public Object getObject(int ai_) throws SQLException
+	public Object getObject(int ai_index) throws SQLException
 	{
-		return null;
+		return getObjectAtCursor(ai_index);
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getObject(String)
 	 */
-	public Object getObject(String arg0) throws SQLException
+	public Object getObject(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		return getObjectAtCursor(aS_ColumnName);
 	}
 
 	/**
 	 * @see java.sql.ResultSet#findColumn(String)
 	 */
-	public int findColumn(String arg0) throws SQLException
+	public int findColumn(String aS_ColumnName) throws SQLException
 	{
-		return 0;
+		return 0;// i_DataSet.findColumn(aS_ColumnName);
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getCharacterStream(int)
 	 */
-	public Reader getCharacterStream(int arg0) throws SQLException
+	public Reader getCharacterStream(int ai_columnIndex) throws SQLException
 	{
-		return null;
+		throw new SQLException("getCharacterStream not supported");
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getCharacterStream(String)
 	 */
-	public Reader getCharacterStream(String arg0) throws SQLException
+	public Reader getCharacterStream(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		throw new SQLException("getCharacterStream not supported");
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getBigDecimal(int)
 	 */
-	public BigDecimal getBigDecimal(int arg0) throws SQLException
+	public BigDecimal getBigDecimal(int ai_columnIndex) throws SQLException
 	{
-		return null;
+		try
+		{
+			return (BigDecimal)getObjectAtCursor(ai_columnIndex);
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getBigDecimal(String)
 	 */
-	public BigDecimal getBigDecimal(String arg0) throws SQLException
+	public BigDecimal getBigDecimal(String aS_ColumnName) throws SQLException
 	{
-		return null;
+		try
+		{
+			return (BigDecimal)getObjectAtCursor(aS_ColumnName);
+			
+		}
+		catch(ClassCastException l_ClassCastException)
+		{
+			throw new SQLException("Column index is wrong type");
+		}
 	}
 
 	/**
@@ -630,7 +799,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public boolean isBeforeFirst() throws SQLException
 	{
-		return false;
+		return ii_cursor==0;
 	}
 
 	/**
@@ -638,7 +807,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public boolean isAfterLast() throws SQLException
 	{
-		return false;
+		return ii_cursor == i_DataSet.getRowCount() + 1;
 	}
 
 	/**
@@ -646,7 +815,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public boolean isFirst() throws SQLException
 	{
-		return false;
+		return ii_cursor==1;
 	}
 
 	/**
@@ -654,7 +823,7 @@ class DataSetResultSet implements ResultSet
 	 */
 	public boolean isLast() throws SQLException
 	{
-		return false;
+		return ii_cursor == i_DataSet.getRowCount();
 	}
 
 	/**
@@ -692,23 +861,49 @@ class DataSetResultSet implements ResultSet
 	 */
 	public int getRow() throws SQLException
 	{
-		return 0;
+		if(i_DataSet==null)
+		{
+			throw new SQLException("ResultSet has been closed");
+		}		
+		return ii_cursor;
 	}
 
 	/**
 	 * @see java.sql.ResultSet#absolute(int)
 	 */
-	public boolean absolute(int arg0) throws SQLException
+	public boolean absolute(int ai_index) throws SQLException
 	{
-		return false;
+		if(i_DataSet==null)
+		{
+			throw new SQLException("ResultSet has been closed");
+		}
+		
+		if( ai_index <= 0 && ai_index > i_DataSet.getRowCount() )
+		{
+			return false;
+		}
+		
+		ii_cursor= ai_index;
+		return true;
 	}
 
 	/**
 	 * @see java.sql.ResultSet#relative(int)
 	 */
-	public boolean relative(int arg0) throws SQLException
+	public boolean relative(int ai_value) throws SQLException
 	{
-		return false;
+		if(i_DataSet==null)
+		{
+			throw new SQLException("ResultSet has been closed");
+		}
+		int li_index = ii_cursor + ai_value;
+		if( li_index <= 0 && li_index > i_DataSet.getRowCount() )
+		{
+			return false;
+		}
+		
+		ii_cursor= li_index;
+		return true;
 	}
 
 	/**
@@ -734,32 +929,39 @@ class DataSetResultSet implements ResultSet
 	/**
 	 * @see java.sql.ResultSet#setFetchDirection(int)
 	 */
-	public void setFetchDirection(int arg0) throws SQLException
+	public void setFetchDirection(int ai_direction) throws SQLException
 	{
-
+		// No effect
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getFetchDirection()
+	 * 
+	 * @return ResultSet.FETCH_UNKNOWN 
 	 */
 	public int getFetchDirection() throws SQLException
 	{
-		return 0;
+		return ResultSet.FETCH_UNKNOWN ;
 	}
 
 	/**
 	 * @see java.sql.ResultSet#setFetchSize(int)
+	 * 
+	 * This has no effect
 	 */
 	public void setFetchSize(int arg0) throws SQLException
 	{
+		// No effect
 	}
 
 	/**
 	 * @see java.sql.ResultSet#getFetchSize()
+	 * 
+	 * @return {@link DataSet#getRowCount() DataSet#getRowCount()}
 	 */
 	public int getFetchSize() throws SQLException
 	{
-		return 0;
+		return i_DataSet.getRowCount();
 	}
 
 	/**

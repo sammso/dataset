@@ -30,7 +30,7 @@ import java.sql.Statement;
  *
  *
  * @author  Sampsa Sohlman
- * @version 2002-10-10
+ * @version 2004-09-17
  */
 public class SQLService
 {
@@ -192,9 +192,10 @@ public class SQLService
 			{
 				li_index++;
 				l_char = a_String.charAt(li_index);
-				if (l_char == 'O' || l_char == 'N' || l_char == 'o' || l_char == 'n' || ((!ab_useON) && l_char != ':'))
+				
+				if (l_char == 'O' || l_char == 'N' || l_char == 'o' || l_char == 'n' || (!ab_useON) || l_char != ':')
 				{
-					if (ab_useON)
+					if (l_char == 'O' || l_char == 'N' || l_char == 'o' || l_char == 'n')
 					{
 						li_index++;
 					}
@@ -224,19 +225,21 @@ public class SQLService
 					{
 						if (li_key == BEGINS_WITH_ZERO)
 						{
-							throw new SQLException("SQL parameter number begins with zero");
+								
+							throw new SQLException("SQL parameter number begins with zero. [SQL str index = " + li_index + " \"" + get55AreaFromString(a_String, li_index) + "\"]");
 						}
-						if (li_key == NO_NUMBER)
+						if (li_key == NO_NUMBER && l_char != ':' )
 						{
-							throw new SQLException("SQL parameter is not number");
+							throw new SQLException("SQL parameter is not number. [SQL str index = " + li_index + " \"" + get55AreaFromString(a_String, li_index) + "\"]");
 						}
 					}
 
 				}
 				else if (l_char != ':')
 				{
-					throw new SQLException("SQL parameter needs new or old definition");
+					throw new SQLException("SQL parameter needs new or old definition. [SQL str index = " + li_index + " \"" + get55AreaFromString(a_String, li_index) + "\"]");
 				}
+				li_index++;
 			}
 			else
 			{
@@ -256,6 +259,30 @@ public class SQLService
 
 	}
 
+	/**
+	 * Made for error reporting purporses. See getKeys method
+	 * 
+	 * @param a_String
+	 * @param ai_index
+	 * @return
+	 */
+	private static String get55AreaFromString(String a_String, int ai_index)
+	{
+		int li_start = ai_index - 5;
+		if(ai_index < 0 )
+		{
+			li_start = 0;
+		}
+		int li_end = ai_index + 5;
+		if(li_end > a_String.length())
+		{
+			li_end = a_String.length();
+		}
+		
+		return a_String.substring(li_start, li_end);
+		
+	}
+	
 	/**
 	 * This is made for getKeys method
 	 */
@@ -424,8 +451,8 @@ public class SQLService
 	{
 		try
 		{
-			String lS_SQL = "UPDATE event_properties SET property_shortvalue = :n5, property_value = :n6 WHERE event_id = :o1 AND property_type_id = :o2";
-			boolean lb_useNO = true;
+			String lS_SQL = "INSERT INTO cm_person_sampsa ( person_id, company_id, person_code, user_id, title, surname, cname, names, phone, department, email, always_notify, last_workday, more_info, creator ) VALUES (  'LMF::' + :n2, 1000000, :n2, :n3, :n4, :n5, :n6, :n7, :n8, :n9, :n10, 'N', '2100-01-01', ' ', 'SYS' ) ";
+			boolean lb_useNO = false;
 			int[] li_keys = getKeys(lS_SQL, lb_useNO);
 
 			System.out.println("Orig SQL : \n" + lS_SQL);
