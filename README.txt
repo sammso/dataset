@@ -1,4 +1,4 @@
-	DataSet Library 1.0 RC 2
+	DataSet Library 1.0 RC 3
 -------------------------------------------------------------
  I currently using this version of DataSet on my projects.
  I'm using DataSet on production.
@@ -9,6 +9,9 @@
 
 Changes 
 ------------------------------------------------------------- 
+ Changes in RC 3
+ - Row.setValueAt throws now ClassCastException, this helps to find errors on application 
+   code.
  Changes in RC 2
  - Bug fix on SQLWriteEngine.getTableName()
  Changes in RC 1

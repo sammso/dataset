@@ -32,6 +32,8 @@ public class Row
 	 * @param ai_index Column index
 	 * @param a_Object Object for column
 	 * @return index of column changed or -1 error
+	 * @throws ClassCastException if column class is different than defined column class
+	 * ArrayIndexOutOfBoundsException if array is out of range
 	 */
 	public final int setValueAt(int ai_index, Object a_Object)
 	{
@@ -41,13 +43,14 @@ public class Row
 			{
 				iO_Columns[ai_index - 1] = null;	
 			}
-			if(i_RowInfo.getColumnClass(ai_index).isInstance(a_Object))
+			else if(i_RowInfo.getColumnClass(ai_index).isInstance(a_Object))
 			{
 				iO_Columns[ai_index - 1] = a_Object;
 			}
 			else
 			{
-				ai_index = -1;
+				throw new ClassCastException("DataSet column class definition for column '" + ai_index + "' different than what is tried to set.\r\nColumn class definition : " + i_RowInfo.getColumnClass(ai_index).getName() + "\r\nAnd tried to set : " + a_Object.getClass().getName());
+				//ai_index = -1;
 			}
 			return ai_index;
 		}

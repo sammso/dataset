@@ -16,7 +16,6 @@ import javax.swing.JList;
 import javax.swing.text.JTextComponent;
 
 import com.sohlman.dataset.DataSet;
-import com.sohlman.dataset.DataSetListener;
 
 /**
  * 
@@ -35,7 +34,7 @@ public class RowToComponentConnector
 		public void focusLost(FocusEvent a_FocusEvent)
 		{	
 			RowComponentContainer l_RowComponentContainer = (RowComponentContainer)iHt_Components.get(a_FocusEvent.getComponent());
-			i_DataSet.setValueAt(l_RowComponentContainer.getValue(), ii_row,l_RowComponentContainer.getColumnIndex()); 
+			i_DataSet.setValueAt(l_RowComponentContainer.getValue(), ii_row,l_RowComponentContainer.getColumnIndex());			 
 		}
 	};
 	private ActionListener i_ActionListner = new ActionListener()
@@ -49,7 +48,7 @@ public class RowToComponentConnector
 			i_DataSet.setValueAt(l_RowComponentContainer.getValue(), ii_row,l_RowComponentContainer.getColumnIndex()); 			
 		}
 	};
-	private DataSetListener i_DataSetListener;
+	
 	private DataSet i_DataSet;
 	private int ii_row;
 
@@ -85,7 +84,6 @@ public class RowToComponentConnector
 			RowComponentContainer l_RowComponentContainer = (RowComponentContainer)l_Object;
 			l_RowComponentContainer.setValue(i_DataSet.getValueAt(ii_row,l_RowComponentContainer.getColumnIndex()));
 		}
-		
 	}
 
 	public void setJComponent(JTextComponent a_JTextComponent, int ai_columnIndex)

@@ -115,11 +115,16 @@ class RowComponentContainer
 	}
 	
 	public void setValue(Object a_Object)
-	{		
+	{	
+		String l_String = "";
+		if(a_Object != null)
+		{
+			l_String = a_Object.toString();
+		}
 		if (i_JCheckBox != null)
 		{
 
-			if(a_Object.equals(iO_Params[0]))
+			if(l_String.equals(iO_Params[0]))
 			{
 				i_JCheckBox.setSelected(true);
 			}
@@ -127,19 +132,24 @@ class RowComponentContainer
 			{
 				i_JCheckBox.setSelected(false);
 			}
+			i_JCheckBox.updateUI();
 
 		}
 		else if (i_JTextComponent != null)
 		{
-			i_JTextComponent.setText(a_Object.toString());
+			i_JTextComponent.setText(l_String);
+			i_JTextComponent.updateUI();
+			
 		}
 		else if (i_JComboBox != null)
 		{
 			i_JComboBox.setSelectedItem(a_Object);
+			i_JComboBox.updateUI();
 		}
 		else if (i_JLabel != null)
 		{
-			i_JLabel.setText(a_Object.toString());
+			i_JLabel.setText(l_String);
+			i_JLabel.updateUI();
 		}						
 	}
 }

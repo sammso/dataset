@@ -334,6 +334,25 @@ public class DataSet
 		return -1;
 	}
 
+	/**
+	 * This is for quicker programming if programmer wants to add whole row at once.
+	 * <br><b>Note Object array size has to be equal to getColumnCount()</b>
+	 * @param a_Objects Array of objects
+	 * @param ai_rowIndex Index of row
+	 * @throws ArrayIndexOutOfBoundsException if Object array size is different than getColumnCount()
+	 */
+	public final void setValue(Object[] a_Objects, int ai_rowIndex)
+	{
+		if(a_Objects.length != getColumnCount())
+		{
+			throw new ArrayIndexOutOfBoundsException("Object array size has to be equal to column count");
+		}
+		for(int li_column = 0 ; li_column < a_Objects.length ; li_column++ )
+		{
+			setValueAt(a_Objects[li_column], ai_rowIndex, li_column +  1);
+		}
+	}
+
 	/** Modify one cell in DataSet.
 	 * @param ai_rowIndex Index of row
 	 * @param ai_columnIndex Column index. 0 is first.
@@ -942,7 +961,7 @@ public class DataSet
 			{
 				return li_index;
 			}
-			else if (a_Object.equals(l_Object))
+			else if( a_Object != null && l_Object != null && a_Object.equals(l_Object))
 			{
 				return li_index;
 			}
