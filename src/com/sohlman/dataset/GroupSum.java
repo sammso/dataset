@@ -5,6 +5,7 @@ import java.math.BigInteger;
 
 /**
  * @author Sampsa Sohlman
+ * @version 2003-02-25
  */
 public class GroupSum extends GroupCalc
 {

@@ -519,7 +519,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 			catch (SQLException l_SQLException)
 			{
 				i_ConnectionContainer.setErrorFlag(true);
-				l_DataSetException = new DataSetException(EX_SQLEXCEPTION, l_SQLException);
+				l_DataSetException = new DataSetException(EX_SQLEXCEPTION + "Row \nCurrent " +  a_Row_Current.toString() + "\nOriginal " + a_Row_Original.toString(), l_SQLException);
 			}
 			finally
 			{

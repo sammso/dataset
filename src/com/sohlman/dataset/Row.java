@@ -221,6 +221,15 @@ public class Row
 		return li_count == ai_columns.length;
 	}
 	
-
-
+	public String toString()
+	{
+		StringBuffer l_StringBuffer = new StringBuffer();
+		l_StringBuffer.append(" : ");		
+		for (int li_x = 0; li_x <iO_Columns.length; li_x++)
+		{
+			l_StringBuffer.append(iO_Columns[li_x]);
+			l_StringBuffer.append(" : ");			
+		}		
+		return l_StringBuffer.toString();
+	}
 }

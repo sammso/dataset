@@ -27,7 +27,7 @@ public class GroupSubstringToAll extends GroupCalc
 	{
 		super(ai_columnId);
 		ii_start = ai_start;
-		ii_end = ii_end;
+		ii_end = ai_end;
 	}
 
 	/**
@@ -49,12 +49,12 @@ public class GroupSubstringToAll extends GroupCalc
 		{
 			int li_end = ii_end;
 			
-			if(l_String.length() >= li_end)
+			if(l_String.length() < li_end)
 			{
-				li_end = l_String.length() - 1;
+				li_end = l_String.length();
 			}
 			
-			return l_String.substring(ii_start,ii_end);
+			return l_String.substring(ii_start,li_end);
 		}
 	}
 
