@@ -188,7 +188,7 @@ public class SQLReadEngine implements ReadEngine
 				SQLRowInfo l_SQLRowInfo;
 				if (i_SQLSelectFilter != null)
 				{
-					l_SQLRowInfo = i_SQLSelectFilter.getColumnsInfo(l_ResultSetMetaData);
+					l_SQLRowInfo = i_SQLSelectFilter.getRowInfo(l_ResultSetMetaData);
 				}
 				else
 				{
@@ -313,6 +313,7 @@ public class SQLReadEngine implements ReadEngine
 	{
 		try
 		{
+			i_ResultSet.getStatement();
 			if (i_ResultSet != null)
 			{
 				i_ResultSet.close();
