@@ -1362,31 +1362,6 @@ public class DataSet
 		return iVe_Data;
 	}
 
-	public void sumRows(int[] ai_groupColumns, int[] ai_sumColumns)
-	{
-		setComparator(new RowComparator(ai_groupColumns));
-		sort();
-
-		for (int li_row = getRowCount(); li_row > 1; li_row--)
-		{
-			Row l_Row_Current = getReferenceToRow(li_row);
-			Row l_Row_Before = getReferenceToRow(li_row - 1);
-
-			if (l_Row_Current.equals(l_Row_Before, ai_groupColumns))
-			{
-				for (int li_index = 0; li_index < ai_sumColumns.length; li_index++)
-				{
-					Number l_Number =
-						DataSetService.sum(
-							(Number) l_Row_Current.getValueAt(ai_sumColumns[li_index]),
-							(Number) l_Row_Before.getValueAt(ai_sumColumns[li_index]));
-					l_Row_Before.setValueAt(ai_sumColumns[li_index], l_Number);
-				}
-				removeRow(li_row);
-			}
-		}
-	}
-
 	/**
 	 * Method getValuesAt returns range of values from certain column
 	 * @param ai_startRow Start row
