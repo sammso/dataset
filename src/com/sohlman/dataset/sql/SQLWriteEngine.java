@@ -1,18 +1,15 @@
 package com.sohlman.dataset.sql;
 
-import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Iterator;
-import java.util.ListIterator;
 
-import com.sohlman.dataset.RowInfo;
 import com.sohlman.dataset.DataSet;
+import com.sohlman.dataset.DataSetException;
 import com.sohlman.dataset.Row;
 import com.sohlman.dataset.RowContainer;
-import com.sohlman.dataset.DataSetException;
 
 /**
  * <ul>
@@ -68,12 +65,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	 * @param aS_Delete Delete SQL statement
 	 * @param a_SQLColumnsInfo
 	 */
-	public SQLWriteEngine(
-		ConnectionContainer a_ConnectionContainer,
-		String aS_InsertSQL,
-		String aS_UpdateSQL,
-		String aS_DeleteSQL,
-		SQLRowInfo a_SQLRowInfo)
+	public SQLWriteEngine(ConnectionContainer a_ConnectionContainer, String aS_InsertSQL, String aS_UpdateSQL, String aS_DeleteSQL, SQLRowInfo a_SQLRowInfo)
 		throws DataSetException
 	{
 		setConnection(a_ConnectionContainer);
@@ -137,21 +129,20 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		int li_length = aS_From.length() - aS_What.length();
 		char[] lc_from = aS_From.toCharArray();
 		char[] lc_what = aS_What.toCharArray();
-		
-		char lc_lastChar = 'S';	
+
+		char lc_lastChar = 'S';
 		boolean lb_doubleQuote = false;
 		boolean lb_singleQuote = false;
-			
-		for(int li_index = ai_start ; li_index < li_length ; li_index ++ )
+
+		for (int li_index = ai_start; li_index < li_length; li_index++)
 		{
 			char lc_char = lc_from[li_index];
-			
-			
-			if(lc_char=='"') // We are now in column name or 
+
+			if (lc_char == '"') // We are now in column name or 
 			{
-				if(lb_doubleQuote)
+				if (lb_doubleQuote)
 				{
-					if(li_index == ai_start || lc_lastChar!='"')
+					if (li_index == ai_start || lc_lastChar != '"')
 					{
 						lb_doubleQuote = false;
 					}
@@ -161,11 +152,11 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 					lb_doubleQuote = true;
 				}
 			}
-			else if(lc_char=='\'')
+			else if (lc_char == '\'')
 			{
-				if(lb_singleQuote)
+				if (lb_singleQuote)
 				{
-					if(li_index == ai_start || lc_lastChar!='\'')
+					if (li_index == ai_start || lc_lastChar != '\'')
 					{
 						lb_singleQuote = false;
 					}
@@ -177,26 +168,26 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 			}
 			else
 			{
-				if((!lb_doubleQuote) && (!lb_singleQuote) && lc_what[0]==lc_char)
+				if ((!lb_doubleQuote) && (!lb_singleQuote) && lc_what[0] == lc_char)
 				{
 					int li_i = lc_what.length - 1;
-					for( ; li_i > 0 ; li_i --)
+					for (; li_i > 0; li_i--)
 					{
-						if(lc_what[li_i] != lc_from[li_i + li_index])
+						if (lc_what[li_i] != lc_from[li_i + li_index])
 						{
-							continue;							
+							continue;
 						}
 					}
-					if(li_i == 0)
+					if (li_i == 0)
 					{
-						return li_index;					
+						return li_index;
 					}
 				}
 			}
 			lc_lastChar = lc_char;
 		}
 		return -1;
-	} 
+	}
 
 	/**
 	 * Get's table name from SELECT string. If there is more than one table then
@@ -212,20 +203,20 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		String lS_SQL = aS_Sql.toUpperCase();
 
 		//int li_tableNameStart = lS_SQL.indexOf("FROM");
-		int li_tableNameStart = keyWordSearchIndexOf(lS_SQL,"FROM",0);
+		int li_tableNameStart = keyWordSearchIndexOf(lS_SQL, "FROM", 0);
 
 		if (li_tableNameStart == -1)
 			throw new DataSetException("FROM keyword not found");
 
 		li_tableNameStart += 4;
 
-		int li_tableNameEnd = keyWordSearchIndexOf(lS_SQL,"WHERE", li_tableNameStart);
+		int li_tableNameEnd = keyWordSearchIndexOf(lS_SQL, "WHERE", li_tableNameStart);
 		if (li_tableNameEnd == -1)
 		{
-			li_tableNameEnd = keyWordSearchIndexOf(lS_SQL,"ORDER", li_tableNameStart);
+			li_tableNameEnd = keyWordSearchIndexOf(lS_SQL, "ORDER", li_tableNameStart);
 			if (li_tableNameEnd == -1)
 			{
-				li_tableNameEnd = keyWordSearchIndexOf(lS_SQL,"GROUP", li_tableNameStart);
+				li_tableNameEnd = keyWordSearchIndexOf(lS_SQL, "GROUP", li_tableNameStart);
 			}
 		}
 
@@ -238,15 +229,15 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 		// If space found more than one table defintion found 
 		// this don't support alias tables with as or "" named tables		
-		if (keyWordSearchIndexOf(lS_TableName,",", 0) > 0)
+		if (keyWordSearchIndexOf(lS_TableName, ",", 0) > 0)
 		{
 			throw new DataSetException(EX_MORE_THAN_ONE_TABLE_DEF);
 		}
-		if (keyWordSearchIndexOf(lS_TableName," ", 0) > 0)
+		if (keyWordSearchIndexOf(lS_TableName, " ", 0) > 0)
 		{
 			throw new DataSetException("JOIN or AS keyword found from 'FROM' statement");
-		}		
-		
+		}
+
 		return lS_TableName;
 	}
 
@@ -307,16 +298,28 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		lSb_UpdateSQL.append(" WHERE ");
 		for (int li_x = 1; li_x <= i_SQLRowInfo.getColumnCount(); li_x++)
 		{
-			if (li_x > 1)
+			switch (i_SQLRowInfo.getColumnType(li_x))
 			{
-				lSb_UpdateSQL.append(" AND ");
+				case Types.CLOB :
+				case Types.BLOB :
+				case Types.BINARY :
+				case Types.OTHER :
+				case Types.ARRAY :
+				case Types.LONGVARBINARY :
+				case Types.LONGVARCHAR :
+					break;
+				default :
+					if (li_x > 1)
+					{
+						lSb_UpdateSQL.append(" AND ");
+					}
+					lSb_UpdateSQL.append(i_SQLRowInfo.getColumnName(li_x));
+					lSb_UpdateSQL.append(":isnull(:o");
+					lSb_UpdateSQL.append(li_x);
+					lSb_UpdateSQL.append(" ; IS NULL  ; = :o");
+					lSb_UpdateSQL.append(li_x);
+					lSb_UpdateSQL.append(")");
 			}
-			lSb_UpdateSQL.append(i_SQLRowInfo.getColumnName(li_x));
-			lSb_UpdateSQL.append(":isnull(:o");
-			lSb_UpdateSQL.append(li_x);
-			lSb_UpdateSQL.append(" ; IS NULL  ; = :o");
-			lSb_UpdateSQL.append(li_x);
-			lSb_UpdateSQL.append(")");
 		}
 		return lSb_UpdateSQL.toString();
 	}
@@ -333,16 +336,28 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		lSb_DeleteSQL.append(" WHERE ");
 		for (int li_x = 1; li_x <= i_SQLRowInfo.getColumnCount(); li_x++)
 		{
-			if (li_x > 1)
+			switch (i_SQLRowInfo.getColumnType(li_x))
 			{
-				lSb_DeleteSQL.append(" AND ");
+				case Types.CLOB :
+				case Types.BLOB :
+				case Types.BINARY :
+				case Types.OTHER :
+				case Types.ARRAY :
+				case Types.LONGVARBINARY :
+				case Types.LONGVARCHAR :
+					break;
+				default :
+					if (li_x > 1)
+					{
+						lSb_DeleteSQL.append(" AND ");
+					}
+					lSb_DeleteSQL.append(i_SQLRowInfo.getColumnName(li_x));
+					lSb_DeleteSQL.append(":isnull(:o");
+					lSb_DeleteSQL.append(li_x);
+					lSb_DeleteSQL.append(" ; IS NULL  ; = :o");
+					lSb_DeleteSQL.append(li_x);
+					lSb_DeleteSQL.append(")");
 			}
-			lSb_DeleteSQL.append(i_SQLRowInfo.getColumnName(li_x));
-			lSb_DeleteSQL.append(":isnull(:o");
-			lSb_DeleteSQL.append(li_x);
-			lSb_DeleteSQL.append(" ; IS NULL  ; = :o");
-			lSb_DeleteSQL.append(li_x);
-			lSb_DeleteSQL.append(")");
 		}
 		return lSb_DeleteSQL.toString();
 	}
@@ -529,21 +544,21 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 		while (l_Iterator.hasNext())
 		{
-			l_RowContainer = (RowContainer) l_Iterator.next();
+			l_RowContainer = (RowContainer)l_Iterator.next();
 			deleteRow(l_RowContainer.getOrigRow(), l_RowContainer.getRow());
 		}
 
 		l_Iterator = a_DataSet.getModified().iterator();
 		while (l_Iterator.hasNext())
 		{
-			l_RowContainer = (RowContainer) l_Iterator.next();
+			l_RowContainer = (RowContainer)l_Iterator.next();
 			modifyRow(l_RowContainer.getOrigRow(), l_RowContainer.getRow());
 		}
 
 		l_Iterator = a_DataSet.getInserted().iterator();
 		while (l_Iterator.hasNext())
 		{
-			l_RowContainer = (RowContainer) l_Iterator.next();
+			l_RowContainer = (RowContainer)l_Iterator.next();
 			insertRow(l_RowContainer.getRow());
 		}
 
@@ -567,46 +582,49 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 				// SetParameters
 				for (int li_c = 1; li_c <= i_SQLRowInfo.getColumnCount(); li_c++)
 				{
-					a_SQLStatement.setParameter(li_c, a_Row_Original.getValueAt(li_c), a_Row_Current.getValueAt(li_c),i_SQLRowInfo.getColumnType(li_c));
+					a_SQLStatement.setParameter(li_c, a_Row_Original.getValueAt(li_c), a_Row_Current.getValueAt(li_c), i_SQLRowInfo.getColumnType(li_c));
 				}
 				l_PreparedStatement = a_SQLStatement.getPreparedStatement(i_Connection);
 
 				int li_return = l_PreparedStatement.executeUpdate();
 
-				if(li_return == 0 && ib_noRowsUpdatedError)
+				if (li_return == 0 && ib_noRowsUpdatedError)
 				{
-					if ( a_SQLStatement == i_SQLStatement_Update)
+					if (a_SQLStatement == i_SQLStatement_Update)
 					{
 						i_ConnectionContainer.setErrorFlag(true);
 						l_DataSetException = new DataSetException(EX_UPDATE_NO_ROWS_UPDATED);
 					}
-					else if( a_SQLStatement == i_SQLStatement_Insert)
+					else if (a_SQLStatement == i_SQLStatement_Insert)
 					{
 						i_ConnectionContainer.setErrorFlag(true);
 						l_DataSetException = new DataSetException(EX_INSERT_NO_ROWS_INSERTED);
 					}
-					else if ( a_SQLStatement == i_SQLStatement_Delete)
+					else if (a_SQLStatement == i_SQLStatement_Delete)
 					{
 						i_ConnectionContainer.setErrorFlag(true);
 						l_DataSetException = new DataSetException(EX_DELETE_NO_ROWS_DELETED);
-					}				
-					if(l_DataSetException!=null)
-					{	
+					}
+					if (l_DataSetException != null)
+					{
 						ii_updateCount++;
 					}
 				}
-				
+
 			}
 			catch (SQLException l_SQLException)
 			{
 				i_ConnectionContainer.setErrorFlag(true);
-				l_DataSetException = new DataSetException(EX_SQLEXCEPTION + "Row \nCurrent " +  a_Row_Current.toString() + "\nOriginal " + a_Row_Original.toString(), l_SQLException);
+				l_DataSetException =
+					new DataSetException(
+						EX_SQLEXCEPTION + "Row \nCurrent " + a_Row_Current.toString() + "\nOriginal " + a_Row_Original.toString(),
+						l_SQLException);
 			}
 			finally
 			{
 				if (l_PreparedStatement != null)
 				{
-					
+
 					try
 					{
 						l_PreparedStatement.close();
