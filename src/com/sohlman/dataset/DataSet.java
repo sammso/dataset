@@ -1,11 +1,12 @@
 package com.sohlman.dataset;
 
-import java.util.Vector;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Enumeration;
 import java.io.PrintStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Vector;
 
 /** 
 * <p>DataSet is common component to handle data in table form.
@@ -1350,9 +1351,9 @@ public class DataSet
 	 * @param ai_compareColumns
 	 * @param ai_sumColumns
 	 */
-	public void sumRows(int[] ai_compareColumns, int[] ai_sumColumns)
-	{
-		setComparator(new RowComparator(ai_compareColumns));
+	public void sumRows(int[] ai_groupColumns, int[] ai_sumColumns)
+	{	
+		setComparator(new RowComparator(ai_groupColumns));
 		sort();
 		
 		for(int li_row = getRowCount() ; li_row > 1  ; li_row-- )
@@ -1360,16 +1361,72 @@ public class DataSet
 			Row l_Row_Current = getReferenceToRow(li_row);
 			Row l_Row_Before = getReferenceToRow(li_row - 1);
 			
-			if(l_Row_Current.equals(l_Row_Before,ai_compareColumns))
+			if(l_Row_Current.equals(l_Row_Before, ai_groupColumns))
 			{
 				for(int li_index = 0 ; li_index < ai_sumColumns.length ; li_index++)
 				{
-					
+					Object l_Object = addObject(l_Row_Current.getValueAt(ai_sumColumns[li_index]), l_Row_Before.getValueAt(ai_sumColumns[li_index]));
+					l_Row_Before.setValueAt(ai_sumColumns[li_index], l_Object);
 				}
-				
 				removeRow(li_row);	
-			}		
+			}	
 		}
 	}
 	
+	/**
+	 * Method This is part of functionality of sumRows
+	 * @param a_Object_1
+	 * @param a_Object_2
+	 * @return Object
+	 */
+	private Object addObject(Object a_Object_1, Object a_Object_2)
+	{
+		if(a_Object_1==null || a_Object_2 != null)
+		{
+			return a_Object_2;	
+		}
+		if(a_Object_2==null || a_Object_1 != null)
+		{
+			return a_Object_1;	
+		}		
+		
+		if (a_Object_1 instanceof Integer )
+		{
+			return (Object) new Integer(((Integer)a_Object_1).intValue() + ((Integer)a_Object_2).intValue());
+		}
+		else if (a_Object_1 instanceof Long )
+		{
+			return (Object) new Long(((Long)a_Object_1).longValue() + ((Long)a_Object_2).longValue());
+		}
+		else if (a_Object_1 instanceof Double )
+		{
+			return (Object) new Double(((Double)a_Object_1).doubleValue() + ((Double)a_Object_2).doubleValue());
+		}
+		else if (a_Object_1 instanceof Float )
+		{
+			return (Object) new Float(((Float)a_Object_1).floatValue() + ((Float)a_Object_2).floatValue());
+		}
+		else if (a_Object_1 instanceof Short )
+		{
+			short ls_value1 = ((Short)a_Object_1).shortValue();
+			short ls_value2 = ((Short)a_Object_1).shortValue();			
+			short ls_value = (short)(ls_value1 + ls_value2);
+			return (Object) new Short( ls_value );
+		}		
+		else if (a_Object_1 instanceof BigInteger )
+		{
+			BigInteger l_BigInteger_1 = (BigInteger) a_Object_1;
+			BigInteger l_BigInteger_2 = (BigInteger) a_Object_2;	
+		
+			return (Object) l_BigInteger_1.add(l_BigInteger_2);
+		}
+		else if (a_Object_1 instanceof BigDecimal )
+		{
+			BigDecimal l_BigDecimal_1 = (BigDecimal) a_Object_1;
+			BigDecimal l_BigDecimal_2 = (BigDecimal) a_Object_2;	
+		
+			return (Object) l_BigDecimal_1.add(l_BigDecimal_2);
+		}		
+		return null;				
+	} 	
 }
