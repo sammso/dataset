@@ -1,5 +1,8 @@
 package com.sohlman.dataset.sql;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+
 import com.sohlman.dataset.DataSet;
 import com.sohlman.dataset.DataSetException;
 
@@ -54,6 +57,20 @@ public class SQLDataSet extends DataSet
 	public SQLDataSet()
 	{
 
+	}
+
+
+	/**
+	 * Set javax.sql.Connection to SQLDataSet
+	 * <br>
+	 * It is same as {@link #setConnectionContainer setConnectionContainer}(new {@link  com.sohlman.dataset.sql.SingleConnectionContainer SingleConnectionContainer}(..));
+	 * 
+	 * @param a_Connection
+	 * @throws DataSetException
+	 */
+	public void setConnection(Connection a_Connection) throws DataSetException
+	{
+		setConnectionContainer(new SingleConnectionContainer(a_Connection));
 	}
 
 	/**
@@ -312,5 +329,28 @@ public class SQLDataSet extends DataSet
 			ib_noRowsUpdatedError = ab_noRowsUpdatedError;
 		}
 		
+	}
+	
+	public static void main(String[] aS_Args)
+	{
+		try
+		{
+			//Class.forName ("com.sap.dbtech.jdbc.DriverSapDB");
+			Class.forName("com.microsoft.jdbc.sqlserver.SQLServerDriver"); 
+			//Connection l_Connection = DriverManager.getConnection("jdbc:sapdb://localhost/test", "dba", "dba");
+			Connection l_Connection = DriverManager.getConnection("jdbc:microsoft:sqlserver://localhost:1433", "dbotestdb", "dbotestdb");
+
+			SQLDataSet l_SQLDataSet = new SQLDataSet();
+			l_SQLDataSet.setConnection(l_Connection);
+			//l_SQLDataSet.setSQLSelect("select * from CASES");
+			l_SQLDataSet.setSQLSelect("select * from weburl");
+			l_SQLDataSet.read();
+			l_SQLDataSet.printBuffers(System.out);
+			
+		}
+		catch(Exception l_Exception)
+		{
+			l_Exception.printStackTrace();
+		}		
 	}
 }

@@ -9,6 +9,10 @@
 
 Changes 
 ------------------------------------------------------------- 
+ Changes in Final
+ - SQLColumn info has more information, see javadoc
+ 
+
  Changes in RC 3
  - Row.setValueAt throws now ClassCastException, this helps to find errors on application 
    code.
