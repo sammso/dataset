@@ -1,9 +1,3 @@
-/*
- * SQLSelectFilter.java
- *
- * Created on 13. maaliskuuta 2002, 21:54
- */
-
 package com.sohlman.dataset.sql;
 
 import java.sql.ResultSet;
