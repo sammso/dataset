@@ -52,7 +52,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	private boolean ib_noRowsUpdatedError = true;
 	private boolean ib_noRowsDeletedError = true;
 
-	private SQLRowInfo i_SQLColumnsInfo;
+	private SQLRowInfo i_SQLRowInfo;
 
 	/** Creates new SQLUpdateEngine */
 	public SQLWriteEngine()
@@ -73,11 +73,11 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		String aS_InsertSQL,
 		String aS_UpdateSQL,
 		String aS_DeleteSQL,
-		SQLRowInfo a_SQLColumnsInfo)
+		SQLRowInfo a_SQLRowInfo)
 		throws DataSetException
 	{
 		setConnection(a_ConnectionContainer);
-		setSQLColumnsInfo(a_SQLColumnsInfo);
+		setSQLRowInfo(a_SQLRowInfo);
 		setSQL(aS_InsertSQL, aS_UpdateSQL, aS_DeleteSQL);
 
 	}
@@ -91,16 +91,16 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	public SQLWriteEngine(ConnectionContainer a_ConnectionContainer, String aS_SelectSQL, SQLRowInfo a_SQLColumnsInfo) throws DataSetException
 	{
 		setConnection(a_ConnectionContainer);
-		setSQLColumnsInfo(a_SQLColumnsInfo);
+		setSQLRowInfo(a_SQLColumnsInfo);
 		createWriteStatementsFromSelect(aS_SelectSQL);
 	}
 
 	/** Set Connection object to SQLUpdateEngine
 	 * @param a_Connecion Current connection object
 	 */
-	public void setSQLColumnsInfo(SQLRowInfo a_SQLColumnsInfo)
+	public void setSQLRowInfo(SQLRowInfo a_SQLRowInfo)
 	{
-		i_SQLColumnsInfo = a_SQLColumnsInfo;
+		i_SQLRowInfo = a_SQLRowInfo;
 	}
 
 	/** Set Connection object to SQLUpdateEngine
@@ -171,25 +171,25 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 	private String createInsertSQL(String aS_Table)
 	{
-		if (i_SQLColumnsInfo == null)
+		if (i_SQLRowInfo == null)
 		{
 			throw new IllegalStateException("SQLRowInfo is not set");
 		}
 		StringBuffer lSb_InsertSQL = new StringBuffer();
 		lSb_InsertSQL.append("INSERT INTO ").append(aS_Table).append(" ( ");
 
-		for (int li_x = 1; li_x <= i_SQLColumnsInfo.getColumnCount(); li_x++)
+		for (int li_x = 1; li_x <= i_SQLRowInfo.getColumnCount(); li_x++)
 		{
 			if (li_x > 1)
 			{
 				lSb_InsertSQL.append(", ");
 			}
-			lSb_InsertSQL.append(i_SQLColumnsInfo.getColumnName(li_x));
+			lSb_InsertSQL.append(i_SQLRowInfo.getColumnName(li_x));
 		}
 
 		lSb_InsertSQL.append(" ) VALUES ( ");
 
-		for (int li_x = 1; li_x <= i_SQLColumnsInfo.getColumnCount(); li_x++)
+		for (int li_x = 1; li_x <= i_SQLRowInfo.getColumnCount(); li_x++)
 		{
 			if (li_x > 1)
 			{
@@ -205,32 +205,32 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 	private String createUpdateSQL(String aS_Table)
 	{
-		if (i_SQLColumnsInfo == null)
+		if (i_SQLRowInfo == null)
 		{
 			throw new IllegalStateException("SQLRowInfo is not set");
 		}
 		StringBuffer lSb_UpdateSQL = new StringBuffer();
 		lSb_UpdateSQL.append("UPDATE ").append(aS_Table).append(" SET ");
 
-		for (int li_x = 1; li_x <= i_SQLColumnsInfo.getColumnCount(); li_x++)
+		for (int li_x = 1; li_x <= i_SQLRowInfo.getColumnCount(); li_x++)
 		{
 			if (li_x > 1)
 			{
 				lSb_UpdateSQL.append(", ");
 			}
-			lSb_UpdateSQL.append(i_SQLColumnsInfo.getColumnName(li_x));
+			lSb_UpdateSQL.append(i_SQLRowInfo.getColumnName(li_x));
 			lSb_UpdateSQL.append(" = :n");
 			lSb_UpdateSQL.append(li_x);
 		}
 
 		lSb_UpdateSQL.append(" WHERE ");
-		for (int li_x = 1; li_x <= i_SQLColumnsInfo.getColumnCount(); li_x++)
+		for (int li_x = 1; li_x <= i_SQLRowInfo.getColumnCount(); li_x++)
 		{
 			if (li_x > 1)
 			{
 				lSb_UpdateSQL.append(" AND ");
 			}
-			lSb_UpdateSQL.append(i_SQLColumnsInfo.getColumnName(li_x));
+			lSb_UpdateSQL.append(i_SQLRowInfo.getColumnName(li_x));
 			lSb_UpdateSQL.append(":isnull(:o");
 			lSb_UpdateSQL.append(li_x);
 			lSb_UpdateSQL.append(" ; IS NULL  ; = :o");
@@ -242,7 +242,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 	private String createDeleteSQL(String aS_Table)
 	{
-		if (i_SQLColumnsInfo == null)
+		if (i_SQLRowInfo == null)
 		{
 			throw new IllegalStateException("SQLRowInfo is not set");
 		}
@@ -250,13 +250,13 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		lSb_DeleteSQL.append("DELETE FROM ").append(aS_Table);
 
 		lSb_DeleteSQL.append(" WHERE ");
-		for (int li_x = 1; li_x <= i_SQLColumnsInfo.getColumnCount(); li_x++)
+		for (int li_x = 1; li_x <= i_SQLRowInfo.getColumnCount(); li_x++)
 		{
 			if (li_x > 1)
 			{
 				lSb_DeleteSQL.append(" AND ");
 			}
-			lSb_DeleteSQL.append(i_SQLColumnsInfo.getColumnName(li_x));
+			lSb_DeleteSQL.append(i_SQLRowInfo.getColumnName(li_x));
 			lSb_DeleteSQL.append(":isnull(:o");
 			lSb_DeleteSQL.append(li_x);
 			lSb_DeleteSQL.append(" ; IS NULL  ; = :o");
@@ -413,22 +413,22 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	public void writeStart() throws DataSetException
 	{
 		ii_updateCount = 0;
-		if (i_SQLColumnsInfo == null)
+		if (i_SQLRowInfo == null)
 		{
 			throw new DataSetException(EX_NO_COLUMNINFO_DEFINED);
 		}
 
 		if (i_SQLStatement_Delete != null)
 		{
-			i_SQLStatement_Delete.setSQLTypes(i_SQLColumnsInfo);
+			i_SQLStatement_Delete.setSQLTypes(i_SQLRowInfo);
 		}
 		if (i_SQLStatement_Update != null)
 		{
-			i_SQLStatement_Update.setSQLTypes(i_SQLColumnsInfo);
+			i_SQLStatement_Update.setSQLTypes(i_SQLRowInfo);
 		}
 		if (i_SQLStatement_Insert != null)
 		{
-			i_SQLStatement_Insert.setSQLTypes(i_SQLColumnsInfo);
+			i_SQLStatement_Insert.setSQLTypes(i_SQLRowInfo);
 		}
 		try
 		{
@@ -470,7 +470,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 
 	private void execSQLStatement(SQLStatement a_SQLStatement, Row a_Row_Original, Row a_Row_Current) throws DataSetException
 	{
-		if (i_SQLColumnsInfo == null)
+		if (i_SQLRowInfo == null)
 		{
 			throw new DataSetException(EX_NO_COLUMNINFO_DEFINED);
 		}
@@ -484,9 +484,9 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 			{
 
 				// SetParameters
-				for (int li_c = 1; li_c <= i_SQLColumnsInfo.getColumnCount(); li_c++)
+				for (int li_c = 1; li_c <= i_SQLRowInfo.getColumnCount(); li_c++)
 				{
-					a_SQLStatement.setParameter(li_c, a_Row_Original.getValueAt(li_c), a_Row_Current.getValueAt(li_c));
+					a_SQLStatement.setParameter(li_c, a_Row_Original.getValueAt(li_c), a_Row_Current.getValueAt(li_c),i_SQLRowInfo.getColumnType(li_c));
 				}
 				l_PreparedStatement = a_SQLStatement.getPreparedStatement(i_Connection);
 
@@ -525,6 +525,8 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 			{
 				if (l_PreparedStatement != null)
 				{
+					// This made serious bug
+					/*
 					try
 					{
 						l_PreparedStatement.close();
@@ -535,7 +537,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 						{
 							l_DataSetException = new DataSetException(EX_CLOSE_PREPARED_STATEMENT, l_SQLException);
 						}
-					}
+					}*/
 				}
 			}
 			if (l_DataSetException != null)

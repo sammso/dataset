@@ -247,7 +247,8 @@ class SQLStatement
 		PreparedStatement l_PreparedStatement;
 		if (!iS_FinalSQL_Last.equals(lS_SQL))
 		{
-
+			// Prepared statement has to be closed
+			i_PreparedStatement_Current.close();
 			l_PreparedStatement = a_Connection.prepareStatement(lS_SQL);
 			iS_FinalSQL_Last = lS_SQL;
 		}
@@ -276,14 +277,7 @@ class SQLStatement
 				}
 				else
 				{
-					try
-					{
-						l_PreparedStatement.setObject(li_c + 1, lO_newParamenter);
-					}
-					catch(NullPointerException l_NullPointerException)
-					{
-						throw l_NullPointerException;
-					}
+					l_PreparedStatement.setObject(li_c + 1, lO_newParamenter);
 				}	
 			}
 			else
@@ -650,5 +644,10 @@ class SQLStatement
 		{
 			return ai_default;
 		}
+	}
+	
+	public void close()
+	{
+
 	}
 }
