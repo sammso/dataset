@@ -223,14 +223,14 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	 */
 	public static String getTableNameFromSelectSQL(String aS_Sql) throws DataSetException
 	{
-		String lS_SQL = aS_Sql.toUpperCase();
+		String lS_SQL = aS_Sql.toUpperCase().trim();
 
 		//int li_tableNameStart = lS_SQL.indexOf("FROM");
 		int li_tableNameStart = keyWordSearchIndexOf(lS_SQL, "FROM", 0);
 
 		// Check if 
 
-		if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameStart - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameStart + 5)))
+		if (!(isSpaceTabReturnNothing(lS_SQL, li_tableNameStart - 1)&&isSpaceTabReturnNothing(lS_SQL, li_tableNameStart + 4)))
 		{
 			li_tableNameStart = -1;
 		}
@@ -710,7 +710,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		}
 		catch(Exception l_Exception)
 		{
-			
+			l_Exception.printStackTrace();
 		}
 		
 	}

@@ -182,5 +182,9 @@ public class DataSetTableModel extends AbstractTableModel implements DataSetList
 		{
 			fireTableRowsInserted(a_DataSetEvent.getRow() - 1, a_DataSetEvent.getRow() - 1);
 		}	
+		if(a_DataSetEvent.getAction() == DataSetEvent.RESET)
+		{
+			fireTableStructureChanged();
+		}
 	}
 }

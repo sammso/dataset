@@ -45,10 +45,11 @@ import com.sohlman.dataset.swing.DataSetTableModel;
 public class SQLTool
 {
 	private JButton i_JButton_Add;
+	private JButton i_JButton_Reset;
 	private JButton i_JButton_Delete;
 	private JButton i_JButton_Print;
 
-	private JButton i_JButton_Read;
+	private JButton i_JButton_Execute;
 	private JButton i_JButton_Save;
 
 	private JTextArea i_JTextArea_SQL;
@@ -87,13 +88,16 @@ public class SQLTool
 			{
 				i_SQLDataSet.printBuffers(System.out);
 			}
-			if (a_ActionEvent.getSource() == i_JButton_Read)
+			if (a_ActionEvent.getSource() == i_JButton_Execute)
 			{
 				try
 				{
-					i_SQLDataSet.reset();
-					i_SQLDataSet.setSQLStatements(i_JTextArea_SQL.getText(), null, null, null);
+					i_SQLDataSet = getSQLDataSet();
+					i_JTable.setModel(new DataSetTableModel(getSQLDataSet()));
+					i_SQLDataSet.setSQLSelect(i_JTextArea_SQL.getText());
+					i_SQLDataSet.setAutoGenerateWriteSQL(true);
 					i_SQLDataSet.read();
+					
 					i_JTextArea_ResultText.append(i_SQLDataSet.getRowCount() + " rows read \r\n");
 					i_JTabbedPane.setSelectedIndex(0);
 
@@ -206,101 +210,9 @@ public class SQLTool
 		{
 			if (connectToDb(l_Properties))
 			{
-				i_JFrame = new JFrame("SQL DataSet demo");
-				Container l_Container = i_JFrame.getContentPane();
-				JPanel l_JPanel_Buttons = new JPanel();
-				l_JPanel_Buttons.setLayout(new BoxLayout(l_JPanel_Buttons, BoxLayout.Y_AXIS));
-				l_JPanel_Buttons.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-
-				i_JButton_Read = new JButton("Read");
-				i_JButton_Read.addActionListener(i_ActionListener);
-				l_JPanel_Buttons.add(i_JButton_Read);
-
-				i_JButton_Save = new JButton("Save");
-				i_JButton_Save.setEnabled(false);
-				i_JButton_Save.addActionListener(i_ActionListener);
-				l_JPanel_Buttons.add(i_JButton_Save);
-
-				i_JButton_Add = new JButton("Add");
-				i_JButton_Add.setEnabled(false);
-				i_JButton_Add.addActionListener(i_ActionListener);
-				l_JPanel_Buttons.add(i_JButton_Add);
-
-				i_JButton_Delete = new JButton("Delete");
-				i_JButton_Delete.setEnabled(false);
-				i_JButton_Delete.addActionListener(i_ActionListener);
-				l_JPanel_Buttons.add(i_JButton_Delete);
-
-				i_JButton_Print = new JButton("Print");
-				i_JButton_Print.addActionListener(i_ActionListener);
-
-//				l_JPanel_Buttons.add(i_JButton_Print);
-
-				JPanel l_JPanel_List = new JPanel();
-				l_JPanel_List.setLayout(new BorderLayout());
-
-				i_JTextArea_SQL = new JTextArea();
-				i_JTextArea_SQL.setRows(10);
-				i_JTextArea_SQL.setAutoscrolls(true);
-
-				JScrollPane l_JScrollPane_SQL = new JScrollPane(i_JTextArea_SQL);
-
-				JPanel l_JPanel_SQL = new JPanel();
-				l_JPanel_SQL.setLayout(new BorderLayout());
-				l_JPanel_SQL.setBorder(BorderFactory.createBevelBorder(1));
-				l_JPanel_SQL.add(l_JScrollPane_SQL);
-
-				JLabel l_JLabel = new JLabel();
-				l_JLabel.setText("Select statement");
-				JPanel l_JPanel_Select = new JPanel();
-				l_JPanel_Select.setLayout(new BorderLayout());
-				l_JPanel_Select.add(l_JPanel_SQL, BorderLayout.CENTER);
-				l_JPanel_Select.add(l_JLabel, BorderLayout.NORTH);
-
-				l_JPanel_List.add(l_JPanel_Select, BorderLayout.NORTH);
-
-				JPanel l_JPanel_JTable = new JPanel();
-
-				l_JPanel_JTable.setLayout(new BorderLayout());
-				i_JTable = new JTable(new DataSetTableModel(getSQLDataSet()));
-				i_JTable.setBorder(BorderFactory.createBevelBorder(1));
-				i_JTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
-
-				JScrollPane l_JScrollPane_JTable = new JScrollPane(i_JTable);
-				l_JPanel_JTable.add(l_JScrollPane_JTable, BorderLayout.CENTER);
-
-				i_JTabbedPane = new JTabbedPane();
-				i_JTabbedPane.add("Result data", l_JPanel_JTable);
-
-				l_JPanel_List.add(i_JTabbedPane, BorderLayout.CENTER);
-
-				i_JTextArea_ResultText = new JTextArea();
-				JScrollPane l_JScrollPane_ResultText = new JScrollPane(i_JTextArea_ResultText);
-				JPanel l_JPanel_ResultText = new JPanel();
-
-				l_JPanel_ResultText.setLayout(new BorderLayout());
-				l_JPanel_ResultText.setBorder(BorderFactory.createBevelBorder(1));
-				l_JPanel_ResultText.add(l_JScrollPane_ResultText);
-
-				i_JTabbedPane.add("Result text", l_JPanel_ResultText);
-				JPanel l_JPanel = new JPanel();
-
-				l_JPanel.setLayout(new BorderLayout());
-				l_JPanel.add(l_JPanel_List, BorderLayout.CENTER);
-				l_JPanel.add(l_JPanel_Buttons, BorderLayout.EAST);
-
-				l_Container.add(l_JPanel, BorderLayout.CENTER);
-
-				i_JFrame.addWindowListener(new WindowAdapter()
-				{
-					public void windowClosing(WindowEvent e)
-					{
-						System.exit(0);
-					}
-				});
-
-				i_JFrame.pack();
-				i_JFrame.setVisible(true);
+				createComponents();
+				initializeComponents();
+				layoutComponents();
 			}
 		}
 		else
@@ -309,6 +221,126 @@ public class SQLTool
 			printMessage();
 		}
 	}
+
+	private void layoutComponents()
+	{
+		Container l_Container = i_JFrame.getContentPane();
+		JPanel l_JPanel_Buttons = new JPanel();
+		l_JPanel_Buttons.setLayout(new BoxLayout(l_JPanel_Buttons, BoxLayout.Y_AXIS));
+		l_JPanel_Buttons.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+
+		i_JButton_Execute.setText("Execute");
+		l_JPanel_Buttons.add(i_JButton_Execute);
+
+		i_JButton_Save.setText("Save");
+		l_JPanel_Buttons.add(i_JButton_Save);
+
+		i_JButton_Add.setText("Add");
+		l_JPanel_Buttons.add(i_JButton_Add);
+
+		i_JButton_Delete.setText("Delete");
+		l_JPanel_Buttons.add(i_JButton_Delete);
+
+		i_JButton_Print.setText("Print");
+		l_JPanel_Buttons.add(i_JButton_Print);
+
+		JPanel l_JPanel_List = new JPanel();
+		l_JPanel_List.setLayout(new BorderLayout());
+
+		i_JTextArea_SQL.setRows(10);
+		i_JTextArea_SQL.setAutoscrolls(true);
+
+		JScrollPane l_JScrollPane_SQL = new JScrollPane(i_JTextArea_SQL);
+
+		JPanel l_JPanel_SQL = new JPanel();
+		l_JPanel_SQL.setLayout(new BorderLayout());
+		l_JPanel_SQL.setBorder(BorderFactory.createBevelBorder(1));
+		l_JPanel_SQL.add(l_JScrollPane_SQL);
+
+		JLabel l_JLabel = new JLabel();
+		l_JLabel.setText("Select statement");
+		JPanel l_JPanel_Select = new JPanel();
+		l_JPanel_Select.setLayout(new BorderLayout());
+		l_JPanel_Select.add(l_JPanel_SQL, BorderLayout.CENTER);
+		l_JPanel_Select.add(l_JLabel, BorderLayout.NORTH);
+
+		l_JPanel_List.add(l_JPanel_Select, BorderLayout.NORTH);
+
+		JPanel l_JPanel_JTable = new JPanel();
+
+		l_JPanel_JTable.setLayout(new BorderLayout());
+		i_JTable.setBorder(BorderFactory.createBevelBorder(1));
+		i_JTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
+
+		JScrollPane l_JScrollPane_JTable = new JScrollPane(i_JTable);
+		l_JPanel_JTable.add(l_JScrollPane_JTable, BorderLayout.CENTER);
+
+		i_JTabbedPane.add("Result data", l_JPanel_JTable);
+
+		l_JPanel_List.add(i_JTabbedPane, BorderLayout.CENTER);
+
+		JScrollPane l_JScrollPane_ResultText = new JScrollPane(i_JTextArea_ResultText);
+		JPanel l_JPanel_ResultText = new JPanel();
+
+		l_JPanel_ResultText.setLayout(new BorderLayout());
+		l_JPanel_ResultText.setBorder(BorderFactory.createBevelBorder(1));
+		l_JPanel_ResultText.add(l_JScrollPane_ResultText);
+
+		i_JTabbedPane.add("Result text", l_JPanel_ResultText);
+		JPanel l_JPanel = new JPanel();
+
+		l_JPanel.setLayout(new BorderLayout());
+		l_JPanel.add(l_JPanel_List, BorderLayout.CENTER);
+		l_JPanel.add(l_JPanel_Buttons, BorderLayout.EAST);
+
+		l_Container.add(l_JPanel, BorderLayout.CENTER);
+
+		i_JFrame.pack();
+		i_JFrame.setVisible(true);		
+	}
+	
+	private void initializeComponents()
+	{
+		i_JButton_Reset.addActionListener(i_ActionListener);
+		
+		i_JButton_Execute.addActionListener(i_ActionListener);
+		
+		i_JButton_Save.addActionListener(i_ActionListener);
+		i_JButton_Save.setEnabled(false);
+		
+		i_JButton_Add.addActionListener(i_ActionListener);
+		i_JButton_Add.setEnabled(false);
+		
+		i_JButton_Delete.addActionListener(i_ActionListener);
+		i_JButton_Delete.setEnabled(false);
+		
+		i_JButton_Print.addActionListener(i_ActionListener);
+		
+		i_JFrame.addWindowListener(new WindowAdapter()
+		{
+			public void windowClosing(WindowEvent e)
+			{
+				System.exit(0);
+			}
+		});		
+	}
+	
+	private void createComponents()
+	{
+		i_JFrame = new JFrame("SQL DataSet demo");
+		i_JTable = new JTable();
+		i_JTabbedPane = new JTabbedPane();
+		i_JTextArea_ResultText = new JTextArea();
+		i_JTextArea_SQL = new JTextArea();
+		i_JButton_Reset = new JButton();
+		i_JButton_Execute = new JButton();
+		i_JButton_Save = new JButton();		
+		i_JButton_Add = new JButton();
+		i_JButton_Delete = new JButton();
+		i_JButton_Print = new JButton();
+		
+	}
+	
 
 	private SQLDataSet getSQLDataSet()
 	{
