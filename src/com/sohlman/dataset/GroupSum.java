@@ -1,7 +1,5 @@
 package com.sohlman.dataset;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 
 /**
  * @author Sampsa Sohlman

@@ -1,14 +1,7 @@
 package com.sohlman.dataset.swing;
 
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.JTable;
-import java.math.BigInteger;
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
+import javax.swing.table.AbstractTableModel;
 
 import com.sohlman.dataset.DataSet;
 import com.sohlman.dataset.DataSetEvent;

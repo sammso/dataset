@@ -1,8 +1,5 @@
 package com.sohlman.dataset.file;
 
-import java.util.Vector;
-
-import com.sohlman.dataset.ColumnInfo;
 import com.sohlman.dataset.RowInfo;
 
 /**

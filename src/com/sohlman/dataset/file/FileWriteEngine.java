@@ -1,17 +1,13 @@
 package com.sohlman.dataset.file;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
-import java.util.List;
-import java.math.BigDecimal;
 
 import com.sohlman.dataset.DataSet;
 import com.sohlman.dataset.DataSetException;

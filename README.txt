@@ -1,4 +1,4 @@
-	DataSet Library 1.0 Beta 5
+	DataSet Library 1.0 Beta 6
 -------------------------------------------------------------
  I currently using this version of DataSet on my projects.
  I'm using DataSet on production.
@@ -8,6 +8,10 @@
 
 Changes 
 ------------------------------------------------------------- 
+ Changes in  Beta 6
+ - Package structure fix
+ - FileReadEngine fix on Timestamps
+
  Before Beta 4 - Read from Earlier releases
  Beta 5
  - Fixed bug on removeRow event generation
@@ -18,7 +22,6 @@ Changes
  - New CVS and package structure.
    - build.xml to create newest version from CVS
    - swing functionality removed and transferred to another .jar
- - Swing support removed it is now on own .jar file.
  - Write statements generation developed further
  - Swing developement.
  - Rename KeyAction ModifyAction also it is bounded to RowInfo

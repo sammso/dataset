@@ -1,7 +1,6 @@
 package com.sohlman.dataset.sql;
 
 import com.sohlman.dataset.DataSet;
-import com.sohlman.dataset.Row;
 import com.sohlman.dataset.DataSetException;
 
 /**

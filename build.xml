@@ -73,7 +73,7 @@
 		</javadoc>		
 		
 		<!-- Swing library -->
-		<copy todir="${DataSet.zip}">
+		<copy todir="${DataSet.zip}/swingsrc">
 			<fileset dir="${swingsrc}"/>
 		</copy>
 		
@@ -91,7 +91,7 @@
 	
 	<target name="Clean" description="Clean Up" >
 		<delete file="${zipfile}"/>
-		<delete dir="${distdir}"/>
+		<delete dir="${distribution}"/>
 		<delete dir="${builddir}"/>
 	</target>
 </project>

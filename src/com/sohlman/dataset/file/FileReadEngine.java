@@ -118,7 +118,6 @@ public class FileReadEngine implements ReadEngine
 							li_endPosition = lS_Line.length();
 						}
 						String lS_Data = lS_Line.substring(i_FileRowInfo.getColumnStartPosition(li_index), li_endPosition);
-
 						l_Objects[li_index - 1] = getObject(lS_Data, i_FileRowInfo.getColumnInfo(li_index));
 					}
 				}
@@ -248,7 +247,7 @@ public class FileReadEngine implements ReadEngine
 					{
 						return null;
 					}
-					else if(l_Timestamp.before(iTs_RangeStart) || l_Timestamp.after(iTs_RangeEnd))
+					else if((iTs_RangeStart!=null && l_Timestamp.before(iTs_RangeStart)) || (iTs_RangeEnd!=null && l_Timestamp.after(iTs_RangeEnd)))
 					{
 						return null;
 					}
@@ -277,7 +276,7 @@ public class FileReadEngine implements ReadEngine
 		{
 			if (!l_FileColumnInfo.emptyIsNull())
 			{
-				throw new DataSetException("Bad data format", l_Exception);
+				throw new DataSetException("Bad data format in column " + l_FileColumnInfo.getName() + " Format " + l_FileColumnInfo.getFormat(), l_Exception);	
 			}
 		}
 		return null;
@@ -305,7 +304,6 @@ public class FileReadEngine implements ReadEngine
 		iTs_RangeStart = aTs_Start;
 		iTs_RangeEnd = aTs_End;
 	}	
-	
 	
 	/**
 	 * @see #setTimestampRange(Timestamp, Timestamp)

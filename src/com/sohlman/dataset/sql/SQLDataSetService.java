@@ -1,17 +1,13 @@
 
 package com.sohlman.dataset.sql;
 
-import java.sql.Types;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.sql.Time;
-
-import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
 
 import com.sohlman.dataset.DataSetException;
-import com.sohlman.dataset.Row;
-import com.sohlman.dataset.Row;
 
 /**
  *

@@ -19,10 +19,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
-import org.apache.xalan.lib.sql.SQLErrorDocument;
-
-import com.sohlman.dataset.sql.SQLDataSet;
-
 /**
  * ResultSet wrapper for DataSet
  * 

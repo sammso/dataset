@@ -1,7 +1,5 @@
 package com.sohlman.dataset.file;
 
-import java.sql.Timestamp;
-
 import com.sohlman.dataset.ColumnInfo;
 
 /**

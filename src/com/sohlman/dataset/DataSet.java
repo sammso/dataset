@@ -136,11 +136,11 @@ public class DataSet
 	 * @param ai_index Number of row where new row is to be inserted. All the other rows are moved down.<br>
 	 * If -1 then act as addRow()
 	 */
-	public final int insertRow(int ai_index)
+	public final int insertRow(int ai_before)
 	{
 		int li_return = 0;
 
-		li_return = doInsertRow(ai_index);
+		li_return = doInsertRow(ai_before);
 
 		if (li_return > 0 && iVe_Listeners != null)
 		{
@@ -815,28 +815,28 @@ public class DataSet
 		}
 	}
 
-	private final int doInsertRow(int ai_index)
+	private final int doInsertRow(int ai_before)
 	{
 		Object[] l_Objects = new Object[getColumnCount()];
 		Row l_Row = new Row(l_Objects, i_RowInfo);
 		l_Row.setAllNulls();
-		return doInsertRow(ai_index, new RowContainer(null, l_Row));
+		return doInsertRow(ai_before, new RowContainer(null, l_Row));
 	}
 
-	private final int doInsertRow(int ai_index, RowContainer a_RowContainer)
+	private final int doInsertRow(int ai_before, RowContainer a_RowContainer)
 	{
-		if (ai_index == -1)
+		if (ai_before == -1)
 		{
 			iVe_Data.add((Object) a_RowContainer);
 			iVe_New.add((Object) a_RowContainer);
 			return iVe_Data.size();
 		}
 
-		if (ai_index > 0)
+		if (ai_before > 0)
 		{
-			iVe_Data.add(ai_index - 1, (Object) a_RowContainer);
+			iVe_Data.add(ai_before - 1, (Object) a_RowContainer);
 			iVe_New.add((Object) a_RowContainer);
-			return ai_index;
+			return ai_before;
 		}
 		else
 		{

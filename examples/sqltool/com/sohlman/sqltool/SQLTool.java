@@ -1,25 +1,40 @@
 package com.sohlman.sqltool;
 
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
-import com.sohlman.dataset.*;
-import com.sohlman.dataset.swing.*;
-
-import java.sql.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import com.sohlman.dataset.sql.*;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.UIManager;
+
+import com.sohlman.dataset.DataSetException;
+import com.sohlman.dataset.sql.ConnectionContainer;
+import com.sohlman.dataset.sql.SQLDataSet;
+import com.sohlman.dataset.swing.DataSetTableModel;
 
 
 /**

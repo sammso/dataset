@@ -1,7 +1,6 @@
 package com.sohlman.dataset.swing;
 
 import javax.swing.AbstractListModel;
-import javax.swing.event.ListDataListener;
 
 import com.sohlman.dataset.DataSet;
 import com.sohlman.dataset.DataSetEvent;

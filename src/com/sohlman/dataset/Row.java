@@ -1,6 +1,5 @@
 package com.sohlman.dataset;
 
-import java.io.Serializable;
 
 
 /** Row object represent row in {@link DataSet DataSet} object.<br>

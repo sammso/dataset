@@ -1,6 +1,5 @@
 package com.sohlman.dataset;
 
-import org.apache.xpath.operations.Equals;
 
 /**
  * Column  info contains all needed data from column
