@@ -252,6 +252,6 @@ public class FileReadEngine implements ReadEngine
 	 */
 	public int readEnd() throws DataSetException
 	{
-		return 0;
+		return ii_counter;
 	}
 }

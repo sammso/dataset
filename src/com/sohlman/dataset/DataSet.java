@@ -1016,10 +1016,15 @@ public class DataSet
 	
 	
 	/**
-	 * Method syncronizeFrom. (under development)
+	 * Method syncronizeFrom<br>
+	 * With this method you can syncronize DataSets that same type {@link RowInfo RowInfo}.<br><br>
+	 * This is possible to check using equals method of {@link RowInfo RowInfo}.
+	 * <br><br>
+	 * Result of syncronization is that this DataSet has new insert, and updates and it buffers are changed.
 	 * 
 	 * 
 	 * @param a_DataSet_Source
+	 * @param a_RowComparator This tells if which rows are match. NOTE! Both DataSet are also ordered after this operation by using  selected RowComparator class
 	 * @return int[] Index 0 addcount 1 modify 2 remove count
 	 */
 	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator) throws DataSetException
