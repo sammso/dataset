@@ -18,14 +18,14 @@ Changes
  - New CVS and package structure.
    - build.xml to create newest version from CVS
    - swing functionality removed and transferred to another .jar
- - Swing support removed it is not on own .jar file.
+ - Swing support removed it is now on own .jar file.
 Future Ideas
 -------------------------------------------------------------
  - Column level tracking for changed columns. (It is now
    row level)
  - Tight integration to Swing (After v1.0)
  - Tight SWT (Eclipse) integration
- - SQL Taglib for JSP
+ - DataSet Taglib for JSP
 
 Installation instructions:
 -------------------------------------------------------------
