@@ -22,8 +22,6 @@ public class RowComparator implements Comparator
 	}
 	
 	/**
-	 * @return This returns always 0
-	 * 
 	 * @see java.util.Comparator#compare(Object, Object)
 	 */
 	public final int compare(Object aO_Row1, Object aO_Row2)

@@ -1,19 +1,18 @@
 package com.sohlman.dataset;
 
 import java.io.PrintStream;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
 /** 
 * <p>DataSet is common component to handle data in table form.
-* It is possible to use different sources like SQL database, tabular file, XML file etc.</p>
+* It is possible to use different sources like SQL database, text file etc.</p>
 * <p><b>Usage</b></p>
 * <ol>        
-* <li>First create {@link RowInfo RowInfo} which defines ColumnStructure for DataSet</li>
+* <li>First create {@link RowInfo RowInfo} which defines ColumnStructure for DataSet<i>(optional) {@link ReadEngine ReadEngine} can create RowInfo automaticly. Example {@link com.sohlman.dataset.sql.SQLReadEngine SQLReadEngine} does so. </i></li>
 * <li>Implement {@link ReadEngine ReadEngine} class <i>(optional)</i></li>
 * <ul>        
 * 	There is no need to create {@link ReadEngine ReadEngine} or some common solution is used like {@link com.sohlman.dataset.sql.SQLReadEngine SQLReadEngine}.
@@ -30,13 +29,11 @@ import java.util.Vector;
 * <li>Save changes, using {@link #save save} method <i>(optional)</i></li>
 * </ol>              
  * @author Sampsa Sohlman
- * @version 2003-02-26
+ * @version 2003-03-21
  */
 
 public class DataSet
 {
-	public final static String EX_STRUCTURE_IS_NOT_MATCH = "Column structure of source and destination DataSet are not match";
-
 	/** This buffer contains "visible" data.
 	 */
 	private DataSetVector iVe_Data;
@@ -391,8 +388,8 @@ public class DataSet
 	}
 
 	/**
-	 * Tells if DataSet can save changes
-	 * @return boolean is dataset can be saved
+	 * Tells if DataSet can save changes and there is something 
+	 * @return boolean this dataset can be saved
 	 */
 	public boolean canSave()
 	{
@@ -494,31 +491,31 @@ public class DataSet
 	{
 		i_KeyAction = a_KeyAction;
 	} /** Set setReadEngine for DataSet
-																										 * @param a_ReadEngine Assigned read engine.
-																										 */
+																												 * @param a_ReadEngine Assigned read engine.
+																												 */
 	public final void setReadEngine(ReadEngine a_ReadEngine)
 	{
 		// future when many types of
 		// write engines exists. Do check and set all other nulls.
 		i_ReadEngine = a_ReadEngine;
 	} /** Set WriteEngine for DataSet
-																									 * @param a_WriteEngine Refrence to new WriteEngine.
-																									 */
+																											 * @param a_WriteEngine Refrence to new WriteEngine.
+																											 */
 	public final void setWriteEngine(WriteEngine a_WriteEngine)
 	{
 		i_WriteEngine = a_WriteEngine;
 	} /** Removes ReadEngine from DataSet
-																										 */
+																												 */
 	public final void removeReadEngine()
 	{
 		i_ReadEngine = null;
 	} /** Removes KeyAction object from DataSet
-																										 */
+																												 */
 	public final void removeKeyAction()
 	{
 		i_KeyAction = null;
 	} /** Removes WriteEngine from DataSet
-																										 */
+																												 */
 	public final void removeWriteEngine()
 	{
 		i_WriteEngine = null;
@@ -532,6 +529,10 @@ public class DataSet
 		return i_RowInfo.getColumnClassName(ai_columnIndex);
 	}
 
+	/**
+	 * Returns RowInfo object
+	 * @return RowInfo
+	 */
 	public RowInfo getRowInfo()
 	{
 		return i_RowInfo;
@@ -563,14 +564,18 @@ public class DataSet
 			throw new ArrayIndexOutOfBoundsException("There is no column information");
 		}
 		return i_RowInfo.getColumnName(ai_index);
-	} /** Returns row count of DataSet
-																										 * @return Row count of DataSet
-																										 */
+	}
+	/**
+	 * @return int Row count of DataSet 0 if none
+	 */
 	public int getRowCount()
 	{
 		return iVe_Data.size();
 	}
 
+	/**
+	 * @see printBuffers(PrintStream , boolean , boolean , boolean , boolean )
+	 */
 	public void printBuffers(PrintStream a_PrintStream)
 	{
 		printBuffers(a_PrintStream, true, true, true, true);
@@ -1031,7 +1036,6 @@ public class DataSet
 
 	/**
 	* Sorts data using current comparator.
-	* 
 	*/
 	public void sort()
 	{
@@ -1042,35 +1046,25 @@ public class DataSet
 	* @param a_Comparator Comparator object
 	*
 	*/
-	public void setComparator(RowComparator a_RowComparator)
+	public void setComparator(Comparator a_Comparator)
 	{
-		i_DataSetComparator = new DataSetComparator(a_RowComparator);
+		i_DataSetComparator = new DataSetComparator(a_Comparator);
 	}
 
 	/**
-	* Set comparator for sorting. 
-	* @return current RowComparator object
+	* Get current Comparator object
+	* @return current Comparator object
 	*/
-	public RowComparator getComparator()
+	public Comparator getComparator()
 	{
 		if (i_DataSetComparator == null)
 		{
 			return null;
 		}
 
-		return i_DataSetComparator.getRowComparator();
+		return i_DataSetComparator.getComparator();
 	}
 
-	/**
-	* This with this method it is possible to change row status.
-	* <i>Currently this is only skelenton and under design.</i>
-	* @param ai_rowIndex
-	* @param ai_buffer
-	*/
-	public void setBuffer(int ai_rowIndex, int ai_buffer)
-	{
-
-	}
 	/**
 	* This method is made for if example data need to be handled like new.
 	* <br>In case of MODIFIED new rows are not counted, because there are
@@ -1109,14 +1103,14 @@ public class DataSet
 		}
 		else if (ai_targetBuffer == this.NOTMODIFIED)
 		{
+			for (int li_y = 0; li_y < iVe_Modified.size(); li_y++)
+			{
+				RowContainer l_RowContainer = (RowContainer) iVe_Modified.get(li_y);
+				l_RowContainer.i_Row_Orig = l_RowContainer.i_Row_Current;
+			}
 			iVe_Modified.removeAllElements();
 			iVe_Deleted.removeAllElements();
 			iVe_New.removeAllElements();
-			for (int li_y = 0; li_y < iVe_Data.size(); li_y++)
-			{
-				RowContainer l_RowContainer = (RowContainer) iVe_Data.get(li_y);
-				l_RowContainer.i_Row_Orig = l_RowContainer.i_Row_Current;
-			}
 		}
 		else
 		{
@@ -1124,20 +1118,41 @@ public class DataSet
 		}
 	}
 
-	private final static int DESTINATION_MISSING = 1;
-	private final static int SOURCE_MISSING = 2;
-	private final static int COPY = 3;
-
 	/**
-	 * @see #synchronizeFrom(DataSet , RowComparator ,int[], boolean , boolean , boolean ) throws DataSetException
-	 */
-	public int[] synchronizeFrom(DataSet a_DataSet_Source, int[] ai_sourceKeys, int[] ai_destinationKeys) throws DataSetException
+	 * Method synchronizeFrom.
+	 * @param a_DataSet_Source Source DataSet
+	 * @param ai_key Key column which is used in comparation
+	 * @return int[] Index 0 addcount 1 modify 2 remove count
+	 * @throws DataSetException
+	 */	
+	public int[] syncronizeFromsynchronizeFrom(DataSet a_DataSet_Source, int ai_key)  throws DataSetException
 	{
-		return synchronizeFrom(a_DataSet_Source, ai_sourceKeys, ai_destinationKeys, null, null, true, true, true);
+		int[] li_keys = { ai_key };
+		return synchronizeFrom(a_DataSet_Source, li_keys, li_keys, null, null, true, true, true);		
 	}
 
 	/**
-	 * @see #synchronizeFrom(DataSet , RowComparator ,int[], boolean , boolean , boolean ) throws DataSetException
+	 * Method synchronizeFrom.
+	 * @param a_DataSet_Source Source DataSet
+	 * @param ai_keys Array of indexes of key columns, which are used to comparing rows.
+	 * @return int[] Index 0 addcount 1 modify 2 remove count
+	 * @throws DataSetException
+	 */
+	public int[] synchronizeFrom(DataSet a_DataSet_Source, int[] ai_keys) throws DataSetException
+	{
+		return synchronizeFrom(a_DataSet_Source, ai_keys, ai_keys, null, null, true, true, true);
+	}
+
+	/**
+	 * Method synchronizeFrom.
+	 * @param a_DataSet_Source Source DataSet
+	 * @param ai_sourceKeys Array of indexes of key columns, which are used to comparing rows.
+	 * @param ai_destinationKeys Array of indexes of key columns, which are used to comparing rows.
+	 * @param ab_doAdd if add to operation should be is made to destination 
+	 * @param ab_doUpdate if update to operation should be is made to destination 
+	 * @param ab_doDelete if delete to operation should be is made to destination 
+	 * @return int[] Index 0 addcount 1 modify 2 remove count
+	 * @throws DataSetException
 	 */
 	public int[] synchronizeFrom(
 		DataSet a_DataSet_Source,
@@ -1153,22 +1168,22 @@ public class DataSet
 
 	/**
 	 * Method syncronizeFrom<br>
-	 * With this method you can syncronize DataSets that same type {@link RowInfo RowInfo}.<br><br>
-	 * This is possible to check using equals method of {@link RowInfo RowInfo}.
+	 * With this method you can syncronize DataSets.
 	 * <br><br>
-	 * Result of syncronization is that this DataSet has new insert, and updates and it buffers are changed.
+	 * Result of syncronization is that this DataSet buffers are changed as operation would have been done 
 	 * 
 	 * 
-	 * @param a_DataSet_Source
-	 * @param ai_sourceKeys
-	 * @param ai_destinationKeys
-	 * @param ai_sourceColumns
-	 * @param ai_destinationColumns
+	 * @param a_DataSet_Source Source DataSet
+	 * @param ai_sourceKeys Array of indexes of key columns, which are used to comparing rows.
+	 * @param ai_destinationKeys Array of indexes of key columns, which are used to comparing rows.
+	 * @param ai_sourceColumns Array of indexes of data columns, where will be copied if destination is different.
+	 * @param ai_destinationColumns Array of indexes of data columns, which are will be updated if source is different.
 	 * @param ab_doAdd if add to operation should be is made to destination 
 	 * @param ab_doUpdate if update to operation should be is made to destination 
 	 * @param ab_doDelete if delete to operation should be is made to destination 
 	 * 
 	 * @return int[] Index 0 addcount 1 modify 2 remove count
+	 * @throws DataSetException on error
 	 */
 	public int[] synchronizeFrom(
 		DataSet a_DataSet_Source,
@@ -1304,7 +1319,8 @@ public class DataSet
 							li_destinationCount--;
 							li_removeCount++;
 						}
-						while (li_dIndex <= li_destinationCount && compareRows(l_Row_Source, getReferenceToRow(li_dIndex), ai_sourceKeys, ai_destinationKeys) > 0);
+						while (li_dIndex <= li_destinationCount
+							&& compareRows(l_Row_Source, getReferenceToRow(li_dIndex), ai_sourceKeys, ai_destinationKeys) > 0);
 					}
 					else
 					{
@@ -1344,10 +1360,10 @@ public class DataSet
 				li_sIndex++;
 			}
 			while (li_dIndex <= li_destinationCount && li_sIndex <= li_sourceCount);
-			
+
 			// Some where left to added
 
-			while(li_sIndex<=li_sourceCount)
+			while (li_sIndex <= li_sourceCount)
 			{
 				// Destination smaller so let's add
 				if (ab_doAdd)
@@ -1355,16 +1371,16 @@ public class DataSet
 					int li_row = addRow();
 					copyRow(a_DataSet_Source, this, li_sIndex, li_row, ai_sourceColumns, ai_destinationColumns);
 					li_addCount++;
-				}	
-				li_sIndex++;			
+				}
+				li_sIndex++;
 			}
 			if (ab_doDelete)
-			{			
-				while(li_dIndex<=li_destinationCount)
+			{
+				while (li_dIndex <= li_destinationCount)
 				{
 					removeRow(li_dIndex);
 					li_destinationCount--;
-					li_removeCount++;							
+					li_removeCount++;
 				}
 			}
 		}
@@ -1446,9 +1462,9 @@ public class DataSet
 	 * Method getRowComparator retunrs current row Compator
 	 * @return RowComparator
 	 */
-	public RowComparator getRowComparator()
+	public Comparator getRowComparator()
 	{
-		return i_DataSetComparator.getRowComparator();
+		return i_DataSetComparator.getComparator();
 	}
 
 	private int compareRows(Row a_Row_Source, Row a_Row_Destination, int[] ai_sourceKeys, int[] ai_destinationKeys)
