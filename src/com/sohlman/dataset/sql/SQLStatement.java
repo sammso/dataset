@@ -261,21 +261,30 @@ class SQLStatement
 
 			if (li_keys[li_c] > 0)
 			{
-				if(getParameterNew(li_keys[li_c]) == null && getParameterSQLType(li_keys[li_c])==Types.NULL)
+				Object lO_newParamenter = getParameterNew(li_keys[li_c]);
+				int li_parameterType = getParameterSQLType(li_keys[li_c]);
+				if( lO_newParamenter == null && li_parameterType==Types.NULL)
 				{
 					//
 					// Not defined parameter type
 					//
 					throw new IllegalArgumentException("Parameter value is null and it is not allowed");
 				}
-				else if (getParameterNew(li_keys[li_c]) == null)
+				else if (lO_newParamenter == null)
 				{
-					l_PreparedStatement.setNull(li_c + 1, getParameterSQLType(li_keys[li_c]));
+					l_PreparedStatement.setNull(li_c + 1, li_parameterType);
 				}
 				else
 				{
-					l_PreparedStatement.setObject(li_c + 1, getParameterNew(li_keys[li_c]));
-				}
+					try
+					{
+						l_PreparedStatement.setObject(li_c + 1, lO_newParamenter);
+					}
+					catch(NullPointerException l_NullPointerException)
+					{
+						throw l_NullPointerException;
+					}
+				}	
 			}
 			else
 			{
