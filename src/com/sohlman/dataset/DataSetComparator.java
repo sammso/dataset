@@ -19,7 +19,6 @@ final class DataSetComparator implements Comparator
 			throw new NullPointerException("Null value not accepted");
 		}
 		i_RowComparator = a_RowComparator;
-		System.out.println(a_RowComparator);
 	}
 
 	public int compare(Object a_Object_1, Object a_Object_2)
