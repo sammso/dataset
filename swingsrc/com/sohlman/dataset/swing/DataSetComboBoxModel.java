@@ -5,7 +5,7 @@ import javax.swing.ComboBoxModel;
 import com.sohlman.dataset.DataSet;
 
 /**
- * DataSetComboBox is wrapper to data set inside to ComboBox
+ * DataSetComboBox is wrapper to put ComboBox to use DataSet data 
  * 
  * @author Sampsa Sohlman
  * @version 25.4.2003
@@ -14,6 +14,11 @@ public class DataSetComboBoxModel extends DataSetListModel implements ComboBoxMo
 {
 	private int ii_selectedItem = 0;	
 	
+	/**
+	 * 
+	 * @param a_DataSet DataSet to wrap
+	 * @param ai_visibleColumnNumber Which DataSet column want to be shown on ComboBox
+	 */
 	public DataSetComboBoxModel(DataSet a_DataSet, int ai_visibleColumnNumber)
 	{
 		super(a_DataSet, ai_visibleColumnNumber);
@@ -37,6 +42,9 @@ public class DataSetComboBoxModel extends DataSetListModel implements ComboBoxMo
 		ii_selectedItem = ai_index;
 	}
 	
+	/**
+	 * @return selected item index (dataset row index)
+	 */
 	public int getSelectedItemIndex()
 	{
 		return ii_selectedItem;

@@ -49,6 +49,12 @@ public class DataSetListModel extends AbstractListModel
 		}
 	};
 
+	/**
+	 * Wraps DataSet so it is possible to use inside JList
+	 * 
+	 * @param a_DataSet DataSet to wrap inside to JList
+	 * @param ai_visibleColumnNumber  Which DataSet column want to be shown on JList
+	 */
 	public DataSetListModel(DataSet a_DataSet, int ai_visibleColumnNumber)
 	{
 		i_DataSet = a_DataSet;
@@ -57,7 +63,7 @@ public class DataSetListModel extends AbstractListModel
 	}
 
 	/**
-	 * set visible column from DataSet to ListModel
+	 * Set visible column from DataSet to ListModel
 	 * 
 	 * @param ai_visibleColumn
 	 */
@@ -66,6 +72,11 @@ public class DataSetListModel extends AbstractListModel
 		ii_visibleColumn = ai_visibleColumn;
 	}
 
+	/**
+	 * Set DataSet
+	 * 
+	 * @param a_DataSet DataSet
+	 */
 	public void setDataSet(DataSet a_DataSet)
 	{
 		i_DataSet = a_DataSet;

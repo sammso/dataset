@@ -6,6 +6,9 @@
 	<property name="zipfile" value="DataSet.zip"/>
 	<property name="datasetsrc" location="src"/>
 	<property name="sqltoolsrc" location="examples/sqltool"/>
+	<property name="datasetswingsrc" location="examples/datasetswing"/>	
+	<!-- Change the path of easy layout -->
+	<property name="easylayout.jar" location="../EasyLayout/easylayout.jar"/>		
 	<property name="swingsrc" location="swingsrc"/>	
 	<property name="builddir" location="build"/>
 	<property name="distribution"  location="distribution"/>
@@ -39,12 +42,25 @@
 		<javac srcdir="${sqltoolsrc}" destdir="${builddir}"  optimize="true" nowarn="true">
 			<classpath path="${DataSet.zip}/libs/dataset.jar"/>
 			<classpath path="${DataSet.zip}/libs/dataset-swing.jar"/>
+			<classpath path="${e}/libs/dataset-swing.jar"/>			
 		</javac>
 		<jar jarfile="${DataSet.zip}/libs/sqltool.jar" basedir="${builddir}" manifest="examples/sqltool.manifest" compress="true"/>
 		<delete dir="${builddir}" failonerror="false"/>
 	</target>	
 
-	<target name="CreateDist" depends="CompileDataSet, CompileSQLTool" description="Create Distribution Package" >
+	<target name="CompileDataSetSwing" depends="CompileSwing" description="Compile Source of Swing example" >
+	<!-- Complile and create jar -->
+		<mkdir dir="${builddir}"/>
+		<javac srcdir="${datasetswingsrc}" destdir="${builddir}"  optimize="true" nowarn="true">
+			<classpath path="${DataSet.zip}/libs/dataset.jar"/>
+			<classpath path="${DataSet.zip}/libs/dataset-swing.jar"/>
+			<classpath path="${easylayout.jar}"/>			
+		</javac>
+		<jar jarfile="${DataSet.zip}/libs/swingexample.jar" basedir="${builddir}" manifest="examples/datasetswing.manifest" compress="true"/>
+		<delete dir="${builddir}" failonerror="false"/>
+	</target>
+
+	<target name="CreateDist" depends="CompileDataSet, CompileSQLTool, CompileDataSetSwing" description="Create Distribution Package" >
 		<!-- Main -->
 		
 		<copy todir="${DataSet.zip}/src">
@@ -81,6 +97,13 @@
 		<copy todir="${DataSet.zip}/examples/sqltool">
 			<fileset dir="${sqltoolsrc}"/>
 		</copy>
+		
+		<!-- DataSet swing Example -->
+		<copy todir="${DataSet.zip}/examples/datasetswing">
+			<fileset dir="${datasetswingsrc}"/>
+		</copy>		
+		<!-- Also need to copy  easylayout.jar to make swing example to work-->
+		<copy file="${easylayout.jar}"  todir="${DataSet.zip}/libs"/>
 		
 		<copy file="examples/SQLTool.ini" todir="${DataSet.zip}/libs"/>
 		<copy file="examples/SQLTool.ini" todir="${DataSet.zip}/examples"/>

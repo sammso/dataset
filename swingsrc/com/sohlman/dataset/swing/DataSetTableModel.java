@@ -143,7 +143,9 @@ public class DataSetTableModel extends AbstractTableModel implements DataSetList
 	{
 		return i_DataSet.getRowCount();
 	}
-
+	/**
+	 * @see javax.swing.table.AbstractTableModel#isCellEditable(int,int)
+	 */
 	public boolean isCellEditable(int ai_rowIndex, int ai_columnIndex)
 	{
 		if (lb_isNotEditableCells == null)

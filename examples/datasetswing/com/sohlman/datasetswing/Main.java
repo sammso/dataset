@@ -29,7 +29,7 @@ import com.sohlman.easylayout.Position;
 
 /**
  * @author Sampsa Sohlman
- * @version 13.5.2003
+ * @version 17.11.2003
  */
 public class Main extends JFrame
 {
@@ -37,6 +37,11 @@ public class Main extends JFrame
 	JButton i_JButton_Remove;
 	JTextField i_JTextField_Name;
 	JList i_JList;
+	
+	JLabel i_JLabel_Name = new JLabel("Name");
+	JLabel i_JLabel_List = new JLabel("List");		
+	JLabel i_JLabel_Value = new JLabel("Value");
+	JLabel i_JLabel_Story = new JLabel("Story");	
 	
 	RowToComponentConnector i_RowToComponentConnector;
 	
@@ -48,7 +53,12 @@ public class Main extends JFrame
 			{
 				if(i_DataSet_List.getRowCount() == 0)
 				{
-					i_RowToComponentConnector.setVisible(true);
+					i_RowToComponentConnector.setEnabled(true);
+					i_JLabel_List.setEnabled(true);
+					i_JLabel_Name.setEnabled(true);
+					i_JLabel_Story.setEnabled(true);
+					i_JLabel_Value.setEnabled(true);
+					i_JButton_Remove.setEnabled(true);				
 				}
 				
 				int li_row = i_DataSet_List.addRow();
@@ -63,9 +73,9 @@ public class Main extends JFrame
 				
 				if(li_index != -1)
 				{
+					i_DataSet_List.removeRow(li_index + 1);
 					if(i_DataSet_List.getRowCount() > 0)
 					{							
-						i_DataSet_List.removeRow(li_index + 1);
 						i_JList.setSelectedIndex(li_index);
 						if(li_index < i_DataSet_List.getRowCount())
 						{
@@ -78,7 +88,12 @@ public class Main extends JFrame
 					}
 					else
 					{
-						i_RowToComponentConnector.setVisible(false);
+						i_RowToComponentConnector.setEnabled(false);
+						i_JLabel_List.setEnabled(false);
+						i_JLabel_Name.setEnabled(false);
+						i_JLabel_Story.setEnabled(false);
+						i_JLabel_Value.setEnabled(false);
+						i_JButton_Remove.setEnabled(false);
 					}									
 				}				
 			} 
@@ -177,11 +192,6 @@ public class Main extends JFrame
 
 		EasyLayout l_EasyLayout = new EasyLayout(null, null, li_columnsPercentages, li_rowPercentages, 3, 3);
 		l_JPanel_ContentPane.setLayout(l_EasyLayout);
-
-		JLabel l_JLabel_Name = new JLabel("Name");
-		JLabel l_JLabel_List = new JLabel("List");		
-		JLabel l_JLabel_Value = new JLabel("Value");
-		JLabel l_JLabel_Story = new JLabel("Story");
 		
 		i_JButton_Add = new JButton("Add");
 		i_JButton_Add.addActionListener(i_ActionListener);
@@ -208,14 +218,14 @@ public class Main extends JFrame
 		i_RowToComponentConnector.setJComponent(l_JTextArea_Story,3);
 
 
-		l_JPanel_ContentPane.add(l_JLabel_List, new Position(0,0));
+		l_JPanel_ContentPane.add(i_JLabel_List, new Position(0,0));
 		l_JPanel_ContentPane.add(l_JScrollPane_JList, new Position(0,1,1,3));
 		l_JPanel_ContentPane.add(i_JButton_Add, new Position(1,0));
 		l_JPanel_ContentPane.add(i_JButton_Remove, new Position(1,1));
 		
-		l_JPanel_ContentPane.add(l_JLabel_Name, new Position(2,0));
-		l_JPanel_ContentPane.add(l_JLabel_Value, new Position(2,1));
-		l_JPanel_ContentPane.add(l_JLabel_Story, new Position(2,2));
+		l_JPanel_ContentPane.add(i_JLabel_Name, new Position(2,0));
+		l_JPanel_ContentPane.add(i_JLabel_Value, new Position(2,1));
+		l_JPanel_ContentPane.add(i_JLabel_Story, new Position(2,2));
 		
 		l_JPanel_ContentPane.add(i_JTextField_Name, new Position(3,0));
 		l_JPanel_ContentPane.add(l_JComboBox, new Position(3, 1));

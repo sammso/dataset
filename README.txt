@@ -12,7 +12,13 @@ Changes
  Changes in RC 3
  - Row.setValueAt throws now ClassCastException, this helps to find errors on application 
    code.
+ - New Methodd DataSet.setValue(..) 
+   + to changing values to whole row at once.
  - Swing package developement
+ - Swing example application on examples/datasetswing
+   + does nothing important, but just one test case to swing connection.
+ - To run build.xml you need also the change value of easylayout.jar property in build.xml 
+   file
  Changes in RC 2
  - Bug fix on SQLWriteEngine.getTableName()
  Changes in RC 1

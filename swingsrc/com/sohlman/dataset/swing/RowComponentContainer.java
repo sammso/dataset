@@ -7,8 +7,10 @@ import javax.swing.JLabel;
 import javax.swing.text.JTextComponent;
 
 /**
+ * To internal use
+ * 
  * @author Sampsa Sohlman
- * @version 25.4.2003
+ * @version 17.11.2003
  */
 class RowComponentContainer
 {

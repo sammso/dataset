@@ -18,9 +18,11 @@ import javax.swing.text.JTextComponent;
 import com.sohlman.dataset.DataSet;
 
 /**
+ * RowToComponentConnector is wrapper which connects Textfields, ComboBoxes etc. to DataSet row.  
+ * To changing these components user is also changing DataSet row.
  * 
  * @author Sampsa Sohlman
- * @version 24.4.2003
+ * @version 17.11.2003
  */
 public class RowToComponentConnector
 {
