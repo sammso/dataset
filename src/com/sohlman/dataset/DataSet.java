@@ -201,7 +201,7 @@ public class DataSet
 			l_Enumeration = iVe_Listeners.elements();
 			while (l_Enumeration.hasMoreElements())
 			{
-				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.ROW_REMOVED, ai_index));
+				((DataSetListener) l_Enumeration.nextElement()).dataSetChanged(new DataSetEvent(this, DataSetEvent.ROW_REMOVED, ai_index,DataSetEvent.ALL));
 			}
 		}
 		return li_return;
@@ -783,6 +783,7 @@ public class DataSet
 			{
 				iVe_Deleted.add(l_RowContainer);
 			}
+			
 			iVe_Data.remove(ai_index - 1);
 			return ai_index;
 		}
