@@ -1,3 +1,23 @@
+/*
+DataSet Library
+---------------
+Copyright (C) 2001-2004 - Sampsa Sohlman, Teemu Sohlman
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+*/
+
 package com.sohlman.dataset;
 
 import java.io.PrintStream;
@@ -1687,6 +1707,25 @@ public class DataSet
 		else
 		{
 			return false;
+		}
+	}
+	
+	/**
+	 * Tells if row is new, added by insert/add
+	 * 
+	 * @param ai_row row number
+	 * @return true if it is new row false if not
+	 */
+	public boolean isNew(int ai_row)
+	{
+		if(ai_row <= iVe_Data.size() && ai_row > 0)
+		{
+			RowContainer l_RowContainer = (RowContainer)iVe_Data.get(ai_row - 1);
+			return iVe_New.contains(l_RowContainer);
+		}
+		else
+		{
+			return false; 
 		}
 	}
 }
