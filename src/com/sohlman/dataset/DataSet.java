@@ -1095,6 +1095,15 @@ public class DataSet
 	private final static int SOURCE_MISSING = 2;
 	private final static int COPY = 3;
 
+
+	/**
+	 * @see #synchronizeFrom(DataSet , RowComparator , boolean , boolean , boolean ) throws DataSetException
+	 */
+	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator) throws DataSetException	
+	{
+		return synchronizeFrom(a_DataSet_Source,a_RowComparator, true, true, true);
+	}
+
 	/**
 	 * Method syncronizeFrom<br>
 	 * With this method you can syncronize DataSets that same type {@link RowInfo RowInfo}.<br><br>
@@ -1105,9 +1114,13 @@ public class DataSet
 	 * 
 	 * @param a_DataSet_Source
 	 * @param a_RowComparator This tells if which rows are match. NOTE! Both DataSet are also ordered after this operation by using  selected RowComparator class
+	 * @param ab_doAdd if add to operation should be is made to destination 
+	 * @param ab_doUpdate if update to operation should be is made to destination 
+	 * @param ab_doDelete if delete to operation should be is made to destination 
+	 * 
 	 * @return int[] Index 0 addcount 1 modify 2 remove count
 	 */
-	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator) throws DataSetException
+	public int[] synchronizeFrom(DataSet a_DataSet_Source, RowComparator a_RowComparator, boolean ab_doAdd, boolean ab_doUpdate, boolean ab_doDelete) throws DataSetException
 	{
 		// At first ai_columns, ai_keys don't work
 
@@ -1141,34 +1154,37 @@ public class DataSet
 					compareRows(a_DataSet_Source, this, a_RowComparator, li_sourceCounter, li_destinationCounter, li_sourceCount, li_destinationCount);
 				if (li_result == COPY)
 				{
-					if (copyRow(a_DataSet_Source, this, li_sourceCounter, li_destinationCounter))
+					if(ab_doUpdate)
 					{
-						li_modifyCount++;
+						if (copyRow(a_DataSet_Source, this, li_sourceCounter, li_destinationCounter))
+						{
+							li_modifyCount++;
+						}
+						li_destinationCounter++;
 					}
 					li_sourceCounter++;
-					li_destinationCounter++;
-					//					if (li_sourceCounter < li_sourceCount)
-					//						li_sourceCounter++;
-					//					if (li_destinationCounter < li_destinationCount)
-					//						li_destinationCounter++;
 					lb_loop = true;
 				}
 				else if (li_result == DESTINATION_MISSING)
 				{
-					if (addRow(a_DataSet_Source, this, li_sourceCounter))
+					if(ab_doAdd)
 					{
-						li_addCount++;
+						if (addRow(a_DataSet_Source, this, li_sourceCounter))
+						{
+							li_addCount++;
+						}
 					}
 					li_sourceCounter++;
-					//					if (li_sourceCounter < li_sourceCount)
-					//						li_sourceCounter++;
 					lb_loop = true;
 				}
 				else if (li_result == SOURCE_MISSING)
 				{
-					this.removeRow(li_destinationCounter);
-					li_removeCount++;
-					li_destinationCount--;
+					if(ab_doDelete)
+					{
+						removeRow(li_destinationCounter);
+						li_removeCount++;
+						li_destinationCount--;
+					}
 					lb_loop = true;
 				}
 				if (li_sourceCounter > li_sourceCount && li_destinationCounter > li_destinationCount)
