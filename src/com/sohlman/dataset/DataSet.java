@@ -102,6 +102,10 @@ public class DataSet
 	 */
 	public final static int NOTMODIFIED = 4;
 
+	public int ii_readLimit = 0; // not read limit
+
+	public boolean ib_stillRowsPending = false; // If read engine could give more rows.
+	
 	/** Creates new DataSet
 	 */
 
@@ -802,10 +806,19 @@ public class DataSet
 			{
 				i_RowInfo = i_ReadEngine.readStart(i_RowInfo);
 				Row l_Row;
-				while ((l_Row = i_ReadEngine.readRow(i_RowInfo)) != Row.NO_MORE_ROWS)
+				while ((l_Row = i_ReadEngine.readRow(i_RowInfo)) != Row.NO_MORE_ROWS && ( li_count < ii_readLimit + 1 || ii_readLimit == 0))
 				{
 					iVe_Data.add(new RowContainer(l_Row, l_Row));
 					li_count++;
+				}
+				
+				if(ii_readLimit == li_count && i_ReadEngine.readRow(i_RowInfo) != Row.NO_MORE_ROWS )
+				{
+					ib_stillRowsPending = true;					
+				}
+				else
+				{
+					ib_stillRowsPending = false;
 				}
 			}
 			finally
@@ -1727,5 +1740,35 @@ public class DataSet
 		{
 			return false; 
 		}
+	}
+	
+	/**
+	 * With this method is possible to limit read amount of DataSet.
+	 * 
+	 * It is good if query is returning too much.
+	 * 
+	 * @param ai_readLimit
+	 */
+	public void setReadLimit(int ai_readLimit)
+	{
+		if(ai_readLimit <= 0)
+		{
+			ai_readLimit = 0;
+		}
+		else
+		{
+			ii_readLimit = ai_readLimit;
+		}
+	}
+	
+	/**
+	 * If readLimit is set then 
+	 * this return if more rows could been read than read limit.
+	 * 
+	 * @return boolean
+	 */
+	public boolean isStillRowsPending()
+	{
+		return ib_stillRowsPending;
 	}
 }
