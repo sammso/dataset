@@ -418,7 +418,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 			throw new DataSetException(EX_NO_COLUMNINFO_DEFINED);
 		}
 
-		if (i_SQLStatement_Insert != null)
+		if (i_SQLStatement_Delete != null)
 		{
 			i_SQLStatement_Delete.setSQLTypes(i_SQLColumnsInfo);
 		}
