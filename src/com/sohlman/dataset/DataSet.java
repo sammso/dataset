@@ -454,14 +454,14 @@ public class DataSet
 			try
 			{
 				l_RowContainer = (RowContainer) iVe_Data.get(ai_rowIndex - 1);
-							}
+			}
 			catch (ArrayIndexOutOfBoundsException l_ArrayIndexOutOfBoundsException)
 			{
 				throw new ArrayIndexOutOfBoundsException("Row " + ai_rowIndex + " is out of range");
 			}
 			Row l_Row = l_RowContainer.i_Row_Current;
 			l_Object = l_Row.getValueAt(ai_columnIndex);
-			
+
 		}
 		return l_Object;
 	}
@@ -494,31 +494,31 @@ public class DataSet
 	{
 		i_KeyAction = a_KeyAction;
 	} /** Set setReadEngine for DataSet
-																									 * @param a_ReadEngine Assigned read engine.
-																									 */
+																										 * @param a_ReadEngine Assigned read engine.
+																										 */
 	public final void setReadEngine(ReadEngine a_ReadEngine)
 	{
 		// future when many types of
 		// write engines exists. Do check and set all other nulls.
 		i_ReadEngine = a_ReadEngine;
 	} /** Set WriteEngine for DataSet
-																								 * @param a_WriteEngine Refrence to new WriteEngine.
-																								 */
+																									 * @param a_WriteEngine Refrence to new WriteEngine.
+																									 */
 	public final void setWriteEngine(WriteEngine a_WriteEngine)
 	{
 		i_WriteEngine = a_WriteEngine;
 	} /** Removes ReadEngine from DataSet
-																									 */
+																										 */
 	public final void removeReadEngine()
 	{
 		i_ReadEngine = null;
 	} /** Removes KeyAction object from DataSet
-																									 */
+																										 */
 	public final void removeKeyAction()
 	{
 		i_KeyAction = null;
 	} /** Removes WriteEngine from DataSet
-																									 */
+																										 */
 	public final void removeWriteEngine()
 	{
 		i_WriteEngine = null;
@@ -564,8 +564,8 @@ public class DataSet
 		}
 		return i_RowInfo.getColumnName(ai_index);
 	} /** Returns row count of DataSet
-																									 * @return Row count of DataSet
-																									 */
+																										 * @return Row count of DataSet
+																										 */
 	public int getRowCount()
 	{
 		return iVe_Data.size();
@@ -1016,13 +1016,13 @@ public class DataSet
 		}
 		return ERROR;
 	}
-	
+
 	public void sort(int ai_columnIndex)
 	{
-		int[] li_indexes = {ai_columnIndex};
+		int[] li_indexes = { ai_columnIndex };
 		sort(li_indexes);
 	}
-	
+
 	public void sort(int[] ai_columnIndexes)
 	{
 		setComparator(new RowComparator(ai_columnIndexes));
@@ -1286,80 +1286,76 @@ public class DataSet
 			{
 				Row l_Row_Destination = getReferenceToRow(li_dIndex);
 				Row l_Row_Source = a_DataSet_Source.getReferenceToRow(li_sIndex);
-				int li_result;
+				String lS_S = String.valueOf(l_Row_Source.getValueAt(1));
+				String lS_D = String.valueOf(l_Row_Destination.getValueAt(1));
 
-				li_result = compareRows(l_Row_Source,l_Row_Destination ,ai_sourceKeys, ai_destinationKeys);
+				int li_result = compareRows(l_Row_Source, l_Row_Destination, ai_sourceKeys, ai_destinationKeys);
 
-				if (li_result < 0)
+				if (li_result > 0)
 				{
-					// Destination smaller so let's remove
+					// Destination bigger so let's remove
 					if (ab_doDelete)
 					{
-						removeRow(li_dIndex);
-						li_destinationCount--;
-						li_removeCount++;
+						do
+						{
+							removeRow(li_dIndex);
+							li_destinationCount--;
+							li_removeCount++;
+							if (li_dIndex <= li_destinationCount)
+							{
+								li_result = compareRows(l_Row_Source, l_Row_Destination, ai_sourceKeys, ai_destinationKeys);
+							}
+						}
+						while (li_result > 0);
 					}
 				}
-				else if (li_result > 0)
+				else if (li_result < 0)
 				{
-					// Destination bigger so let's add
+					// Destination smaller so let's add
 					if (ab_doAdd)
 					{
 						int li_row = addRow();
-						copyRow(l_Row_Source, getReferenceToRow(li_row), ai_sourceColumns, ai_destinationColumns);
+						copyRow(a_DataSet_Source, this, li_sIndex, li_row, ai_sourceColumns, ai_destinationColumns);
 						li_addCount++;
-						
-						li_sIndex++;
 					}
 				}
 				else
 				{
 					// Equal .. Copy
-					if (ab_doUpdate)
-					{
-						if (copyRow(l_Row_Source, l_Row_Destination, ai_sourceColumns, ai_destinationColumns))
-						{
-							li_modifyCount++;
-						}
-					}
-					li_dIndex++;
-					if (li_dIndex <= li_destinationCount)
-					{
-						if (compareRows(l_Row_Source, getReferenceToRow(li_dIndex), ai_sourceKeys, ai_destinationKeys) != 0)
-						{
-							li_sIndex++;
-						}
-					}
 
+					do
+					{
+						if (ab_doUpdate)
+						{
+							if (copyRow(a_DataSet_Source, this, li_sIndex, li_dIndex, ai_sourceColumns, ai_destinationColumns))
+							{
+								li_modifyCount++;
+							}
+						}
+						li_dIndex++;
+					}
+					while (li_dIndex <= li_destinationCount
+						&& compareRows(l_Row_Source, getReferenceToRow(li_dIndex), ai_sourceKeys, ai_destinationKeys) == 0
+						&& (li_sIndex == li_sourceCount
+							|| compareRows(l_Row_Source, a_DataSet_Source.getReferenceToRow(li_sIndex + 1), ai_sourceKeys, ai_sourceKeys) != 0));
 				}
+				li_sIndex++;
 			}
 			while (li_dIndex <= li_destinationCount && li_sIndex <= li_sourceCount);
-
-			// Add rest from the source
-			if (ab_doAdd)
-			{
-				li_sIndex++;
-				if (li_sIndex <= li_sourceCount)
-				{
-					while (li_sIndex <= li_sourceCount)
-					{
-						int li_row = addRow();
-						copyRow(a_DataSet_Source.getReferenceToRow(li_sIndex), getReferenceToRow(li_row), ai_sourceColumns, ai_destinationColumns);
-						li_addCount++;
-						li_sIndex++;
-					}
-				}
-			}
 			
-			// Delete rest of the destination here
-			if (ab_doDelete)
+			// Some where left to added
+			
+			while(li_sIndex<=li_sourceCount)
 			{
-				for(int li_index = li_destinationCount ; li_index >= li_dIndex ; li_index--)
+				// Destination smaller so let's add
+				if (ab_doAdd)
 				{
-					removeRow(li_index);
-					li_removeCount++;
-				}
-			}			
+					int li_row = addRow();
+					copyRow(a_DataSet_Source, this, li_sIndex, li_row, ai_sourceColumns, ai_destinationColumns);
+					li_addCount++;
+				}	
+				li_sIndex++;			
+			}
 		}
 		else if (li_sourceCount == 0 && li_destinationCount > 0)
 		{
@@ -1377,7 +1373,7 @@ public class DataSet
 			for (int li_index = 1; li_index <= li_sourceCount; li_index++)
 			{
 				int li_row = addRow();
-				copyRow(a_DataSet_Source.getReferenceToRow(li_index), getReferenceToRow(li_row), ai_sourceColumns, ai_destinationColumns);
+				copyRow(a_DataSet_Source, this, li_index, li_row, ai_sourceColumns, ai_destinationColumns);
 				li_addCount++;
 			}
 		}
@@ -1386,20 +1382,31 @@ public class DataSet
 		return li_returnValue;
 	}
 
-	private boolean copyRow(Row a_Row_Source, Row a_Row_Destination, int[] ai_colSource, int[] ai_colDestination)
+	private boolean copyRow(
+		DataSet a_DataSet_Source,
+		DataSet a_DataSet_Destination,
+		int ai_sourceIndex,
+		int ai_destinationIndex,
+		int[] ai_colSource,
+		int[] ai_colDestination)
 	{
 		int li_copyCount = 0;
 
 		//for (int li_x = 1; li_x <= a_DataSet_Source.getColumnCount(); li_x++)
+
+		Row l_Row_Source = a_DataSet_Source.getReferenceToRow(ai_sourceIndex);
+		Row l_Row_Destination = a_DataSet_Destination.getReferenceToRow(ai_destinationIndex);
+
 		for (int li_x = 0; li_x < ai_colSource.length; li_x++)
 		{
 			int li_copy = 0;
-			Object lO_Source = a_Row_Source.getValueAt(ai_colSource[li_x]);
-			Object lO_Destination = a_Row_Destination.getValueAt(ai_colDestination[li_x]);
+			Object lO_Source = l_Row_Source.getValueAt(ai_colSource[li_x]);
+			Object lO_Destination = l_Row_Destination.getValueAt(ai_colDestination[li_x]);
 
 			if ((lO_Source != null && lO_Destination == null) || (lO_Source == null && lO_Destination != null))
 			{
-				a_Row_Destination.setValueAt(ai_colDestination[li_x], lO_Source);
+				// We using DataSet to store value
+				a_DataSet_Destination.setValueAt(lO_Source, ai_destinationIndex, ai_colDestination[li_x]);
 				li_copy = 1;
 			}
 			else if (lO_Source == null && lO_Destination == null)
@@ -1408,7 +1415,7 @@ public class DataSet
 			}
 			else if (!lO_Source.equals(lO_Destination))
 			{
-				a_Row_Destination.setValueAt(ai_colDestination[li_x], lO_Source);
+				a_DataSet_Destination.setValueAt(lO_Source, ai_destinationIndex, ai_colDestination[li_x]);
 				li_copy = 1;
 			}
 			li_copyCount = li_copyCount + li_copy;
@@ -1424,6 +1431,10 @@ public class DataSet
 		}
 	}
 
+	/**
+	 * Method getRowComparator retunrs current row Compator
+	 * @return RowComparator
+	 */
 	public RowComparator getRowComparator()
 	{
 		return i_DataSetComparator.getRowComparator();
@@ -1431,15 +1442,6 @@ public class DataSet
 
 	private int compareRows(Row a_Row_Source, Row a_Row_Destination, int[] ai_sourceKeys, int[] ai_destinationKeys)
 	{
-		/*		if(a_Row_Source == null && a_Row_Destination != null)
-				{
-					return 1;
-				}
-				else if(a_Row_Source != null && a_Row_Destination == null)
-				{
-					return -1;	
-				}
-		*/
 		for (int li_index = 0; li_index < ai_sourceKeys.length; li_index++)
 		{
 			int li_value =
