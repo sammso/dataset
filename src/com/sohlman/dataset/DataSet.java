@@ -1675,8 +1675,29 @@ public class DataSet
 		}
 	}
 	
-	public void mapRowToClass(int ai_row, int li_column, Object a_Object)
+	/**
+	 * This method if DataSet is modified. It is modified, if some of fields 
+	 * are modified or rows are added or deleted.
+	 * 
+	 * @return true if modified or false if not
+	 */
+	public boolean isModified()
 	{
-		//return null;
+		if(iVe_Modified!=null && iVe_Modified.size() > 0)
+		{
+			return true;
+		}		
+		else if(iVe_New!=null && iVe_New.size() > 0)
+		{
+			return true;
+		}
+		else if(iVe_Deleted!=null && iVe_Deleted.size() > 0)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-	DataSet Library 1.0 RC 3
+	DataSet Library 1.0 Final
 -------------------------------------------------------------
  I currently using this version of DataSet on my projects.
  I'm using DataSet on production.
@@ -13,6 +13,8 @@ Changes
  - SQLColumn info has more information, see javadoc
  - Fixes on swing section
  - Another bug fix on SQLWriteEngine.getTableName()
+ - new method DataSet.isModified() see Javadoc
+ - Modified SQLTool example application
 
  Changes in RC 3
  - Row.setValueAt throws now ClassCastException, this helps to find errors on application 
