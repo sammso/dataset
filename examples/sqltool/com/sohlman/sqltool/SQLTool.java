@@ -37,13 +37,10 @@ import javax.swing.UIManager;
  */
 public class SQLTool
 {
-	private JButton i_JButton_Add;
 	private JButton i_JButton_Reset;
-	private JButton i_JButton_Delete;
 	private JButton i_JButton_Print;
 
 	private JButton i_JButton_Execute;
-	private JButton i_JButton_Save;
 
 	private JTextArea i_JTextArea_SQL;
 	private JTextArea i_JTextArea_ResultText;
@@ -60,14 +57,6 @@ public class SQLTool
 		 */
 		public void actionPerformed(ActionEvent a_ActionEvent)
 		{
-			if (a_ActionEvent.getSource() == i_JButton_Add)
-			{
-				setEnabledDisabled();
-			}
-			if (a_ActionEvent.getSource() == i_JButton_Delete)
-			{
-				setEnabledDisabled();
-			}
 			if (a_ActionEvent.getSource() == i_JButton_Print)
 			{
 				//i_SQLDataSet.printBuffers(System.out);
@@ -97,31 +86,29 @@ public class SQLTool
 					{
 						lS_SQL = l_SQLClauseTokenizer.nextToken();
 						i_JTextArea_ResultText.append("\n " + ii_index + " - (" + new Timestamp(System.currentTimeMillis()) +") : \n");
-						SQLResultJPanel l_SQLResultJPanel = SQLResultJPanel.createInstance(lS_SQL, i_Connection);
-						i_JTabbedPane.add(l_SQLResultJPanel, String.valueOf(ii_index));
-						l_SQLResultJPanel.setJTabbedPane(i_JTabbedPane);
-						l_SQLResultJPanel.setResultJTextArea(i_JTextArea_ResultText);
-						l_SQLResultJPanel.execute();
+						SQLResultJPanel l_SQLResultJPanel = SQLResultJPanel.createInstance(lS_SQL, i_Connection, i_JTextArea_ResultText);
+						if(l_SQLResultJPanel!=null)
+						{
+							i_JTabbedPane.add(l_SQLResultJPanel, String.valueOf(ii_index));
+							l_SQLResultJPanel.setJTabbedPane(i_JTabbedPane);
+						}
 						ii_index++;
 					}
 				}
 				else
 				{
 					i_JTextArea_ResultText.append("\n " + ii_index + " - (" + new Timestamp(System.currentTimeMillis()) + ") : \n");
-					SQLResultJPanel l_SQLResultJPanel = SQLResultJPanel.createInstance(lS_SQL, i_Connection);
-					i_JTabbedPane.add(l_SQLResultJPanel, String.valueOf(ii_index));
-					l_SQLResultJPanel.setJTabbedPane(i_JTabbedPane);
-					l_SQLResultJPanel.setResultJTextArea(i_JTextArea_ResultText);
-					l_SQLResultJPanel.execute();
+					SQLResultJPanel l_SQLResultJPanel = SQLResultJPanel.createInstance(lS_SQL, i_Connection, i_JTextArea_ResultText);
+					if(l_SQLResultJPanel!=null)
+					{
+						i_JTabbedPane.add(l_SQLResultJPanel, String.valueOf(ii_index));
+						l_SQLResultJPanel.setJTabbedPane(i_JTabbedPane);
+					}
 					ii_index++;
 				}
 
 				i_JTabbedPane.setSelectedIndex(0);
 
-				setEnabledDisabled();
-			}
-			if (a_ActionEvent.getSource() == i_JButton_Save)
-			{
 				setEnabledDisabled();
 			}
 
@@ -200,15 +187,6 @@ public class SQLTool
 		i_JButton_Execute.setText("Execute");
 		l_JPanel_Buttons.add(i_JButton_Execute);
 
-		i_JButton_Save.setText("Save");
-		l_JPanel_Buttons.add(i_JButton_Save);
-
-		i_JButton_Add.setText("Add");
-		l_JPanel_Buttons.add(i_JButton_Add);
-
-		i_JButton_Delete.setText("Delete");
-		l_JPanel_Buttons.add(i_JButton_Delete);
-
 		i_JButton_Print.setText("Print");
 		l_JPanel_Buttons.add(i_JButton_Print);
 
@@ -262,15 +240,6 @@ public class SQLTool
 
 		i_JButton_Execute.addActionListener(i_ActionListener);
 
-		i_JButton_Save.addActionListener(i_ActionListener);
-		i_JButton_Save.setEnabled(false);
-
-		i_JButton_Add.addActionListener(i_ActionListener);
-		i_JButton_Add.setEnabled(false);
-
-		i_JButton_Delete.addActionListener(i_ActionListener);
-		i_JButton_Delete.setEnabled(false);
-
 		i_JButton_Print.addActionListener(i_ActionListener);
 
 		i_JFrame.addWindowListener(new WindowAdapter()
@@ -290,9 +259,6 @@ public class SQLTool
 		i_JTextArea_SQL = new JTextArea();
 		i_JButton_Reset = new JButton();
 		i_JButton_Execute = new JButton();
-		i_JButton_Save = new JButton();
-		i_JButton_Add = new JButton();
-		i_JButton_Delete = new JButton();
 		i_JButton_Print = new JButton();
 	}
 

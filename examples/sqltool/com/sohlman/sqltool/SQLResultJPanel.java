@@ -32,6 +32,8 @@ public class SQLResultJPanel extends JPanel implements ActionListener
 	private JButton i_JButton_Close;
 	private JButton i_JButton_Refresh;
 	private JButton i_JButton_Add;
+	private JButton i_JButton_Insert;
+	
 	private JButton i_JButton_Remove;
 	private JTabbedPane i_JTabbedPane;
 	private JTextArea i_JTextArea_Result;
@@ -45,13 +47,16 @@ public class SQLResultJPanel extends JPanel implements ActionListener
 	private void createComponents()
 	{
 		i_JTable = new JTable();
-		i_JButton_Add = new JButton("+");
+		i_JButton_Add = new JButton("Add");
 		i_JButton_Add.addActionListener(this);
+
+		i_JButton_Insert = new JButton("Insert");
+		i_JButton_Insert.addActionListener(this);
 		
-		i_JButton_Remove = new JButton("-");
+		i_JButton_Remove = new JButton("Remove");
 		i_JButton_Remove.addActionListener(this);
 		
-		i_JButton_Close = new JButton("X");
+		i_JButton_Close = new JButton("Close Tab");
 		i_JButton_Close.addActionListener(this);
 		
 		i_JButton_Refresh = new JButton("Refresh");
@@ -86,10 +91,25 @@ public class SQLResultJPanel extends JPanel implements ActionListener
 		{
 			i_JTabbedPane.remove(this);
 		}
-		else if(a_ActionEvent.getSource()==i_JButton_Add)
+		else if(a_ActionEvent.getSource()==i_JButton_Insert)
 		{
 			int li_row = i_JTable.getSelectedRow();
-			
+			if(li_row >= 0 && li_row < i_SQLDataSet.getRowCount())
+			{
+				i_SQLDataSet.insertRow(li_row + 1);
+			}	
+		}
+		else if(a_ActionEvent.getSource()==i_JButton_Add)
+		{
+			i_SQLDataSet.addRow();	
+		}
+		else if(a_ActionEvent.getSource()==i_JButton_Remove)
+		{
+			int li_row = i_JTable.getSelectedRow();
+			if(li_row >= 0 && li_row < i_SQLDataSet.getRowCount())
+			{
+				i_SQLDataSet.removeRow(li_row + 1);
+			}	
 		}
 		else if(a_ActionEvent.getSource()==i_JButton_Refresh) 
 		{
@@ -100,28 +120,31 @@ public class SQLResultJPanel extends JPanel implements ActionListener
 
 	private void layoutComponents()
 	{
-		EasyLayout l_EasyLayout = new EasyLayout(new int[] { 0, 0, 100, 0, 0, 0 }, new int[] { 0, 0, 0, 100 }, 2, 2);
+		EasyLayout l_EasyLayout = new EasyLayout(new int[] { 0, 0, 100, 0, 0, 0 }, new int[] { 0, 0, 0, 0, 0, 0, 100 }, 2, 2);
 		
 		setLayout(l_EasyLayout);
 
 		i_JTable.setBorder(BorderFactory.createBevelBorder(1));
 		i_JTable.setPreferredScrollableViewportSize(new Dimension(500, 70));
 
-		JScrollPane l_JScrollPane_JTable = new JScrollPane(i_JTable);
-		add(l_JScrollPane_JTable, new Position(0, 1, 4, 3));
+		JScrollPane l_JScrollPane_JTable = new JScrollPane(i_JTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		add(l_JScrollPane_JTable, new Position(0, 0, 4, 7));
 		
 		add(i_JButton_Refresh, new Position(0, 0));
-		add(i_JButton_Save, new Position(2, 0));
+		
 
 		add(i_JButton_Close, new Position(5, 0));
-		add(i_JButton_Add, new Position(5, 1));
-		add(i_JButton_Remove, new Position(5, 2));		
+		add(i_JButton_Refresh, new Position(5, 1));
+		add(i_JButton_Save, new Position(5, 2));
+		add(i_JButton_Add, new Position(5, 3));
+		add(i_JButton_Insert, new Position(5, 4));
+		add(i_JButton_Remove, new Position(5, 5));		
 		
 	}
 
-	public static SQLResultJPanel createInstance(String aS_SQL, Connection a_Connection)
+	public static SQLResultJPanel createInstance(String aS_SQL, Connection a_Connection, JTextArea a_JTextArea)
 	{
-		SQLResultJPanel l_SQLResultJPanel = new SQLResultJPanel();
+		
 
 		SQLDataSet l_SQLDataSet = new SQLDataSet();
 		try
@@ -129,15 +152,30 @@ public class SQLResultJPanel extends JPanel implements ActionListener
 			l_SQLDataSet.setConnection(a_Connection);
 			l_SQLDataSet.setSQLSelect(aS_SQL);
 			l_SQLDataSet.setAutoGenerateWriteSQL(true);
-			l_SQLResultJPanel.i_SQLDataSet = l_SQLDataSet;
-			l_SQLResultJPanel.i_JTable.setModel(new DataSetTableModel(l_SQLDataSet));
+			
+			int li_count =l_SQLDataSet.read();
+			
+			if(li_count > 0)
+			{
+				a_JTextArea.append(li_count + " rows read\n");
+				SQLResultJPanel l_SQLResultJPanel = new SQLResultJPanel();
+				
+				l_SQLResultJPanel.i_SQLDataSet = l_SQLDataSet;
+				l_SQLResultJPanel.i_JTextArea_Result = a_JTextArea;
+				l_SQLResultJPanel.i_JTable.setModel(new DataSetTableModel(l_SQLDataSet));
+				
+				return l_SQLResultJPanel;
+			}
+			else
+			{
+				return null;
+			}
 		}
 		catch (DataSetException l_DataSetException)
 		{
-
+			a_JTextArea.append("ERROR:\n\t" + l_DataSetException.getMessage() + "\n");
+			return null;
 		}
-
-		return l_SQLResultJPanel;
 	}
 
 	public void setJTabbedPane(JTabbedPane a_JTabbedPane)
@@ -145,17 +183,12 @@ public class SQLResultJPanel extends JPanel implements ActionListener
 		i_JTabbedPane = a_JTabbedPane;
 	}
 
-	public void setResultJTextArea(JTextArea a_JTextArea)
-	{
-		i_JTextArea_Result = a_JTextArea;
-	}
-
 	public int execute()
 	{
 		try
 		{
 			int li_count = i_SQLDataSet.read();
-
+			
 			i_JTextArea_Result.append(li_count + " rows read\n");
 			return li_count;
 

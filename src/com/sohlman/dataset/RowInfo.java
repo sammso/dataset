@@ -108,7 +108,7 @@ public class RowInfo implements Serializable
 		
 		for(int li_x = 0 ; li_x < li_count ; li_x ++)
 		{
-			if(!getColumnClassName(li_x + 1).equals(a_RowInfo.getColumnClassName(li_x + 1)))
+			if(!getColumnClass(li_x + 1).equals(a_RowInfo.getColumnClass(li_x)))
 			{
 				return false;	
 			}
