@@ -19,17 +19,17 @@ public class Row
 	public final static Row NO_MORE_ROWS = null;
 
 	Object[] iO_Columns;
-	ColumnsInfo i_ColumnsInfo;
+	RowInfo i_RowInfo;
 
 	/** Constructor
 	 * @param aO_Columns List object columns.
 	 * @param aS_ColumnClassNames Class names like "java.lang.String"
 	 * Only basic datacolums are allowed.
 	 */
-	public Row(Object[] aO_Columns, ColumnsInfo a_ColumnsInfo)
+	public Row(Object[] aO_Columns, RowInfo a_RowInfo)
 	{
 		iO_Columns = aO_Columns;
-		i_ColumnsInfo = a_ColumnsInfo;
+		i_RowInfo = a_RowInfo;
 	}
 	
 
@@ -48,7 +48,7 @@ public class Row
 			{
 				iO_Columns[ai_index - 1] = null;	
 			}
-			else if(a_Object.getClass().getName().equals(i_ColumnsInfo.getColumnClassName(ai_index)))
+			else if(a_Object.getClass().getName().equals(i_RowInfo.getColumnClassName(ai_index)))
 			{
 				iO_Columns[ai_index - 1] = a_Object;
 			}
@@ -93,9 +93,9 @@ public class Row
 		}
 	}
 	
-	public ColumnsInfo getColumnsInfo()
+	public RowInfo getColumnsInfo()
 	{
-		return	i_ColumnsInfo;
+		return	i_RowInfo;
 	}
 
 	/** Returns object array from columns.
@@ -145,7 +145,7 @@ public class Row
 	 */
 	public int getColumnCount()
 	{
-		return i_ColumnsInfo.getColumnCount();
+		return i_RowInfo.getColumnCount();
 	}
 
 	/** Creates copy of this object.
@@ -157,7 +157,7 @@ public class Row
 
 		System.arraycopy(iO_Columns, 0, l_Objects, 0, iO_Columns.length);
 
-		return (Object) new Row(l_Objects, i_ColumnsInfo);
+		return (Object) new Row(l_Objects, i_RowInfo);
 	}
 
 	/** Set all column Values to null.

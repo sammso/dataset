@@ -28,6 +28,6 @@ public interface SQLSelectFilter
      */
     public Object[] getColumnObjects(ResultSet a_ResultSet) throws SQLException;
     
-    public SQLColumnsInfo getColumnsInfo(ResultSetMetaData a_ResultSetMetaData) throws SQLException;
+    public SQLRowInfo getColumnsInfo(ResultSetMetaData a_ResultSetMetaData) throws SQLException;
 }
 

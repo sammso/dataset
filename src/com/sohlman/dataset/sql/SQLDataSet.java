@@ -10,8 +10,8 @@ import com.sohlman.dataset.DataSetException;
  *  functionality of {@link SQLReadEngine SQLReadEngine} and {@link SQLWriteEngine SQLWriteEngine}</p>
  * <p><b>Usage</b></p>
  * <ol>        
- * <li>First create {@link SQLColumnsInfo SQLColumnsInfo} which defines ColumnStructure for SQLDataSet. <i>(optional)</i><br> 
- * If you always read data from database before writing there is not need to define {@link SQLColumnsInfo SQLColumnsInfo}
+ * <li>First create {@link SQLRowInfo SQLRowInfo} which defines ColumnStructure for SQLDataSet. <i>(optional)</i><br> 
+ * If you always read data from database before writing there is not need to define {@link SQLRowInfo SQLRowInfo}
  *  object.
  * </li> 
  * <li>Set SQLStamements using {@link #setSQLStatements setSQLStatements} 
@@ -26,7 +26,7 @@ import com.sohlman.dataset.DataSetException;
  * {@link com.sohlman.dataset.DataSet#setRowAt setRowAt} methods <i>(optional)</i>
  * </li> 
  * <li>Save changes, using {@link com.sohlman.dataset.DataSet#save() save()} <i>(optional)</i><li>
- * <li>You can ask Databata base information from {@link SQLColumnsInfo SQLColumnsInfo} object, which you can
+ * <li>You can ask Databata base information from {@link SQLRowInfo SQLRowInfo} object, which you can
  * object, which you can get with {@link com.sohlman.dataset.DataSet#getColumnsInfo() getColumnsInfo} object.
  * </li>
  * </ol>
@@ -187,21 +187,21 @@ public class SQLDataSet extends DataSet
 				}
 			}
 
-			if (getColumnsInfo() != null && (iS_InsertSQL != null || iS_DeleteSQL != null || iS_UpdateSQL != null))
+			if (getRowInfo() != null && (iS_InsertSQL != null || iS_DeleteSQL != null || iS_UpdateSQL != null))
 			{
 				SQLWriteEngine l_SQLWriteEngine = (SQLWriteEngine) getWriteEngine();
 				if (l_SQLWriteEngine == null)
 				{
-					if (getColumnsInfo() != null)
+					if (getRowInfo() != null)
 					{
 						l_SQLWriteEngine =
-							new SQLWriteEngine(i_ConnectionContainer, iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL, (SQLColumnsInfo) getColumnsInfo());
+							new SQLWriteEngine(i_ConnectionContainer, iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL, (SQLRowInfo) getRowInfo());
 						setWriteEngine(l_SQLWriteEngine);
 					}
 				}
 				else
 				{
-					l_SQLWriteEngine.setSQLColumnsInfo((SQLColumnsInfo) getColumnsInfo());
+					l_SQLWriteEngine.setSQLColumnsInfo((SQLRowInfo) getRowInfo());
 					l_SQLWriteEngine.setSQL(iS_InsertSQL, iS_UpdateSQL, iS_DeleteSQL);
 				}
 			}
@@ -265,7 +265,7 @@ public class SQLDataSet extends DataSet
 		{
 			try
 			{
-				SQLWriteEngine l_SQLWriteEngine = new SQLWriteEngine(i_ConnectionContainer,getSelectSQL(),(SQLColumnsInfo)getColumnsInfo());
+				SQLWriteEngine l_SQLWriteEngine = new SQLWriteEngine(i_ConnectionContainer,getSelectSQL(),(SQLRowInfo)getRowInfo());
 				setWriteEngine(l_SQLWriteEngine);
 			}
 			catch(Exception l_Exception)

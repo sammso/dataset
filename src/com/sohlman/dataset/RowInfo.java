@@ -5,13 +5,12 @@ package com.sohlman.dataset;
  *
  * @version 2002-10-09
  */
-public class ColumnsInfo
-{
-	private String[] iS_ColumnClassNames = null;;
-	private String[] iS_ColumnNames = null;
-	private int ii_columnCount = 0;
+public class RowInfo
+{	
+	private ColumnInfo[] i_ColumnInfos;
 	
-	public ColumnsInfo(String[] aS_ColumnClassNames,  String[] aS_ColumnNames)
+	/*
+	public RowInfo(String[] aS_ColumnClassNames,  String[] aS_ColumnNames)
 	{
 		if(aS_ColumnClassNames==null || aS_ColumnNames==null)
 		{
@@ -28,7 +27,7 @@ public class ColumnsInfo
 		ii_columnCount = iS_ColumnNames.length;
 	}
 	
-	public ColumnsInfo(String[] aS_ColumnClassNames)
+	public RowInfo(String[] aS_ColumnClassNames)
 	{
 		if(aS_ColumnClassNames==null)
 		{
@@ -45,15 +44,15 @@ public class ColumnsInfo
 		iS_ColumnClassNames = aS_ColumnClassNames;		
 		
 	}
+	*/
+	public RowInfo(ColumnInfo[] a_ColumnInfos)
+	{
+		i_ColumnInfos = a_ColumnInfos;
+	}
 	
 	public void setColumnName(int ai_index, String aS_Name)
 	{
-		if(ai_index <= 0 || ai_index > ii_columnCount)
-		{
-			throw new ArrayIndexOutOfBoundsException("SetColumnName index out of range");
-		}
-		
-		iS_ColumnNames[ai_index - 1] = aS_Name;
+		getColumnInfo(ai_index).setName(aS_Name);
 	}
 	
 	public int getIndexByColumnName(String aS_Index)
@@ -71,12 +70,17 @@ public class ColumnsInfo
 	 */
 	public String getColumnName(int ai_index)
 	{
-		if(ai_index <= 0 || ai_index > ii_columnCount)
+		return getColumnInfo(ai_index).getName();
+	}
+	
+	public ColumnInfo getColumnInfo(int ai_index)
+	{
+		int li_count = i_ColumnInfos.length;
+		if(ai_index <= 0 || ai_index > li_count)
 		{
-			throw new ArrayIndexOutOfBoundsException("getColumnName index out of range");
+			throw new ArrayIndexOutOfBoundsException("Column index has to be range 1 - " + li_count);
 		}
-				
-		return iS_ColumnNames[ai_index - 1];
+		return i_ColumnInfos[ai_index - 1];
 	}
 	
 	/**
@@ -86,13 +90,8 @@ public class ColumnsInfo
 	 * @throws ArrayIndexOutOfBoundsException if index is out of range
 	 */
 	public String getColumnClassName(int ai_index)
-	{
-		if(ai_index <= 0 || ai_index > ii_columnCount)
-		{
-			throw new ArrayIndexOutOfBoundsException("SetColumnName index out of range");
-		}
-				
-		return iS_ColumnClassNames[ai_index - 1];		
+	{	
+		return getColumnInfo(ai_index).getClassName();	
 	}	
 	
 	
@@ -106,11 +105,7 @@ public class ColumnsInfo
 	 */
 	public Class getColumnClass(int ai_index) throws ClassNotFoundException
 	{
-		if(ai_index <= 0 || ai_index > ii_columnCount)
-		{
-			throw new ArrayIndexOutOfBoundsException("getColumnClass index out of range");
-		}		
-		return Class.forName(getColumnClassName(ai_index));		
+		return i_ColumnInfos[ai_index].getColumnClass();
 	}
 	
 	
@@ -120,26 +115,27 @@ public class ColumnsInfo
 	 */
 	public int getColumnCount()
 	{
-		return ii_columnCount;
+		return i_ColumnInfos.length;
 	}
 	
 	/**
-	 * Checks if this eguals with another ColumnsInfo object.<p>
+	 * Checks if this eguals with another RowInfo object.<p>
 	 * It will check that ClassNames and column count are match
 	 * 
 	 * @param a_ColumnsInfo
 	 * @return boolean
 	 */
-	public boolean equals(ColumnsInfo a_ColumnsInfo)
+	public boolean equals(RowInfo a_RowInfo)
 	{
-		if(getColumnCount()!=a_ColumnsInfo.getColumnCount())
+		int li_count = i_ColumnInfos.length;		
+		if(li_count!=a_RowInfo.getColumnCount())
 		{
 			return false;
 		}
 		
-		for(int li_x = 0 ; li_x < ii_columnCount ; li_x ++)
+		for(int li_x = 0 ; li_x < li_count ; li_x ++)
 		{
-			if(!getColumnClassName(li_x + 1).equals(a_ColumnsInfo.getColumnClassName(li_x + 1)))
+			if(!getColumnClassName(li_x + 1).equals(a_RowInfo.getColumnClassName(li_x + 1)))
 			{
 				return false;	
 			}

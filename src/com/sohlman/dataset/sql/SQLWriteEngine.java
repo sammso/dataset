@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import com.sohlman.dataset.ColumnsInfo;
+import com.sohlman.dataset.RowInfo;
 import com.sohlman.dataset.DataSet;
 import com.sohlman.dataset.Row;
 import com.sohlman.dataset.RowContainer;
@@ -18,7 +18,7 @@ import com.sohlman.dataset.DataSetException;
  * <ul>
  * 	<li>Set Connection object</li>
  * 	<li>Set SQL Statements (Connection object has be set before)</li>
- * 	<li>Set Set SQLColumnsInfo</li>
+ * 	<li>Set Set SQLRowInfo</li>
  *  <li>Set SQLRetrieveEngine related which is related to same DataSet</li>
  * </ul>
 * <p>To create SQL statements see documentation of {@link SQLStatement SQLStatement} class.</p>
@@ -51,7 +51,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	private boolean ib_noRowsUpdatedError = true;
 	private boolean ib_noRowsDeletedError = true;
 
-	private SQLColumnsInfo i_SQLColumnsInfo;
+	private SQLRowInfo i_SQLColumnsInfo;
 
 	/** Creates new SQLUpdateEngine */
 	public SQLWriteEngine()
@@ -72,7 +72,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 		String aS_InsertSQL,
 		String aS_UpdateSQL,
 		String aS_DeleteSQL,
-		SQLColumnsInfo a_SQLColumnsInfo)
+		SQLRowInfo a_SQLColumnsInfo)
 		throws DataSetException
 	{
 		setConnection(a_ConnectionContainer);
@@ -87,7 +87,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	 * @param aS_Select Select SQL statement
 	 * @param a_SQLColumnsInfo
 	 */
-	public SQLWriteEngine(ConnectionContainer a_ConnectionContainer, String aS_SelectSQL, SQLColumnsInfo a_SQLColumnsInfo) throws DataSetException
+	public SQLWriteEngine(ConnectionContainer a_ConnectionContainer, String aS_SelectSQL, SQLRowInfo a_SQLColumnsInfo) throws DataSetException
 	{
 		setConnection(a_ConnectionContainer);
 		setSQLColumnsInfo(a_SQLColumnsInfo);
@@ -97,7 +97,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	/** Set Connection object to SQLUpdateEngine
 	 * @param a_Connecion Current connection object
 	 */
-	public void setSQLColumnsInfo(SQLColumnsInfo a_SQLColumnsInfo)
+	public void setSQLColumnsInfo(SQLRowInfo a_SQLColumnsInfo)
 	{
 		i_SQLColumnsInfo = a_SQLColumnsInfo;
 	}
@@ -120,7 +120,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	 * <br><b>This is experimental</b>
 	 * @param aS_Select Select statement
 	 * @throws DataSetException If there are more tables than one in statement
-	 * @throws IllegalStateException If SQLColumnsInfo is not set (programming fault)
+	 * @throws IllegalStateException If SQLRowInfo is not set (programming fault)
 	 */
 	public void createWriteStatementsFromSelect(String aS_Select) throws DataSetException
 	{
@@ -172,7 +172,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	{
 		if (i_SQLColumnsInfo == null)
 		{
-			throw new IllegalStateException("SQLColumnsInfo is not set");
+			throw new IllegalStateException("SQLRowInfo is not set");
 		}
 		StringBuffer lSb_InsertSQL = new StringBuffer();
 		lSb_InsertSQL.append("INSERT INTO ").append(aS_Table).append(" ( ");
@@ -206,7 +206,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	{
 		if (i_SQLColumnsInfo == null)
 		{
-			throw new IllegalStateException("SQLColumnsInfo is not set");
+			throw new IllegalStateException("SQLRowInfo is not set");
 		}		
 		StringBuffer lSb_UpdateSQL = new StringBuffer();
 		lSb_UpdateSQL.append("UPDATE ").append(aS_Table).append(" SET ");
@@ -244,7 +244,7 @@ public class SQLWriteEngine implements com.sohlman.dataset.WriteEngine
 	{
 		if (i_SQLColumnsInfo == null)
 		{
-			throw new IllegalStateException("SQLColumnsInfo is not set");
+			throw new IllegalStateException("SQLRowInfo is not set");
 		}		
 		StringBuffer lSb_DeleteSQL = new StringBuffer();
 		lSb_DeleteSQL.append("DELETE FROM ").append(aS_Table);

@@ -14,11 +14,11 @@ public interface ReadEngine
 	 *
 	 * @param a_ColumnsInfo which defines type of row. If row differs then 
 	 * {@link DataSetException DataSetException} is thrown. If value is null then
-	 * It will genereate new ColumnsInfo.
-	 * @return ColumnsInfo which acts as row model object 
+	 * It will genereate new RowInfo.
+	 * @return RowInfo which acts as row model object 
 	 * @throws DataSetException on error situation
 	 */	
-	public ColumnsInfo readStart(ColumnsInfo a_ColumnsInfo) throws DataSetException;    
+	public RowInfo readStart(RowInfo a_ColumnsInfo) throws DataSetException;    
 	
 	/** Gets row from ReadEngine
 	 *
@@ -27,7 +27,7 @@ public interface ReadEngine
 	 * @param a_ColumnsInfo ColumnInfo which are used to create the row 
 	 * @return how many rows have been read. DataSet.NO_MORE_ROWS if no new row found.
 	 */	
-	public Row readRow(ColumnsInfo a_ColumnsInfo) throws DataSetException;
+	public Row readRow(RowInfo a_ColumnsInfo) throws DataSetException;
 		
 	/** Last action when all the rows are retrieved
 	 * @return How may rows are retrieved
