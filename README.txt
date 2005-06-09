@@ -13,7 +13,9 @@ Changes
  - AutoWrite now works also with autoincrement
    auto increment fiels are not generated to SQL statement
  - SQLColumnInfo
- - new methods DataSet.setReadLimit() and DataSet.setReadLimit() see javadoc
+ - new methods DataSet.setReadLimit() and DataSet.setReadLimit() 
+   see javadoc
+ - Fix on SQLStatement conserning usage of ":" characher. Also error messages are improved.
  
 
  Changes in RC 4

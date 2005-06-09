@@ -2,7 +2,7 @@
 	<description>
 		DataSet build.xml
 	</description>
-	<property name="title" value="DataSet 1.0 RC 4"/>
+	<property name="title" value="DataSet 1.0"/>
 	<property name="zipfile" value="DataSet.zip"/>
 	<property name="datasetsrc" location="src"/>
 	<property name="sqltoolsrc" location="examples/sqltool"/>
@@ -83,7 +83,7 @@
 			<packageset dir="${datasetsrc}" defaultexcludes="yes"/>
 			<packageset dir="${swingsrc}" defaultexcludes="yes"/>			
 			<doctitle><![CDATA[<h1>${title}</h1>]]></doctitle>
-			<bottom><![CDATA[<i>Sampsa Sohlman 2001-2004</i>]]></bottom>
+			<bottom><![CDATA[<i>Sampsa Sohlman 2001-2005</i>]]></bottom>
 			<group title="DataSet Core" packages="com.sohlman.dataset:com.sohlman.dataset.file:com.sohlman.dataset.sql"/>
 			<group title="DataSet Swing" packages="com.sohlman.dataset.swing"/>			
 		</javadoc>		
